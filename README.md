@@ -5,4 +5,9 @@
 
 ![qq 20180520160341](https://user-images.githubusercontent.com/5820324/40276878-63826874-5c47-11e8-90ba-8815296e9172.png)
 
+![qq 20180520160433](https://user-images.githubusercontent.com/5820324/40276886-82bcdd96-5c47-11e8-8523-e55caef93997.png)
+
+## 欢迎贡献代码
+- https://github.com/zhaopeiym/quartzui/blob/master/%E6%B3%A8%E6%84%8F.md
+
 
