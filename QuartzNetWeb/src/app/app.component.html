@@ -1,0 +1,171 @@
+<nz-layout class="layout" style="height: 100%;">
+  <nz-header>
+    <div class="logo">任务调度平台</div>
+    <ul nz-menu [nzTheme]="'dark'" [nzMode]="'horizontal'" style="line-height: 64px;">
+      <li nz-menu-item>任务列表</li>
+      <li nz-menu-item>使用说明</li>
+      <li nz-menu-item>关于</li>
+    </ul>
+  </nz-header>
+  <nz-content style="padding:0 50px;">
+    <nz-breadcrumb style="margin:16px 0;">
+        <nz-breadcrumb-item>任务列表</nz-breadcrumb-item>
+    </nz-breadcrumb>
+    <div style="background:#fff; padding: 24px; min-height: 280px;">
+
+      <nz-modal class="modalStyle" [(nzVisible)]="isJobVisible" nzTitle="新增任务" (nzOnCancel)="handleJobCancel()" (nzOnOk)="handleJobOk()">
+
+        <form nz-form [formGroup]="validateJobForm">
+
+          <nz-form-item>
+            <nz-form-label [nzSpan]="5" nzRequired nzFor="jobName">任务组名</nz-form-label>
+            <nz-form-control [nzSpan]="15">
+              <input nz-input placeholder="请输入任务组名字" formControlName="jobGroup" [(ngModel)]="jobInfoEntity.jobGroup">
+              <nz-form-explain *ngIf="validateJobForm.get('jobGroup').dirty && validateJobForm.get('jobGroup').errors">任务组名字必填</nz-form-explain>
+            </nz-form-control>
+          </nz-form-item>
+
+          <nz-form-item>
+            <nz-form-label [nzSpan]="5" nzRequired nzFor="jobName">任务名称</nz-form-label>
+            <nz-form-control [nzSpan]="15">
+              <input nz-input placeholder="请输入任务名字" formControlName="jobName" [(ngModel)]="jobInfoEntity.JobName">
+              <nz-form-explain *ngIf="validateJobForm.get('jobName').dirty && validateJobForm.get('jobName').errors">任务名字必填</nz-form-explain>
+            </nz-form-control>
+          </nz-form-item>
+
+          <nz-form-item>
+            <nz-form-label [nzSpan]="5" nzRequired nzFor="beginTime">开始时间</nz-form-label>
+            <nz-form-control [nzSpan]="15">
+              <nz-date-picker formControlName="beginTime" [(ngModel)]="jobInfoEntity.BeginTime" (ngModelChange)="onChange($event)" nzShowTime></nz-date-picker>
+              <nz-form-explain *ngIf="validateJobForm.get('beginTime').dirty && validateJobForm.get('beginTime').errors">开始时间必填</nz-form-explain>
+            </nz-form-control>
+          </nz-form-item>
+
+          <nz-form-item>
+            <nz-form-label [nzSpan]="5" nzFor="endTime">结束时间</nz-form-label>
+            <nz-form-control [nzSpan]="15">
+              <nz-date-picker formControlName="endTime" [(ngModel)]="jobInfoEntity.EndTime" (ngModelChange)="onChange($event)" nzShowTime></nz-date-picker>
+              <nz-form-explain *ngIf="validateJobForm.get('endTime').dirty && validateJobForm.get('endTime').errors"></nz-form-explain>
+            </nz-form-control>
+          </nz-form-item>
+
+          <nz-form-item>
+            <nz-form-label [nzSpan]="5" nzRequired nzFor="cron">Cron表达式</nz-form-label>
+            <nz-form-control [nzSpan]="15">
+              <input nz-input formControlName="cron" placeholder="请输入Cron表达式" [(ngModel)]="jobInfoEntity.Cron">
+              <nz-form-explain *ngIf="validateJobForm.get('cron').dirty && validateJobForm.get('cron').errors">Cron表达式必填</nz-form-explain>
+            </nz-form-control>
+            <nz-tag [nzColor]="'#2db7f5'">
+              <a href=" http://cron.qqe2.com/ " target="_blank">参考</a>
+            </nz-tag>
+          </nz-form-item>
+
+          <nz-form-item>
+            <nz-form-label [nzSpan]="5" nzRequired nzFor="requestUrl">请求地址</nz-form-label>
+            <nz-form-control [nzSpan]="15">
+              <input nz-input formControlName="requestUrl" placeholder="请输入请求地址" [(ngModel)]="jobInfoEntity.RequestUrl">
+              <nz-form-explain *ngIf="validateJobForm.get('requestUrl').dirty && validateJobForm.get('requestUrl').errors">请求地址必填</nz-form-explain>
+
+            </nz-form-control>
+          </nz-form-item>
+
+          <nz-form-item>
+            <nz-form-label [nzSpan]="5" nzRequired nzFor="requestType"> 请求类型</nz-form-label>
+            <nz-form-control [nzSpan]="15">
+              <nz-radio-group formControlName="requestType" [(ngModel)]="jobInfoEntity.RequestType">
+                <label nz-radio nzValue="1">Get</label>
+                <label nz-radio nzValue="2">Post</label>
+                <label nz-radio nzValue="4">Put</label>
+                <label nz-radio nzValue="8">Delete</label>
+              </nz-radio-group>
+              <nz-form-explain *ngIf="validateJobForm.get('requestType').dirty && validateJobForm.get('requestType').errors">请求类型必填</nz-form-explain>
+            </nz-form-control>
+          </nz-form-item>
+
+          <nz-form-item>
+            <nz-form-label [nzSpan]="5" nzFor="requestParameters">请求参数 </nz-form-label>
+            <nz-form-control [nzSpan]="15">
+              <textarea row="4" formControlName="requestParameters" placeholder="请输入请求参数（json字符串）" nz-input [(ngModel)]="jobInfoEntity.RequestParameters"></textarea>
+              <nz-form-explain *ngIf="validateJobForm.get('requestParameters').dirty && validateJobForm.get('requestParameters').errors"></nz-form-explain>
+            </nz-form-control>
+          </nz-form-item>
+
+          <nz-form-item>
+            <nz-form-label [nzSpan]="5">任务描述 </nz-form-label>
+            <nz-form-control [nzSpan]="15">
+              <textarea row="4" formControlName="description" placeholder="请输入任务描述" nz-input [(ngModel)]="jobInfoEntity.Description"></textarea>
+              <nz-form-explain *ngIf="validateJobForm.get('description').dirty && validateJobForm.get('description').errors"></nz-form-explain>
+            </nz-form-control>
+          </nz-form-item>
+        </form>
+      </nz-modal> 
+      <button *ngIf="!resultData.length" nz-button [nzType]="'primary'" (click)="showJobModal('default')">
+        <span>新增任务</span>
+      </button>
+      <nz-collapse>
+
+        <nz-collapse-panel *ngFor="let panel of resultData" [nzHeader]="panel.groupName" [nzActive]="'true'">
+          <table class="jobTable">
+            <tr>
+              <th>任务名称</th>
+              <th>状态</th>
+              <th style="max-width: 12%;">Url</th>
+              <th>异常信息</th>
+              <th>上次执行时间</th>
+              <th>下次执行时间</th>
+              <th>开始时间</th>
+              <th>结束时间</th>
+              <th>执行计划</th>
+              <th>
+                <button nz-button [nzType]="'primary'" (click)="showJobModal(panel.groupName)">
+                  <span>新增任务</span>
+                </button>
+              </th>
+            </tr>
+            <tr *ngFor="let jobInfo of panel.jobInfoList">
+              <td>
+                {{ jobInfo.name}}
+              </td>
+              <td>
+                <nz-tag *ngIf="jobInfo.displayState==='暂停'" [nzColor]="'magenta'"> {{ jobInfo.displayState}}</nz-tag>
+                <nz-tag *ngIf="jobInfo.displayState!=='暂停'" [nzColor]="'blue'"> {{ jobInfo.displayState}}</nz-tag>
+              </td>
+              <td>
+                {{ jobInfo.requestUrl}}
+              </td>
+              <td>
+                <nz-tag *ngIf="jobInfo.lastErrMsg" [nzColor]="'red'" (click)="showMessg(jobInfo.lastErrMsg)">查看</nz-tag>
+                <span *ngIf="!jobInfo.lastErrMsg">--</span>
+              </td>
+              <td>
+                {{ jobInfo.previousFireTime| date:'yyyy-MM-dd HH:mm:ss'}}
+              </td>
+              <td>
+                {{ jobInfo.nextFireTime| date:'yyyy-MM-dd HH:mm:ss'}}
+              </td>
+              <td>
+                {{ jobInfo.beginTime | date:'yyyy-MM-dd HH:mm:ss'}}
+              </td>
+              <td>
+                {{ jobInfo.endTime| date:'yyyy-MM-dd HH:mm:ss'}}
+              </td>
+              <td>
+                {{ jobInfo.interval}}
+              </td>
+              <td>
+                <button *ngIf="jobInfo.displayState==='暂停'" nz-button (click)="resumeJob(jobInfo.name,panel.groupName)" nzType="default">恢复</button>
+                <button *ngIf="jobInfo.displayState!=='暂停'" nz-button (click)="stopJob(jobInfo.name,panel.groupName)" nzType="default">暂停</button>
+                <button nz-button (click)="removeJob(jobInfo.name,panel.groupName)" nzType="danger">删除</button>
+                <button nz-button>编辑</button>
+              </td>
+            </tr>
+          </table>
+
+        </nz-collapse-panel>
+      </nz-collapse>
+    </div>
+  </nz-content>
+  <nz-footer style="text-align: center;"> ©2018 Implement By
+    <a href="https://github.com/zhaopeiym" target="_blank">农码一生</a>
+  </nz-footer>
+</nz-layout>

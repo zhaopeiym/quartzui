@@ -1,0 +1,7 @@
+/QuartzNetUI/Host/File/logs
+/QuartzNetUI/Host/File/sqliteScheduler.db
+/QuartzNetUI/Host/bin
+/QuartzNetUI/Host/obj
+/QuartzNetUI/Host.Tests/obj
+/QuartzNetUI/Host.Tests/bin
+/QuartzNetUI/.vs
