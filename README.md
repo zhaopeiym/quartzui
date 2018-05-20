@@ -5,8 +5,9 @@
 - https://github.com/zhaopeiym/quartzui/blob/master/%E6%B3%A8%E6%84%8F.md
 
 ## 效果图
-- ![qq 20180520160341](https://user-images.githubusercontent.com/5820324/40276878-63826874-5c47-11e8-90ba-8815296e9172.png)
-- ![qq 20180520160433](https://user-images.githubusercontent.com/5820324/40276886-82bcdd96-5c47-11e8-8523-e55caef93997.png)
+![qq 20180520160711](https://user-images.githubusercontent.com/5820324/40276903-e98a24c0-5c47-11e8-834c-67387b2d8935.png)
+![qq 20180520160824](https://user-images.githubusercontent.com/5820324/40276909-0f8c9c02-5c48-11e8-8925-9d0ad5bd469d.png)
+
 
 
 
