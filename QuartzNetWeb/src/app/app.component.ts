@@ -78,7 +78,7 @@ export class AppComponent {
     }
   }
 
-  //新增/编辑 计划任务
+  //新增-编辑 计划任务
   handleJobOk() {
     if (!this.validateJobForm.valid) {
       this.validata();
@@ -119,26 +119,6 @@ export class AppComponent {
         //this.loadJobInfo();
       });
   }
-
-  /*  //修改
-   modifyJob() {
-     if (!this.validateJobForm.valid) {
-       this.validata();
-       return;
-     }
-     console.log(this.jobInfoEntity);
-     var url = this.baseUrl + "/api/Job/ModifyJob";
-     this.http.post(url, this.jobInfoEntity, { headers: this.headers })
-       .subscribe((result: any) => {
-         console.log(result);
-       }, (err) => {
- 
-       }, () => {
-         this.loadJobInfo();
-       });
- 
-     this.isJobVisible = false;
-   } */
 
   //暂停
   stopJob(name, group) {

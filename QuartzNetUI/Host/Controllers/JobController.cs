@@ -74,6 +74,7 @@ namespace Host.Controllers
         /// </summary>
         /// <param name="entity"></param>
         /// <returns></returns>
+        [HttpPost]
         public async Task<BaseResult> ModifyJob([FromBody]ScheduleEntity entity)
         {
             await SchedulerCenter.Instance.StopOrDelScheduleJob(entity.JobGroup, entity.JobName, true);

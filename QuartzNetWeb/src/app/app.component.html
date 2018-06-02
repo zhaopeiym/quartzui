@@ -127,8 +127,12 @@
                 {{ jobInfo.name}}
               </td>
               <td>
-                <nz-tag *ngIf="jobInfo.displayState==='暂停'" [nzColor]="'magenta'"> {{ jobInfo.displayState}}</nz-tag>
-                <nz-tag *ngIf="jobInfo.displayState!=='暂停'" [nzColor]="'blue'"> {{ jobInfo.displayState}}</nz-tag>
+                <nz-tag *ngIf="jobInfo.displayState==='正常'" [nzColor]="'blue'"> {{ jobInfo.displayState}}</nz-tag>
+                <nz-tag *ngIf="jobInfo.displayState==='暂停'" [nzColor]="'volcano'"> {{ jobInfo.displayState}}</nz-tag>
+                <nz-tag *ngIf="jobInfo.displayState==='完成'" [nzColor]="'green'"> {{ jobInfo.displayState}}</nz-tag>
+                <nz-tag *ngIf="jobInfo.displayState==='异常'" [nzColor]="'magenta'"> {{ jobInfo.displayState}}</nz-tag>
+                <nz-tag *ngIf="jobInfo.displayState==='阻塞'" [nzColor]="'gold'"> {{ jobInfo.displayState}}</nz-tag>
+                <nz-tag *ngIf="jobInfo.displayState==='不存在'" [nzColor]="'purple'"> {{ jobInfo.displayState}}</nz-tag>
               </td>
               <td>
                 {{ jobInfo.requestUrl}}

@@ -22,12 +22,12 @@
 .jobTable td {
     padding: 5px;
 }
- 
+
 .rowJobCont:nth-child(n+2) {
     margin-top: 8px;
 }
 
-nz-tag {
-    line-height: 39px;    
+form nz-tag {
+    line-height: 39px;
     margin-left: 5px;
 }
