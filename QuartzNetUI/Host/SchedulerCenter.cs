@@ -188,14 +188,44 @@ namespace Host
                 {
                     //任务已经存在则暂停任务
                     await Scheduler.ResumeJob(jobKey);
+                    result.Msg = "恢复任务计划成功！";
                     Log.Information(string.Format("任务“{0}”恢复运行", jobName));
+                }
+                else
+                {
+                    result.Msg = "任务不存在";
                 }
             }
             catch (Exception ex)
             {
+                result.Msg = "恢复任务计划失败！";
+                result.Code = 500;
                 Log.Error(string.Format("恢复任务失败！{0}", ex));
             }
             return result;
+        }
+
+        public async Task<ScheduleEntity> QueryJob(string jobGroup, string jobName)
+        {
+            var entity = new ScheduleEntity();
+            var jobKey = new JobKey(jobName, jobGroup);
+            var jobDetail = await Scheduler.GetJobDetail(jobKey);
+            var triggersList = await Scheduler.GetTriggersOfJob(jobKey);
+            var triggers = triggersList.AsEnumerable().FirstOrDefault();
+            var intervalSeconds = (triggers as SimpleTriggerImpl)?.RepeatInterval.Seconds;
+
+            entity.RequestUrl = jobDetail.JobDataMap.GetString("RequestUrl");
+            entity.BeginTime = triggers.StartTimeUtc.LocalDateTime;
+            entity.EndTime = triggers.EndTimeUtc?.LocalDateTime;
+            entity.IntervalSecond = intervalSeconds;
+            entity.JobGroup = jobGroup;
+            entity.JobName = jobName;
+            entity.Cron = (triggers as CronTriggerImpl)?.CronExpressionString;
+            entity.RunTimes = (triggers as SimpleTriggerImpl)?.RepeatCount;
+            entity.RequestType = (RequestTypeEnum)int.Parse(jobDetail.JobDataMap.GetString("RequestType"));
+            entity.RequestParameters = jobDetail.JobDataMap.GetString("RequestParameters");
+            entity.Description = jobDetail.Description;
+            return entity;
         }
 
         /// <summary>
@@ -236,15 +266,15 @@ namespace Host
         private ITrigger CreateSimpleTrigger(ScheduleEntity entity)
         {
             //作业触发器
-            if (entity.RunTimes > 0)
+            if (entity.RunTimes.HasValue && entity.RunTimes > 0)
             {
                 return TriggerBuilder.Create()
                .WithIdentity(entity.JobName, entity.JobGroup)
                .StartAt(entity.BeginTime)//开始时间
                .EndAt(entity.EndTime)//结束数据
                .WithSimpleSchedule(x => x
-                   .WithIntervalInSeconds(entity.IntervalSecond.Second)//执行时间间隔，单位秒
-                   .WithRepeatCount(entity.RunTimes))//执行次数、默认从0开始
+                   .WithIntervalInSeconds(entity.IntervalSecond.Value)//执行时间间隔，单位秒
+                   .WithRepeatCount(entity.RunTimes.Value))//执行次数、默认从0开始
                    .ForJob(entity.JobName, entity.JobGroup)//作业名称
                .Build();
             }
@@ -255,7 +285,7 @@ namespace Host
                .StartAt(entity.BeginTime)//开始时间
                .EndAt(entity.EndTime)//结束数据
                .WithSimpleSchedule(x => x
-                   .WithIntervalInSeconds(entity.IntervalSecond.Second)//执行时间间隔，单位秒
+                   .WithIntervalInSeconds(entity.IntervalSecond.Value)//执行时间间隔，单位秒
                    .RepeatForever())//无限循环
                    .ForJob(entity.JobName, entity.JobGroup)//作业名称
                .Build();

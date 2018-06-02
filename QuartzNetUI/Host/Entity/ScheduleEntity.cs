@@ -30,11 +30,11 @@ namespace Host
         /// <summary>
         /// 执行次数（默认无限循环）
         /// </summary>
-        public int RunTimes { get; set; }
+        public int? RunTimes { get; set; }
         /// <summary>
         /// 执行间隔时间，单位秒（如果有Cron，则IntervalSecond失效）
         /// </summary>
-        public DateTime IntervalSecond { get; set; }
+        public int? IntervalSecond { get; set; }
 
         /// <summary>
         /// 请求url

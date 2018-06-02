@@ -9,11 +9,11 @@
   </nz-header>
   <nz-content style="padding:0 50px;">
     <nz-breadcrumb style="margin:16px 0;">
-        <nz-breadcrumb-item>任务列表</nz-breadcrumb-item>
+      <nz-breadcrumb-item>任务列表</nz-breadcrumb-item>
     </nz-breadcrumb>
     <div style="background:#fff; padding: 24px; min-height: 280px;">
 
-      <nz-modal class="modalStyle" [(nzVisible)]="isJobVisible" nzTitle="新增任务" (nzOnCancel)="handleJobCancel()" (nzOnOk)="handleJobOk()">
+      <nz-modal class="modalStyle" [(nzVisible)]="isJobVisible" [(nzTitle)]="modalTitle" (nzOnCancel)="handleJobCancel()" (nzOnOk)="handleJobOk()">
 
         <form nz-form [formGroup]="validateJobForm">
 
@@ -98,7 +98,7 @@
             </nz-form-control>
           </nz-form-item>
         </form>
-      </nz-modal> 
+      </nz-modal>
       <button *ngIf="!resultData.length" nz-button [nzType]="'primary'" (click)="showJobModal('default')">
         <span>新增任务</span>
       </button>
@@ -134,7 +134,7 @@
                 {{ jobInfo.requestUrl}}
               </td>
               <td>
-                <nz-tag *ngIf="jobInfo.lastErrMsg" [nzColor]="'red'" (click)="showMessg(jobInfo.lastErrMsg)">查看</nz-tag>
+                <nz-tag *ngIf="jobInfo.lastErrMsg" [nzColor]="'red'" (click)="msgError(jobInfo.lastErrMsg)">查看</nz-tag>
                 <span *ngIf="!jobInfo.lastErrMsg">--</span>
               </td>
               <td>
@@ -155,8 +155,12 @@
               <td>
                 <button *ngIf="jobInfo.displayState==='暂停'" nz-button (click)="resumeJob(jobInfo.name,panel.groupName)" nzType="default">恢复</button>
                 <button *ngIf="jobInfo.displayState!=='暂停'" nz-button (click)="stopJob(jobInfo.name,panel.groupName)" nzType="default">暂停</button>
-                <button nz-button (click)="removeJob(jobInfo.name,panel.groupName)" nzType="danger">删除</button>
-                <button nz-button>编辑</button>
+                <nz-popconfirm [nzTitle]="'你确定删除这个任务？'" (nzOnConfirm)="removeJob(jobInfo.name,panel.groupName)" (nzOnCancel)="confirm()">
+                  <a nz-popconfirm>
+                    <button nz-button nzType="danger">删除</button>
+                  </a>
+                </nz-popconfirm>
+                <button nz-button (click)="editJob(jobInfo.name,panel.groupName)">编辑</button>
               </td>
             </tr>
           </table>
@@ -166,6 +170,6 @@
     </div>
   </nz-content>
   <nz-footer style="text-align: center;"> ©2018 Implement By
-    <a href="https://github.com/zhaopeiym" target="_blank">农码一生</a>
+    <a href="https://github.com/zhaopeiym/quartzui" target="_blank">农码一生</a>
   </nz-footer>
 </nz-layout>

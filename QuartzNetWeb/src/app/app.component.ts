@@ -5,6 +5,8 @@ import * as addDays from 'date-fns/add_days';
 import * as getISOWeek from 'date-fns/get_iso_week';
 import { AbstractControl, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { NgModule } from '@angular/core';
+import { environment } from '../environments/environment';
+import { NzNotificationService } from 'ng-zorro-antd';
 
 @Component({
   selector: 'app-root',
@@ -17,16 +19,17 @@ export class AppComponent {
   isVisible: boolean;
   jobGroupName: any;
   jobGroupDescribe: any;
+  modalTitle = "新增任务";
   title = 'app';
   private headers = new HttpHeaders({
     'Content-Type': 'application/json'
   });
-  private baseUrl = "";// "http://localhost:52725";   开发的时候可以先设置本地接口地址
+  private baseUrl = environment.baseUrl;// "http://localhost:52725";   开发的时候可以先设置本地接口地址
   public resultData = [{}];
   dateFormat = 'yyyy/MM/dd';
   jobInfoEntity: any = {};
 
-  constructor(private http: HttpClient, private fb2: FormBuilder) {
+  constructor(private http: HttpClient, private fb2: FormBuilder, private notification: NzNotificationService) {
     this.loadJobInfo();
   }
 
@@ -58,19 +61,14 @@ export class AppComponent {
 
   }
 
-  handleCancel(): void {
-
-    this.isVisible = false;
-  }
-
   showJobModal(groupName) {
     this.isJobVisible = true;
     this.jobInfoEntity.jobGroup = groupName;
   }
 
   handleJobCancel() {
-
     this.isJobVisible = false;
+    this.modalTitle = "新增任务";
   }
 
   validata() {
@@ -82,12 +80,10 @@ export class AppComponent {
 
   //新增计划任务
   handleJobOk() {
-
     if (!this.validateJobForm.valid) {
       this.validata();
       return;
     }
-
     console.log(this.jobInfoEntity);
     var url = this.baseUrl + "/api/Job/AddJob";
     this.http.post(url, this.jobInfoEntity, { headers: this.headers })
@@ -106,24 +102,31 @@ export class AppComponent {
     console.log('onChange: ', result);
   }
 
+  //编辑任务
+  editJob(name, group) {
+    this.modalTitle = "编辑任务";
+    this.isJobVisible = true;
+  }
+
   //暂停
   stopJob(name, group) {
     var url = this.baseUrl + "/api/Job/StopJob";
     this.http.post(url, { name: name, group: group }, { headers: this.headers })
       .subscribe((result: any) => {
-        alert(result.msg);
+        this.msgInfo(result.msg);
       }, (err) => {
 
       }, () => {
         this.loadJobInfo();
       });
   }
+
   //删除
   removeJob(name, group) {
     var url = this.baseUrl + "/api/Job/RemoveJob";
     this.http.post(url, { name: name, group: group }, { headers: this.headers })
       .subscribe((result: any) => {
-        alert(result.msg);
+        this.msgInfo(result.msg);
       }, (err) => {
 
       }, () => {
@@ -136,7 +139,7 @@ export class AppComponent {
     var url = this.baseUrl + "/api/Job/ResumeJob";
     this.http.post(url, { name: name, group: group }, { headers: this.headers })
       .subscribe((result: any) => {
-        alert(result.msg);
+        this.msgInfo(result.msg);
       }, (err) => {
 
       }, () => {
@@ -144,7 +147,16 @@ export class AppComponent {
       });
   }
 
-  showMessg(msg) {
-    alert(msg);
+  msgError(str): void {
+    this.notification.error(str, "")
+  }
+  msgInfo(str): void {
+    this.notification.info(str, "")
+  }
+  msgSuccess(str): void {
+    this.notification.success(str, "")
+  }
+  msgWarning(str): void {
+    this.notification.warning(str, "")
   }
 }

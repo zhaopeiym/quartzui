@@ -60,6 +60,16 @@ namespace Host.Controllers
         }
 
         /// <summary>
+        /// 查询任务
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost]
+        public async Task<ScheduleEntity> QueryJob([FromBody]JobKey job)
+        {
+            return null;
+        }
+
+        /// <summary>
         /// 启动调度
         /// </summary>
         /// <returns></returns>
@@ -87,6 +97,7 @@ namespace Host.Controllers
         public async Task<List<JobInfoEntity>> GetAllJob()
         {
             return await SchedulerCenter.Instance.GetAllJob();
-        }
+        } 
+        
     }
 }
