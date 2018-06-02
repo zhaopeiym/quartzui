@@ -205,6 +205,12 @@ namespace Host
             return result;
         }
 
+        /// <summary>
+        /// 查询任务
+        /// </summary>
+        /// <param name="jobGroup"></param>
+        /// <param name="jobName"></param>
+        /// <returns></returns>
         public async Task<ScheduleEntity> QueryJob(string jobGroup, string jobName)
         {
             var entity = new ScheduleEntity();
@@ -212,8 +218,7 @@ namespace Host
             var jobDetail = await Scheduler.GetJobDetail(jobKey);
             var triggersList = await Scheduler.GetTriggersOfJob(jobKey);
             var triggers = triggersList.AsEnumerable().FirstOrDefault();
-            var intervalSeconds = (triggers as SimpleTriggerImpl)?.RepeatInterval.Seconds;
-
+            var intervalSeconds = (triggers as SimpleTriggerImpl)?.RepeatInterval.Seconds;            
             entity.RequestUrl = jobDetail.JobDataMap.GetString("RequestUrl");
             entity.BeginTime = triggers.StartTimeUtc.LocalDateTime;
             entity.EndTime = triggers.EndTimeUtc?.LocalDateTime;

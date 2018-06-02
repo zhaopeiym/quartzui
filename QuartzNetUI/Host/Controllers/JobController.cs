@@ -66,7 +66,19 @@ namespace Host.Controllers
         [HttpPost]
         public async Task<ScheduleEntity> QueryJob([FromBody]JobKey job)
         {
-            return null;
+            return await SchedulerCenter.Instance.QueryJob(job.Group, job.Name);
+        }
+
+        /// <summary>
+        /// 修改
+        /// </summary>
+        /// <param name="entity"></param>
+        /// <returns></returns>
+        public async Task<BaseResult> ModifyJob([FromBody]ScheduleEntity entity)
+        {
+            await SchedulerCenter.Instance.StopOrDelScheduleJob(entity.JobGroup, entity.JobName, true);
+            await SchedulerCenter.Instance.AddScheduleJob(entity);
+            return new BaseResult() { Msg = "修改计划任务成功！" };
         }
 
         /// <summary>
@@ -97,7 +109,7 @@ namespace Host.Controllers
         public async Task<List<JobInfoEntity>> GetAllJob()
         {
             return await SchedulerCenter.Instance.GetAllJob();
-        } 
-        
+        }
+
     }
 }

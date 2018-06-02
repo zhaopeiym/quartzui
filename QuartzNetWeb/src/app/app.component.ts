@@ -78,7 +78,7 @@ export class AppComponent {
     }
   }
 
-  //新增计划任务
+  //新增/编辑 计划任务
   handleJobOk() {
     if (!this.validateJobForm.valid) {
       this.validata();
@@ -86,6 +86,8 @@ export class AppComponent {
     }
     console.log(this.jobInfoEntity);
     var url = this.baseUrl + "/api/Job/AddJob";
+    if (this.modalTitle === "编辑任务")
+      url = this.baseUrl + "/api/Job/ModifyJob";
     this.http.post(url, this.jobInfoEntity, { headers: this.headers })
       .subscribe((result: any) => {
         console.log(result);
@@ -105,8 +107,38 @@ export class AppComponent {
   //编辑任务
   editJob(name, group) {
     this.modalTitle = "编辑任务";
-    this.isJobVisible = true;
+    var url = this.baseUrl + "/api/Job/QueryJob";
+    this.http.post(url, { name: name, group: group }, { headers: this.headers })
+      .subscribe((result: any) => {
+        this.jobInfoEntity = result;
+        this.jobInfoEntity.requestType = this.jobInfoEntity.requestType.toString();
+        this.isJobVisible = true;
+      }, (err) => {
+
+      }, () => {
+        //this.loadJobInfo();
+      });
   }
+
+  /*  //修改
+   modifyJob() {
+     if (!this.validateJobForm.valid) {
+       this.validata();
+       return;
+     }
+     console.log(this.jobInfoEntity);
+     var url = this.baseUrl + "/api/Job/ModifyJob";
+     this.http.post(url, this.jobInfoEntity, { headers: this.headers })
+       .subscribe((result: any) => {
+         console.log(result);
+       }, (err) => {
+ 
+       }, () => {
+         this.loadJobInfo();
+       });
+ 
+     this.isJobVisible = false;
+   } */
 
   //暂停
   stopJob(name, group) {

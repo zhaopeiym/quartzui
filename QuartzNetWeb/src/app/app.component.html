@@ -28,7 +28,7 @@
           <nz-form-item>
             <nz-form-label [nzSpan]="5" nzRequired nzFor="jobName">任务名称</nz-form-label>
             <nz-form-control [nzSpan]="15">
-              <input nz-input placeholder="请输入任务名字" formControlName="jobName" [(ngModel)]="jobInfoEntity.JobName">
+              <input nz-input placeholder="请输入任务名字" formControlName="jobName" [(ngModel)]="jobInfoEntity.jobName">
               <nz-form-explain *ngIf="validateJobForm.get('jobName').dirty && validateJobForm.get('jobName').errors">任务名字必填</nz-form-explain>
             </nz-form-control>
           </nz-form-item>
@@ -36,7 +36,7 @@
           <nz-form-item>
             <nz-form-label [nzSpan]="5" nzRequired nzFor="beginTime">开始时间</nz-form-label>
             <nz-form-control [nzSpan]="15">
-              <nz-date-picker formControlName="beginTime" [(ngModel)]="jobInfoEntity.BeginTime" (ngModelChange)="onChange($event)" nzShowTime></nz-date-picker>
+              <nz-date-picker formControlName="beginTime" [(ngModel)]="jobInfoEntity.beginTime" (ngModelChange)="onChange($event)" nzShowTime></nz-date-picker>
               <nz-form-explain *ngIf="validateJobForm.get('beginTime').dirty && validateJobForm.get('beginTime').errors">开始时间必填</nz-form-explain>
             </nz-form-control>
           </nz-form-item>
@@ -44,7 +44,7 @@
           <nz-form-item>
             <nz-form-label [nzSpan]="5" nzFor="endTime">结束时间</nz-form-label>
             <nz-form-control [nzSpan]="15">
-              <nz-date-picker formControlName="endTime" [(ngModel)]="jobInfoEntity.EndTime" (ngModelChange)="onChange($event)" nzShowTime></nz-date-picker>
+              <nz-date-picker formControlName="endTime" [(ngModel)]="jobInfoEntity.endTime" (ngModelChange)="onChange($event)" nzShowTime></nz-date-picker>
               <nz-form-explain *ngIf="validateJobForm.get('endTime').dirty && validateJobForm.get('endTime').errors"></nz-form-explain>
             </nz-form-control>
           </nz-form-item>
@@ -52,7 +52,7 @@
           <nz-form-item>
             <nz-form-label [nzSpan]="5" nzRequired nzFor="cron">Cron表达式</nz-form-label>
             <nz-form-control [nzSpan]="15">
-              <input nz-input formControlName="cron" placeholder="请输入Cron表达式" [(ngModel)]="jobInfoEntity.Cron">
+              <input nz-input formControlName="cron" placeholder="请输入Cron表达式" [(ngModel)]="jobInfoEntity.cron">
               <nz-form-explain *ngIf="validateJobForm.get('cron').dirty && validateJobForm.get('cron').errors">Cron表达式必填</nz-form-explain>
             </nz-form-control>
             <nz-tag [nzColor]="'#2db7f5'">
@@ -63,7 +63,7 @@
           <nz-form-item>
             <nz-form-label [nzSpan]="5" nzRequired nzFor="requestUrl">请求地址</nz-form-label>
             <nz-form-control [nzSpan]="15">
-              <input nz-input formControlName="requestUrl" placeholder="请输入请求地址" [(ngModel)]="jobInfoEntity.RequestUrl">
+              <input nz-input formControlName="requestUrl" placeholder="请输入请求地址" [(ngModel)]="jobInfoEntity.requestUrl">
               <nz-form-explain *ngIf="validateJobForm.get('requestUrl').dirty && validateJobForm.get('requestUrl').errors">请求地址必填</nz-form-explain>
 
             </nz-form-control>
@@ -72,7 +72,7 @@
           <nz-form-item>
             <nz-form-label [nzSpan]="5" nzRequired nzFor="requestType"> 请求类型</nz-form-label>
             <nz-form-control [nzSpan]="15">
-              <nz-radio-group formControlName="requestType" [(ngModel)]="jobInfoEntity.RequestType">
+              <nz-radio-group formControlName="requestType" [(ngModel)]="jobInfoEntity.requestType">
                 <label nz-radio nzValue="1">Get</label>
                 <label nz-radio nzValue="2">Post</label>
                 <label nz-radio nzValue="4">Put</label>
@@ -85,7 +85,7 @@
           <nz-form-item>
             <nz-form-label [nzSpan]="5" nzFor="requestParameters">请求参数 </nz-form-label>
             <nz-form-control [nzSpan]="15">
-              <textarea row="4" formControlName="requestParameters" placeholder="请输入请求参数（json字符串）" nz-input [(ngModel)]="jobInfoEntity.RequestParameters"></textarea>
+              <textarea row="4" formControlName="requestParameters" placeholder="请输入请求参数（json字符串）" nz-input [(ngModel)]="jobInfoEntity.requestParameters"></textarea>
               <nz-form-explain *ngIf="validateJobForm.get('requestParameters').dirty && validateJobForm.get('requestParameters').errors"></nz-form-explain>
             </nz-form-control>
           </nz-form-item>
@@ -93,7 +93,7 @@
           <nz-form-item>
             <nz-form-label [nzSpan]="5">任务描述 </nz-form-label>
             <nz-form-control [nzSpan]="15">
-              <textarea row="4" formControlName="description" placeholder="请输入任务描述" nz-input [(ngModel)]="jobInfoEntity.Description"></textarea>
+              <textarea row="4" formControlName="description" placeholder="请输入任务描述" nz-input [(ngModel)]="jobInfoEntity.description"></textarea>
               <nz-form-explain *ngIf="validateJobForm.get('description').dirty && validateJobForm.get('description').errors"></nz-form-explain>
             </nz-form-control>
           </nz-form-item>
