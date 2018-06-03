@@ -17,6 +17,7 @@ using Quartz.Util;
 using Serilog;
 using System.Linq;
 using Quartz.Impl.Triggers;
+using Host.Common;
 
 namespace Host
 {
@@ -88,7 +89,7 @@ namespace Host
         /// </summary>
         /// <param name="entity"></param>
         /// <returns></returns>
-        public async Task<BaseResult> AddScheduleJob(ScheduleEntity entity)
+        public async Task<BaseResult> AddScheduleJobAsync(ScheduleEntity entity)
         {
             var result = new BaseResult();
             try
@@ -117,7 +118,7 @@ namespace Host
                 // 创建触发器
                 ITrigger trigger;
                 //校验是否正确的执行周期表达式
-                if (!string.IsNullOrEmpty(entity.Cron) && CronExpression.IsValidExpression(entity.Cron))
+                if (entity.TriggerType == TriggerTypeEnum.Cron)//CronExpression.IsValidExpression(entity.Cron))
                 {
                     trigger = CreateCronTrigger(entity);
                 }
@@ -145,7 +146,7 @@ namespace Host
         /// <param name="jobName">任务名称</param>
         /// <param name="isDelete">停止并删除任务</param>
         /// <returns></returns>
-        public async Task<BaseResult> StopOrDelScheduleJob(string jobGroup, string jobName, bool isDelete = false)
+        public async Task<BaseResult> StopOrDelScheduleJobAsync(string jobGroup, string jobName, bool isDelete = false)
         {
             BaseResult result;
             try
@@ -177,7 +178,7 @@ namespace Host
         /// </summary>
         /// <param name="jobName">任务名称</param>
         /// <param name="jobGroup">任务分组</param>
-        public async Task<BaseResult> ResumeJob(string jobGroup, string jobName)
+        public async Task<BaseResult> ResumeJobAsync(string jobGroup, string jobName)
         {
             BaseResult result = new BaseResult();
             try
@@ -211,33 +212,146 @@ namespace Host
         /// <param name="jobGroup"></param>
         /// <param name="jobName"></param>
         /// <returns></returns>
-        public async Task<ScheduleEntity> QueryJob(string jobGroup, string jobName)
+        public async Task<ScheduleEntity> QueryJobAsync(string jobGroup, string jobName)
         {
             var entity = new ScheduleEntity();
             var jobKey = new JobKey(jobName, jobGroup);
             var jobDetail = await Scheduler.GetJobDetail(jobKey);
             var triggersList = await Scheduler.GetTriggersOfJob(jobKey);
             var triggers = triggersList.AsEnumerable().FirstOrDefault();
-            var intervalSeconds = (triggers as SimpleTriggerImpl)?.RepeatInterval.Seconds;            
-            entity.RequestUrl = jobDetail.JobDataMap.GetString("RequestUrl");
+            var intervalSeconds = (triggers as SimpleTriggerImpl)?.RepeatInterval.TotalSeconds;
+            entity.RequestUrl = jobDetail.JobDataMap.GetString(Constant.REQUESTURL);
             entity.BeginTime = triggers.StartTimeUtc.LocalDateTime;
             entity.EndTime = triggers.EndTimeUtc?.LocalDateTime;
-            entity.IntervalSecond = intervalSeconds;
+            entity.IntervalSecond = intervalSeconds.HasValue ? Convert.ToInt32(intervalSeconds.Value) : 0;
             entity.JobGroup = jobGroup;
             entity.JobName = jobName;
             entity.Cron = (triggers as CronTriggerImpl)?.CronExpressionString;
             entity.RunTimes = (triggers as SimpleTriggerImpl)?.RepeatCount;
-            entity.RequestType = (RequestTypeEnum)int.Parse(jobDetail.JobDataMap.GetString("RequestType"));
-            entity.RequestParameters = jobDetail.JobDataMap.GetString("RequestParameters");
+            entity.TriggerType = triggers is SimpleTriggerImpl ? TriggerTypeEnum.Simple : TriggerTypeEnum.Cron;
+            entity.RequestType = (RequestTypeEnum)int.Parse(jobDetail.JobDataMap.GetString(Constant.REQUESTTYPE));
+            entity.RequestParameters = jobDetail.JobDataMap.GetString(Constant.REQUESTPARAMETERS);
             entity.Description = jobDetail.Description;
             return entity;
+        }
+
+        /// <summary>
+        /// 立即执行
+        /// </summary>
+        /// <param name="jobGroup"></param>
+        /// <param name="jobName"></param>
+        /// <returns></returns>
+        public async Task<bool> TriggerJobAsync(JobKey jobKey)
+        {
+            await Scheduler.TriggerJob(jobKey);
+            return true;
+        }
+
+        /// <summary>
+        /// 获取job日志
+        /// </summary>
+        /// <param name="jobKey"></param>
+        /// <returns></returns>
+        public async Task<List<string>> GetJobLogsAsync(JobKey jobKey)
+        {
+            var jobDetail = await Scheduler.GetJobDetail(jobKey);
+            return jobDetail.JobDataMap[Constant.LOGLIST] as List<string>;
+        }
+
+        /// <summary>
+        /// 获取所有Job（详情信息 - 初始化页面调用）
+        /// </summary>
+        /// <returns></returns>
+        public async Task<List<JobInfoEntity>> GetAllJobAsync()
+        {
+            List<JobKey> jboKeyList = new List<JobKey>();
+            List<JobInfoEntity> jobInfoList = new List<JobInfoEntity>();
+            var groupNames = await Scheduler.GetJobGroupNames();
+            foreach (var groupName in groupNames.OrderBy(t => t))
+            {
+                jboKeyList.AddRange(await Scheduler.GetJobKeys(GroupMatcher<JobKey>.GroupEquals(groupName)));
+                jobInfoList.Add(new JobInfoEntity() { GroupName = groupName });
+            }
+            foreach (var jobKey in jboKeyList.OrderBy(t => t.Name))
+            {
+                var jobDetail = await Scheduler.GetJobDetail(jobKey);
+                var triggersList = await Scheduler.GetTriggersOfJob(jobKey);
+                var triggers = triggersList.AsEnumerable().FirstOrDefault();
+
+                var interval = string.Empty;
+                if (triggers is SimpleTriggerImpl)
+                    interval = (triggers as SimpleTriggerImpl)?.RepeatInterval.ToString();
+                else
+                    interval = (triggers as CronTriggerImpl)?.CronExpressionString;
+
+                foreach (var jobInfo in jobInfoList)
+                {
+                    if (jobInfo.GroupName == jobKey.Group)
+                    {
+                        jobInfo.JobInfoList.Add(new JobInfo()
+                        {
+                            Name = jobKey.Name,
+                            LastErrMsg = jobDetail.JobDataMap.GetString(Constant.EXCEPTION),
+                            RequestUrl = jobDetail.JobDataMap.GetString(Constant.REQUESTURL),
+                            TriggerState = await Scheduler.GetTriggerState(triggers.Key),
+                            PreviousFireTime = triggers.GetPreviousFireTimeUtc()?.LocalDateTime,
+                            NextFireTime = triggers.GetNextFireTimeUtc()?.LocalDateTime,
+                            BeginTime = triggers.StartTimeUtc.LocalDateTime,
+                            Interval = interval,
+                            EndTime = triggers.EndTimeUtc?.LocalDateTime,
+                            Description = jobDetail.Description
+                        });
+                        continue;
+                    }
+                }
+            }
+            return jobInfoList;
+        }
+
+        /// <summary>
+        /// 获取所有Job信息（简要信息 - 刷新数据的时候使用）
+        /// </summary>
+        /// <returns></returns>
+        public async Task<List<JobBriefInfoEntity>> GetAllJobBriefInfoAsync()
+        {
+            List<JobKey> jboKeyList = new List<JobKey>();
+            List<JobBriefInfoEntity> jobInfoList = new List<JobBriefInfoEntity>();
+            var groupNames = await Scheduler.GetJobGroupNames();
+            foreach (var groupName in groupNames.OrderBy(t => t))
+            {
+                jboKeyList.AddRange(await Scheduler.GetJobKeys(GroupMatcher<JobKey>.GroupEquals(groupName)));
+                jobInfoList.Add(new JobBriefInfoEntity() { GroupName = groupName });
+            }
+            foreach (var jobKey in jboKeyList.OrderBy(t => t.Name))
+            {
+                var jobDetail = await Scheduler.GetJobDetail(jobKey);
+                var triggersList = await Scheduler.GetTriggersOfJob(jobKey);
+                var triggers = triggersList.AsEnumerable().FirstOrDefault();
+
+                foreach (var jobInfo in jobInfoList)
+                {
+                    if (jobInfo.GroupName == jobKey.Group)
+                    {
+                        jobInfo.JobInfoList.Add(new JobBriefInfo()
+                        {
+                            Name = jobKey.Name,
+                            LastErrMsg = jobDetail.JobDataMap.GetString(Constant.EXCEPTION),
+                            TriggerState = await Scheduler.GetTriggerState(triggers.Key),
+                            PreviousFireTime = triggers.GetPreviousFireTimeUtc()?.LocalDateTime,
+                            NextFireTime = triggers.GetNextFireTimeUtc()?.LocalDateTime,
+                        });
+                        continue;
+                    }
+                }
+            }
+            return jobInfoList;
         }
 
         /// <summary>
         /// 开启调度器
         /// </summary>
         /// <returns></returns>
-        public async Task<bool> StartSchedule()
+        public async Task<bool> StartScheduleAsync()
         {
             //开启调度器
             if (Scheduler.InStandbyMode)
@@ -251,7 +365,7 @@ namespace Host
         /// <summary>
         /// 停止任务调度
         /// </summary>
-        public async Task<bool> StopSchedule()
+        public async Task<bool> StopScheduleAsync()
         {
             //判断调度是否已经关闭
             if (!Scheduler.InStandbyMode)
@@ -315,54 +429,6 @@ namespace Host
                    .Build();
         }
 
-        /// <summary>
-        /// 获取所有Job
-        /// </summary>
-        /// <returns></returns>
-        public async Task<List<JobInfoEntity>> GetAllJob()
-        {
-            List<JobKey> jboKeyList = new List<JobKey>();
-            List<JobInfoEntity> jobInfoList = new List<JobInfoEntity>();
-            var groupNames = await Scheduler.GetJobGroupNames();
-            foreach (var groupName in groupNames)
-            {
-                jboKeyList.AddRange(await Scheduler.GetJobKeys(GroupMatcher<JobKey>.GroupEquals(groupName)));
-                jobInfoList.Add(new JobInfoEntity() { GroupName = groupName });
-            }
-            foreach (var jobKey in jboKeyList)
-            {
-                var jobDetail = await Scheduler.GetJobDetail(jobKey);
-                var triggersList = await Scheduler.GetTriggersOfJob(jobKey);
-                var triggers = triggersList.AsEnumerable().FirstOrDefault();
-
-                var interval = string.Empty;
-                if (triggers is SimpleTriggerImpl)
-                    interval = (triggers as SimpleTriggerImpl)?.RepeatInterval.ToString();
-                else
-                    interval = (triggers as CronTriggerImpl)?.CronExpressionString;
-
-                foreach (var jobInfo in jobInfoList)
-                {
-                    if (jobInfo.GroupName == jobKey.Group)
-                    {
-                        jobInfo.JobInfoList.Add(new JobInfo()
-                        {
-                            Name = jobKey.Name,
-                            LastErrMsg = jobDetail.JobDataMap.GetString("Exception"),
-                            RequestUrl = jobDetail.JobDataMap.GetString("RequestUrl"),
-                            TriggerState = await Scheduler.GetTriggerState(triggers.Key),
-                            PreviousFireTime = triggers.GetPreviousFireTimeUtc()?.LocalDateTime,
-                            NextFireTime = triggers.GetNextFireTimeUtc()?.LocalDateTime,
-                            BeginTime = triggers.StartTimeUtc.LocalDateTime,
-                            Interval = interval,
-                            EndTime = triggers.EndTimeUtc?.LocalDateTime
-                        });
-                        continue;
-                    }
-                }
-            }
-            return jobInfoList;
-        }
     }
 }
 

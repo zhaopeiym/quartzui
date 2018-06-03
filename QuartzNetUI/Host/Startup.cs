@@ -31,17 +31,20 @@ namespace Host
             // 日志配置
             LogConfig();
 
-            #region 跨域
-            //var urls = Configuration["AppConfig:Cores"].Split(',');
+            #region 跨域     
+#if DEBUG
             services.AddCors(options =>
-                options.AddPolicy("AllowSameDomain",
-                     builder => builder.WithOrigins("https://*", "http://*")
-                     .AllowAnyMethod()
-                     .AllowAnyHeader()
-                     .AllowAnyOrigin()    //允许任何来源的主机访问
-                     .AllowCredentials()  //指定处理cookie
-                     )
-            );
+               options.AddPolicy("AllowSameDomain",
+                    builder => builder.WithOrigins("https://*", "http://*")
+                    .AllowAnyMethod()
+                    .AllowAnyHeader()
+                    .AllowAnyOrigin()    //允许任何来源的主机访问
+                    .AllowCredentials()  //指定处理cookie
+                    )
+           );
+#else
+             services.AddCors(options => options.AddPolicy("AllowSameDomain", builder => { }));
+#endif
             #endregion
 
             services.AddMvc();

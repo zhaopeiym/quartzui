@@ -18,6 +18,12 @@ namespace Host.Controllers
     [EnableCors("AllowSameDomain")] //允许跨域 
     public class JobController : Controller
     {
+        private SchedulerCenter scheduler;
+        public JobController()
+        {
+            scheduler = SchedulerCenter.Instance;
+        }
+
         /// <summary>
         /// 添加任务
         /// </summary>
@@ -26,7 +32,7 @@ namespace Host.Controllers
         [HttpPost]
         public async Task<BaseResult> AddJob([FromBody]ScheduleEntity entity)
         {
-            return await SchedulerCenter.Instance.AddScheduleJob(entity);
+            return await scheduler.AddScheduleJobAsync(entity);
         }
 
         /// <summary>
@@ -36,7 +42,7 @@ namespace Host.Controllers
         [HttpPost]
         public async Task<BaseResult> StopJob([FromBody]JobKey job)
         {
-            return await SchedulerCenter.Instance.StopOrDelScheduleJob(job.Group, job.Name);
+            return await scheduler.StopOrDelScheduleJobAsync(job.Group, job.Name);
         }
 
         /// <summary>
@@ -46,7 +52,7 @@ namespace Host.Controllers
         [HttpPost]
         public async Task<BaseResult> RemoveJob([FromBody]JobKey job)
         {
-            return await SchedulerCenter.Instance.StopOrDelScheduleJob(job.Group, job.Name, true);
+            return await scheduler.StopOrDelScheduleJobAsync(job.Group, job.Name, true);
         }
 
         /// <summary>
@@ -56,7 +62,7 @@ namespace Host.Controllers
         [HttpPost]
         public async Task<BaseResult> ResumeJob([FromBody]JobKey job)
         {
-            return await SchedulerCenter.Instance.ResumeJob(job.Group, job.Name);
+            return await scheduler.ResumeJobAsync(job.Group, job.Name);
         }
 
         /// <summary>
@@ -66,7 +72,7 @@ namespace Host.Controllers
         [HttpPost]
         public async Task<ScheduleEntity> QueryJob([FromBody]JobKey job)
         {
-            return await SchedulerCenter.Instance.QueryJob(job.Group, job.Name);
+            return await scheduler.QueryJobAsync(job.Group, job.Name);
         }
 
         /// <summary>
@@ -77,9 +83,33 @@ namespace Host.Controllers
         [HttpPost]
         public async Task<BaseResult> ModifyJob([FromBody]ScheduleEntity entity)
         {
-            await SchedulerCenter.Instance.StopOrDelScheduleJob(entity.JobGroup, entity.JobName, true);
-            await SchedulerCenter.Instance.AddScheduleJob(entity);
+            await scheduler.StopOrDelScheduleJobAsync(entity.JobGroup, entity.JobName, true);
+            await scheduler.AddScheduleJobAsync(entity);
             return new BaseResult() { Msg = "修改计划任务成功！" };
+        }
+
+        /// <summary>
+        /// 立即执行
+        /// </summary>
+        /// <param name="jobGroup"></param>
+        /// <param name="jobName"></param>
+        /// <returns></returns>
+        [HttpPost]
+        public async Task<bool> TriggerJob([FromBody]JobKey job)
+        {
+            await scheduler.TriggerJobAsync(job);
+            return true;
+        }
+
+        /// <summary>
+        /// 获取job日志
+        /// </summary>
+        /// <param name="jobKey"></param>
+        /// <returns></returns>
+        [HttpPost]
+        public async Task<List<string>> GetJobLogs([FromBody]JobKey jobKey)
+        {
+            return await scheduler.GetJobLogsAsync(jobKey);
         }
 
         /// <summary>
@@ -89,7 +119,7 @@ namespace Host.Controllers
         [HttpGet]
         public async Task<bool> StartSchedule()
         {
-            return await SchedulerCenter.Instance.StartSchedule();
+            return await scheduler.StartScheduleAsync();
         }
 
         /// <summary>
@@ -99,7 +129,7 @@ namespace Host.Controllers
         [HttpGet]
         public async Task<bool> StopSchedule()
         {
-            return await SchedulerCenter.Instance.StopSchedule();
+            return await scheduler.StopScheduleAsync();
         }
 
         /// <summary>
@@ -109,8 +139,17 @@ namespace Host.Controllers
         [HttpGet]
         public async Task<List<JobInfoEntity>> GetAllJob()
         {
-            return await SchedulerCenter.Instance.GetAllJob();
+            return await scheduler.GetAllJobAsync();
         }
 
+        /// <summary>
+        /// 获取所有Job信息（简要信息 - 刷新数据的时候使用）
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        public async Task<List<JobBriefInfoEntity>> GetAllJobBriefInfo()
+        {
+            return await scheduler.GetAllJobBriefInfoAsync();
+        }
     }
 }

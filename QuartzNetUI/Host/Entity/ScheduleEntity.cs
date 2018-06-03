@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Host.Common;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -35,7 +36,10 @@ namespace Host
         /// 执行间隔时间，单位秒（如果有Cron，则IntervalSecond失效）
         /// </summary>
         public int? IntervalSecond { get; set; }
-
+        /// <summary>
+        /// 触发器类型
+        /// </summary>
+        public TriggerTypeEnum TriggerType { get; set; }
         /// <summary>
         /// 请求url
         /// </summary>
