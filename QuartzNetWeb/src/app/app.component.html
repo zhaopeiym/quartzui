@@ -15,7 +15,7 @@
     </nz-breadcrumb>
     <div style="background:#fff; padding: 24px; min-height: 280px;">
 
-      <nz-modal class="modalStyle" [(nzVisible)]="isJobVisible" [(nzTitle)]="modalTitle" (nzOnCancel)="handleJobCancel()" (nzOnOk)="handleJobOk(event)">
+      <nz-modal class="modalStyle" [(nzVisible)]="isJobVisible" [(nzTitle)]="modalTitle" (nzOnCancel)="handleJobCancel()" (nzOnOk)="handleJobOk()">
 
         <form nz-form [formGroup]="validateJobForm">
 

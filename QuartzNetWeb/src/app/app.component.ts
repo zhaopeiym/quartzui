@@ -122,7 +122,7 @@ export class AppComponent {
   }
 
   //新增-编辑 计划任务
-  handleJobOk(e) {
+  handleJobOk() {
     /*  e.stopPropagation();
      e.preventDefault(); */
 
