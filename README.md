@@ -24,8 +24,10 @@ docker run -v /fileData/quartzuifile:/app/File  --restart=unless-stopped --privi
 - 欢迎有需要和有兴趣的同学贡献代码。我为人人，人人为我。
 
 ## 效果图
-![qq 20180520160711](https://user-images.githubusercontent.com/5820324/40276903-e98a24c0-5c47-11e8-834c-67387b2d8935.png)
-![qq 20180520160824](https://user-images.githubusercontent.com/5820324/40276909-0f8c9c02-5c48-11e8-8925-9d0ad5bd469d.png)
+![1](https://user-images.githubusercontent.com/5820324/40886833-b779990e-6771-11e8-88e2-8bd52ebec39f.png)
+![2](https://user-images.githubusercontent.com/5820324/40886838-c0597d14-6771-11e8-8b77-ffd1d24b5abd.png)
+![3](https://user-images.githubusercontent.com/5820324/40886841-c9c03938-6771-11e8-941e-e82063a7cf49.png)
+![4](https://user-images.githubusercontent.com/5820324/40886843-d4b209de-6771-11e8-8b22-b9224a43a06e.png)
 
 
 
