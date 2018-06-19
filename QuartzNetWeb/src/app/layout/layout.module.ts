@@ -3,11 +3,16 @@ import { CommonModule } from '@angular/common';
 
 import { LayoutRoutingModule } from './layout-routing.module'; 
 import { LayoutComponent } from './layout/layout.component';
+import { NgZorroAntdModule } from 'ng-zorro-antd';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 @NgModule({
   imports: [
     CommonModule,
-    LayoutRoutingModule
+    LayoutRoutingModule,
+    NgZorroAntdModule.forRoot(),
+    FormsModule,
+    ReactiveFormsModule
   ],
   declarations: [LayoutComponent]
 })
