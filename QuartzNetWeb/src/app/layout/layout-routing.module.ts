@@ -5,8 +5,19 @@ import { LayoutComponent } from './layout/layout.component';
 const routes: Routes = [
   {
     path: '',
-    component: LayoutComponent
-  }
+    component: LayoutComponent,
+    children: [
+      {
+        path: '',
+        loadChildren: "app/task-list/task-list.module#TaskListModule"
+      },
+      {
+        path: 'seting',
+        loadChildren: "app/seting/seting.module#SetingModule"
+      }
+    ]
+  },
+
 ];
 
 @NgModule({

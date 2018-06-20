@@ -6,14 +6,14 @@ import { AbstractControl, FormBuilder, FormGroup, Validators } from '@angular/fo
 import { NgModule } from '@angular/core';
 import { NzNotificationService, NzTreeModule, NzModalService } from 'ng-zorro-antd';
 import { environment } from '../../../environments/environment';
-import { Router } from '@angular/router';
 
 @Component({
-  selector: 'app-layout',
-  templateUrl: './layout.component.html',
-  styleUrls: ['./layout.component.css']
+  selector: 'app-task-list',
+  templateUrl: './task-list.component.html',
+  styleUrls: ['./task-list.component.css']
 })
-export class LayoutComponent implements OnInit { 
+export class TaskListComponent implements OnInit {
+
   validateJobForm: FormGroup;
   isJobVisible: boolean;
   isVisible: boolean;
@@ -33,8 +33,7 @@ export class LayoutComponent implements OnInit {
   constructor(private http: HttpClient,
     private fb2: FormBuilder,
     private notification: NzNotificationService,
-    private modalService: NzModalService,
-    private router: Router) {
+    private modalService: NzModalService) {
     this.loadJobInfo();
     setInterval(() => {//定时刷新
       this.renovateJobInfo();
@@ -280,17 +279,5 @@ export class LayoutComponent implements OnInit {
   }
   msgWarning(str): void {
     this.notification.warning(str, "")
-  }
-
-  //跳转到任务列表
-  jumpTaskList(){
-    debugger
-    this.router.navigate(['/']);
-  }
-
-  //跳转到设置页面
-  jumpSeting(){
-    debugger
-    this.router.navigate(['/seting']); 
   }
 }
