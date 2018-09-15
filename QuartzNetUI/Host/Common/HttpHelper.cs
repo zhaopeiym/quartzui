@@ -1,13 +1,16 @@
 ﻿using Newtonsoft.Json;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
 
+
 namespace Host
 {
     /// <summary>
-    /// 
+    /// 请求帮助类
     /// </summary>
     public class HttpHelper
     {
@@ -16,11 +19,18 @@ namespace Host
         {
             Instance = new HttpHelper();
         }
+        /// <summary>
+        /// 不同url分配不同HttpClient
+        /// </summary>
+        public static Dictionary<string, HttpClient> dictionary = new Dictionary<string, HttpClient>();
 
-        private HttpClient httpClient;
-        public HttpHelper()
+        private HttpClient GetHttpClient(string url)
         {
-            httpClient = new HttpClient();
+            var uri = new Uri(url);
+            var key = uri.Scheme + uri.Host;
+            if (!dictionary.Keys.Contains(key))
+                dictionary.Add(key, new HttpClient());
+            return dictionary[key];
         }
 
         /// <summary>
@@ -33,7 +43,7 @@ namespace Host
         {
             StringContent content = new StringContent(jsonString);
             content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
-            var httpResponseMessage = await httpClient.PostAsync(new Uri(url), content);
+            var httpResponseMessage = await GetHttpClient(url).PostAsync(new Uri(url), content);
             return await httpResponseMessage.Content.ReadAsStringAsync();
         }
 
@@ -56,7 +66,7 @@ namespace Host
         /// <returns></returns>
         public async Task<string> GetAsync(string url)
         {
-            var httpResponseMessage = await httpClient.GetAsync(url);
+            var httpResponseMessage = await GetHttpClient(url).GetAsync(url);
             return await httpResponseMessage.Content.ReadAsStringAsync();
         }
 
@@ -70,7 +80,7 @@ namespace Host
         {
             StringContent content = new StringContent(jsonString);
             content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
-            var httpResponseMessage = await httpClient.PutAsync(url, content);
+            var httpResponseMessage = await GetHttpClient(url).PutAsync(url, content);
             return await httpResponseMessage.Content.ReadAsStringAsync();
         }
 
@@ -93,7 +103,7 @@ namespace Host
         /// <returns></returns>
         public async Task<string> DeleteAsync(string url)
         {
-            var httpResponseMessage = await httpClient.DeleteAsync(url);
+            var httpResponseMessage = await GetHttpClient(url).DeleteAsync(url);
             return await httpResponseMessage.Content.ReadAsStringAsync();
         }
     }

@@ -1,11 +1,9 @@
 ﻿using Host.Common;
-using Newtonsoft.Json;
 using Quartz;
 using Serilog;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace Host
