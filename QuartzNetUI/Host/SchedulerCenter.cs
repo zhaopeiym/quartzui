@@ -52,6 +52,8 @@ namespace Host
                 //如果不存在sqlite数据库，则创建
                 if (!File.Exists("File/sqliteScheduler.db"))
                 {
+                    if (!Directory.Exists("File"))
+                        Directory.CreateDirectory("File");
                     using (var connection = new SqliteConnection("Data Source=File/sqliteScheduler.db"))
                     {
                         connection.OpenAsync().Wait();
