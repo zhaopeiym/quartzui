@@ -57,6 +57,24 @@ export class TaskListComponent implements OnInit {
     });
   }
 
+  //移除本次异常记录
+  onClose(name, group) {
+    //event.preventDefault();//紧张默认行为(这里可以禁止关闭)
+    event.stopPropagation();//停止传播 
+    var url = this.baseUrl + "/api/Job/RemoveErrLog";
+    this.http.post(url, { name: name, group: group }, { headers: this.headers })
+    .subscribe((result: any) => {
+     
+    }, (err) => {
+
+    }, () => {
+
+    });
+  }
+
+  afterClose() {
+    //alert("afterClose");
+  }
   //加载
   loadJobInfo(isReset?) {
     var url = this.baseUrl + "/api/Job/GetAllJob";

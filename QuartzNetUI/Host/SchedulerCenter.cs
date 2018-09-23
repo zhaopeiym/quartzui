@@ -1,23 +1,23 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.Specialized;
-using System.Data;
-using System.IO;
-using System.Threading;
-using System.Threading.Tasks;
+﻿using Dapper;
+using Host.Common;
 using Host.Entity;
 using Microsoft.Data.Sqlite;
+using Newtonsoft.Json.Linq;
 using Quartz;
 using Quartz.Impl;
 using Quartz.Impl.AdoJobStore;
 using Quartz.Impl.AdoJobStore.Common;
 using Quartz.Impl.Matchers;
+using Quartz.Impl.Triggers;
 using Quartz.Simpl;
 using Quartz.Util;
 using Serilog;
+using System;
+using System.Collections.Generic;
+using System.IO;
 using System.Linq;
-using Quartz.Impl.Triggers;
-using Host.Common;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace Host
 {
@@ -308,6 +308,44 @@ namespace Host
                 }
             }
             return jobInfoList;
+        }
+
+        /// <summary>
+        /// 移除异常信息
+        /// 因为只能在IJob持久化操作JobDataMap，所有这里直接暴力操作数据库。
+        /// </summary>
+        /// <param name="jobGroup"></param>
+        /// <param name="jobName"></param>
+        /// <returns></returns>          
+        public async Task<bool> RemoveErrLog(string jobGroup, string jobName)
+        {
+            using (var connection = new SqliteConnection("Data Source=File/sqliteScheduler.db"))
+            {
+                string sql = $@"SELECT
+	                                JOB_DATA
+                                FROM
+	                                QRTZ_JOB_DETAILS
+                                WHERE
+	                                JOB_NAME = @jobName
+                                AND JOB_GROUP = @jobGroup";
+
+                var byteArray = await connection.ExecuteScalarAsync<byte[]>(sql, new { jobName, jobGroup });
+                var jsonStr = Encoding.Default.GetString(byteArray);
+                JObject source = JObject.Parse(jsonStr);
+                source.Remove("Exception");//移除异常日志 
+                var modifySql = $@"UPDATE QRTZ_JOB_DETAILS
+                                    SET JOB_DATA = @jobData
+                                    WHERE
+	                                    JOB_NAME = @jobName
+                                    AND JOB_GROUP = @jobGroup;";
+                await connection.ExecuteAsync(modifySql, new { jobName, jobGroup, jobData = source.ToString() });
+            }
+
+            var jobKey = new JobKey(jobName, jobGroup);
+            var jobDetail = await Scheduler.GetJobDetail(jobKey);
+            jobDetail.JobDataMap[Constant.EXCEPTION] = string.Empty;
+
+            return true;
         }
 
         /// <summary>

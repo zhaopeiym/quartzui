@@ -1,13 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.Specialized;
-using System.Linq;
-using System.Threading.Tasks;
-using Host.Entity;
+﻿using Host.Entity;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 using Quartz;
-using Quartz.Impl;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Host.Controllers
 {
@@ -150,6 +146,17 @@ namespace Host.Controllers
         public async Task<List<JobBriefInfoEntity>> GetAllJobBriefInfo()
         {
             return await scheduler.GetAllJobBriefInfoAsync();
+        }
+
+        /// <summary>
+        /// 移除异常信息
+        /// </summary>
+        /// <param name="jobKey"></param>
+        /// <returns></returns>
+        [HttpPost]
+        public async Task<bool> RemoveErrLog([FromBody]JobKey jobKey)
+        {
+            return await scheduler.RemoveErrLog(jobKey.Group, jobKey.Name);
         }
     }
 }

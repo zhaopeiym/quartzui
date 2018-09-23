@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Threading.Tasks;
+using Talk.Extensions;
 
 namespace Host
 {
@@ -19,7 +20,7 @@ namespace Host
 
             //获取相关参数
             var requestUrl = context.JobDetail.JobDataMap.GetString(Constant.REQUESTURL);
-            requestUrl = requestUrl.IndexOf("http") == 0 ? requestUrl : "http://" + requestUrl;
+            requestUrl = requestUrl?.IndexOf("http") == 0 ? requestUrl : "http://" + requestUrl;
             var requestParameters = context.JobDetail.JobDataMap.GetString(Constant.REQUESTPARAMETERS);
             var requestType = (RequestTypeEnum)int.Parse(context.JobDetail.JobDataMap.GetString(Constant.REQUESTTYPE));
 
@@ -33,7 +34,7 @@ namespace Host
             var logs = context.JobDetail.JobDataMap[Constant.LOGLIST] as List<string> ?? new List<string>();
             if (logs.Count >= maxLogCount)
                 logs.RemoveRange(0, logs.Count - maxLogCount);
-            logs.Add($"{logBeginMsg} Time:{DateTime.Now.ToString()}");
+            logs.Add($"{logBeginMsg} Time:{DateTime.Now.yyyMMddHHssmm()}");
 
             try
             {
@@ -58,7 +59,7 @@ namespace Host
                 double seconds = stopwatch.Elapsed.TotalSeconds;  //总秒数
                 var logEndMsg = $@"End   - Code:{GetHashCode()} Type:{requestType} 耗时:{seconds}秒  Url:{requestUrl} Parameters:{requestParameters} JobName:{context.JobDetail.Key.Group}.{context.JobDetail.Key.Name}";
                 Log.Logger.Information(logEndMsg);
-                logs.Add($"{logEndMsg} Ok Time:{DateTime.Now.ToString()}");
+                logs.Add($"{logEndMsg} Ok Time:{DateTime.Now.yyyMMddHHssmm()}");
             }
             catch (Exception ex)
             {
@@ -67,7 +68,7 @@ namespace Host
                 double seconds = stopwatch.Elapsed.TotalSeconds;  //总秒数
                 var logEndMsg = $@"End   - Code:{GetHashCode()} Type:{requestType} 耗时:{seconds}秒  Url:{requestUrl} Parameters:{requestParameters} JobName:{context.JobDetail.Key.Group}.{context.JobDetail.Key.Name}";
                 Log.Logger.Error(ex, logEndMsg);
-                logs.Add($"{logEndMsg} Err:{ex.Message} Time:{DateTime.Now.ToString()}");
+                logs.Add($"{logEndMsg} Err:{ex.Message} Time:{DateTime.Now.yyyMMddHHssmm()}");
             }
             finally
             {
