@@ -255,6 +255,10 @@ export class TaskListComponent implements OnInit {
     var url = this.baseUrl + "/api/Job/GetJobLogs";
     this.http.post(url, { name: name, group: group }, { headers: this.headers })
       .subscribe((result: any) => {        
+        if (result === null) {
+          this.msgWarning("暂无日志！");
+          return;
+        }
         var logs = result.join("");
         /*result.forEach(element => {
           //logs += "<p>" + element + "</p>" 
