@@ -36,3 +36,11 @@ form nz-tag {
 ::ng-deep .ant-calendar-picker {
     width: 100%;
 }
+
+::ng-deep span.error {
+    color: red;
+}
+
+::ng-deep span.warning {
+    color: #faad14;
+}

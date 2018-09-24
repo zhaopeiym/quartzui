@@ -63,13 +63,13 @@ export class TaskListComponent implements OnInit {
     event.stopPropagation();//停止传播 
     var url = this.baseUrl + "/api/Job/RemoveErrLog";
     this.http.post(url, { name: name, group: group }, { headers: this.headers })
-    .subscribe((result: any) => {
-     
-    }, (err) => {
+      .subscribe((result: any) => {
 
-    }, () => {
+      }, (err) => {
 
-    });
+      }, () => {
+
+      });
   }
 
   afterClose() {
@@ -254,11 +254,11 @@ export class TaskListComponent implements OnInit {
   getJobLogs(name, group) {
     var url = this.baseUrl + "/api/Job/GetJobLogs";
     this.http.post(url, { name: name, group: group }, { headers: this.headers })
-      .subscribe((result: any) => {
-        var logs = "";
-        result.forEach(element => {
-          logs += "<p>" + element + "</p>"
-        });
+      .subscribe((result: any) => {        
+        var logs = result.join("");
+        /*result.forEach(element => {
+          //logs += "<p>" + element + "</p>" 
+        }); */
         this.modalService.create({
           nzTitle: '日志',
           nzContent: logs,

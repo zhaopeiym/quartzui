@@ -16,7 +16,7 @@ namespace Host
         public async Task Execute(IJobExecutionContext context)
         {
             var maxLogCount = 20;//最多保存日志数量
-            var warnTime = 60;//接口请求超过多少秒记录警告日志
+            var warnTime = 20;//接口请求超过多少秒记录警告日志
 
             //获取相关参数
             var requestUrl = context.JobDetail.JobDataMap.GetString(Constant.REQUESTURL);
@@ -34,7 +34,7 @@ namespace Host
             var logs = context.JobDetail.JobDataMap[Constant.LOGLIST] as List<string> ?? new List<string>();
             if (logs.Count >= maxLogCount)
                 logs.RemoveRange(0, logs.Count - maxLogCount);
-            logs.Add($"{logBeginMsg} Time:{DateTime.Now.yyyMMddHHssmm2()}");
+            logs.Add($"<p>{logBeginMsg} Time:{DateTime.Now.yyyMMddHHssmm2()}</p>");
 
             try
             {
@@ -59,7 +59,10 @@ namespace Host
                 double seconds = stopwatch.Elapsed.TotalSeconds;  //总秒数
                 var logEndMsg = $@"End   - Code:{GetHashCode()} Type:{requestType} 耗时:{seconds}秒  Url:{requestUrl} Parameters:{requestParameters} JobName:{context.JobDetail.Key.Group}.{context.JobDetail.Key.Name}";
                 Log.Logger.Information(logEndMsg);
-                logs.Add($"{logEndMsg} Ok Time:{DateTime.Now.yyyMMddHHssmm2()}");
+                if (seconds >= warnTime)//如果请求超过20秒，记录警告日志     
+                    logs.Add($"<p>{logEndMsg} Ok <span class='warning'>Time:{DateTime.Now.yyyMMddHHssmm2()}</span></p>");
+                else
+                    logs.Add($"<p>{logEndMsg} Ok Time:{DateTime.Now.yyyMMddHHssmm2()}</p>");
             }
             catch (Exception ex)
             {
@@ -68,16 +71,14 @@ namespace Host
                 double seconds = stopwatch.Elapsed.TotalSeconds;  //总秒数
                 var logEndMsg = $@"End   - Code:{GetHashCode()} Type:{requestType} 耗时:{seconds}秒  Url:{requestUrl} Parameters:{requestParameters} JobName:{context.JobDetail.Key.Group}.{context.JobDetail.Key.Name}";
                 Log.Logger.Error(ex, logEndMsg);
-                logs.Add($"{logEndMsg} Err:{ex.Message} Time:{DateTime.Now.yyyMMddHHssmm2()}");
+                logs.Add($"<p>{logEndMsg} <span class='error'>Err:{ex.Message}</span> Time:{DateTime.Now.yyyMMddHHssmm2()}</p>");
             }
             finally
             {
                 context.JobDetail.JobDataMap[Constant.LOGLIST] = logs;
                 double seconds = stopwatch.Elapsed.TotalSeconds;  //总秒数
-                if (seconds >= warnTime)//如果请求操作一分钟，记录警告日志
-                {
+                if (seconds >= warnTime)//如果请求超过20秒，记录警告日志                
                     Log.Logger.Warning($@"End   - Code:{GetHashCode()} Type:{requestType} 耗时:{seconds}秒  Url:{requestUrl} Parameters:{requestParameters} JobName:{context.JobDetail.Key.Group}.{context.JobDetail.Key.Name}");
-                }
             }
         }
     }
