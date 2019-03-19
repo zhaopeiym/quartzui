@@ -54,7 +54,7 @@ export class TaskListComponent implements OnInit {
       triggerType: ['1', [Validators.required]],
       intervalSecond: [],
       intervalUnit: ['1'],
-      authorization: []
+      headers: []
     });
   }
   isShwoPass = false;

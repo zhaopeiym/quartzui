@@ -1,4 +1,5 @@
 ﻿using Host.Common;
+using Newtonsoft.Json;
 using Quartz;
 using Serilog;
 using System;
@@ -22,7 +23,8 @@ namespace Host
             var requestUrl = context.JobDetail.JobDataMap.GetString(Constant.REQUESTURL);
             requestUrl = requestUrl?.IndexOf("http") == 0 ? requestUrl : "http://" + requestUrl;
             var requestParameters = context.JobDetail.JobDataMap.GetString(Constant.REQUESTPARAMETERS);
-            var authorization = context.JobDetail.JobDataMap.GetString(Constant.AUTHORIZATION);
+            var headersString = context.JobDetail.JobDataMap.GetString(Constant.HEADERS);
+            var headers = JsonConvert.DeserializeObject<Dictionary<string, string>>(headersString?.Trim());
             var requestType = (RequestTypeEnum)int.Parse(context.JobDetail.JobDataMap.GetString(Constant.REQUESTTYPE));
 
             Stopwatch stopwatch = new Stopwatch();
@@ -43,16 +45,16 @@ namespace Host
                 switch (requestType)
                 {
                     case RequestTypeEnum.Get:
-                        result = await http.GetAsync(requestUrl, authorization);
+                        result = await http.GetAsync(requestUrl, headers);
                         break;
                     case RequestTypeEnum.Post:
-                        result = await http.PostAsync(requestUrl, requestParameters, authorization);
+                        result = await http.PostAsync(requestUrl, requestParameters, headers);
                         break;
                     case RequestTypeEnum.Put:
-                        result = await http.PutAsync(requestUrl, requestParameters, authorization);
+                        result = await http.PutAsync(requestUrl, requestParameters, headers);
                         break;
                     case RequestTypeEnum.Delete:
-                        result = await http.DeleteAsync(requestUrl, authorization);
+                        result = await http.DeleteAsync(requestUrl, headers);
                         break;
                 }
 

@@ -100,17 +100,17 @@
       </nz-form-item>
 
       <nz-form-item>
-        <nz-form-label [nzSpan]="5" nzFor="authorization">Authorization</nz-form-label>
+        <nz-form-label [nzSpan]="5" nzFor="headers">请求头 </nz-form-label>
         <nz-form-control [nzSpan]="15">
-          <input formControlName="authorization" title="警告：请考虑授权过期问题" (keyup.enter)="searchData()" type="{{isShwoPass?'text':'password'}}"
-            placeholder="请输入Headers中的Authorization授权认证" nz-input [(ngModel)]="jobInfoEntity.authorization" />
+          <input formControlName="headers" title='格式：{"key":"value","key2":"value2"}' (keyup.enter)="searchData()" type="{{isShwoPass?'text':'password'}}"
+            placeholder="请输入Headers信息，如：授权认证" nz-input [(ngModel)]="jobInfoEntity.headers" />
         </nz-form-control>
       </nz-form-item>
 
       <nz-form-item>
         <nz-form-label [nzSpan]="5" nzFor="requestParameters">请求参数 </nz-form-label>
         <nz-form-control [nzSpan]="15">
-          <textarea row="4" formControlName="requestParameters" placeholder="请输入请求参数（json字符串）" nz-input [(ngModel)]="jobInfoEntity.requestParameters"></textarea>
+          <textarea row="4" formControlName="requestParameters" title='格式：{"key":"value","key2":"value2"}' placeholder="请输入请求参数（json字符串）" nz-input [(ngModel)]="jobInfoEntity.requestParameters"></textarea>
           <nz-form-explain *ngIf="validateJobForm.get('requestParameters').dirty && validateJobForm.get('requestParameters').errors"></nz-form-explain>
         </nz-form-control>
       </nz-form-item>

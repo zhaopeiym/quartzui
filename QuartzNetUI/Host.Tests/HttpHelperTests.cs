@@ -16,7 +16,7 @@ namespace Host.Tests
         public async Task TestPostAsync()
         {
             Dictionary<string, string> dic = new Dictionary<string, string>();
-            await HttpHelper.Instance.PostAsync("http://localhost:60156/api/MaintenanceOrder/GenerateMaintenanceOrderJob", "", "QPWBVpMZP+DHWmn502ebwlr4FI21zZrVuk8nHuFrTPQ=");
+            //await HttpHelper.Instance.PostAsync("http://localhost:60156/api/MaintenanceOrder/GenerateMaintenanceOrderJob", "", "QPWBVpMZP+DHWmn502ebwlr4FI21zZrVuk8nHuFrTPQ=");
 
             var entity = new ScheduleEntity();
             entity.TriggerType = TriggerTypeEnum.Simple;
