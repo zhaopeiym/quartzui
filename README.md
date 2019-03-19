@@ -1,3 +1,7 @@
+## 演示地址
+- https://scheduler.haojima.net
+- **注意：** 由于本人服务器较弱，请测试完成后删除其测试数据，谢谢配合。
+
 ## quartzui
 - 基于Quartz.NET 3.0的web管理界面。
 - docker方式开箱即用
