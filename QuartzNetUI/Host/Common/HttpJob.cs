@@ -22,6 +22,7 @@ namespace Host
             var requestUrl = context.JobDetail.JobDataMap.GetString(Constant.REQUESTURL);
             requestUrl = requestUrl?.IndexOf("http") == 0 ? requestUrl : "http://" + requestUrl;
             var requestParameters = context.JobDetail.JobDataMap.GetString(Constant.REQUESTPARAMETERS);
+            var authorization = context.JobDetail.JobDataMap.GetString(Constant.AUTHORIZATION);
             var requestType = (RequestTypeEnum)int.Parse(context.JobDetail.JobDataMap.GetString(Constant.REQUESTTYPE));
 
             Stopwatch stopwatch = new Stopwatch();
@@ -42,16 +43,16 @@ namespace Host
                 switch (requestType)
                 {
                     case RequestTypeEnum.Get:
-                        result = await http.GetAsync(requestUrl);
+                        result = await http.GetAsync(requestUrl, authorization);
                         break;
                     case RequestTypeEnum.Post:
-                        result = await http.PostAsync(requestUrl, requestParameters);
+                        result = await http.PostAsync(requestUrl, requestParameters, authorization);
                         break;
                     case RequestTypeEnum.Put:
-                        result = await http.PutAsync(requestUrl, requestParameters);
+                        result = await http.PutAsync(requestUrl, requestParameters, authorization);
                         break;
                     case RequestTypeEnum.Delete:
-                        result = await http.DeleteAsync(requestUrl);
+                        result = await http.DeleteAsync(requestUrl, authorization);
                         break;
                 }
 

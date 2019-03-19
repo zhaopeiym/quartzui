@@ -16,6 +16,10 @@ namespace Host.Common
         /// </summary>
         public static string REQUESTPARAMETERS = "RequestParameters";
         /// <summary>
+        /// Headers中的Authorization授权认证
+        /// </summary>
+        public static string AUTHORIZATION = "Authorization";
+        /// <summary>
         /// 请求类型 RequestType
         /// </summary>
         public static string REQUESTTYPE = "RequestType";

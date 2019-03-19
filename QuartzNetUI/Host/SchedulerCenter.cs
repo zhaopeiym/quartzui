@@ -110,6 +110,7 @@ namespace Host
                     { "RequestUrl",entity.RequestUrl},
                     { "RequestParameters",entity.RequestParameters},
                     { "RequestType", ((int)entity.RequestType).ToString()},
+                    { Constant.AUTHORIZATION, entity.Authorization},
                 };
                 // 定义这个工作，并将其绑定到我们的IJob实现类                
                 IJobDetail job = JobBuilder.CreateForAsync<HttpJob>()
@@ -233,6 +234,7 @@ namespace Host
             entity.TriggerType = triggers is SimpleTriggerImpl ? TriggerTypeEnum.Simple : TriggerTypeEnum.Cron;
             entity.RequestType = (RequestTypeEnum)int.Parse(jobDetail.JobDataMap.GetString(Constant.REQUESTTYPE));
             entity.RequestParameters = jobDetail.JobDataMap.GetString(Constant.REQUESTPARAMETERS);
+            entity.Authorization = jobDetail.JobDataMap.GetString(Constant.AUTHORIZATION);
             entity.Description = jobDetail.Description;
             return entity;
         }

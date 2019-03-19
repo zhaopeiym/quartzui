@@ -1,11 +1,8 @@
 using Host.Common;
 using Host.Entity;
-using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Newtonsoft.Json;
 using Quartz;
-using System;
 using System.Collections.Generic;
-using System.Net.Http;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -13,11 +10,14 @@ namespace Host.Tests
 {
     public class HttpHelperTests
     {
-        private string httpBase = "http://localhost:52725";
+        private string httpBase = "http://localhost:53118";
 
         [Fact]
         public async Task TestPostAsync()
         {
+            Dictionary<string, string> dic = new Dictionary<string, string>();
+            await HttpHelper.Instance.PostAsync("http://localhost:60156/api/MaintenanceOrder/GenerateMaintenanceOrderJob", "", "QPWBVpMZP+DHWmn502ebwlr4FI21zZrVuk8nHuFrTPQ=");
+
             var entity = new ScheduleEntity();
             entity.TriggerType = TriggerTypeEnum.Simple;
             entity.JobName = "JobNameBenny";
@@ -27,7 +27,7 @@ namespace Host.Tests
             //添加测试数据
             var resultStr = await HttpHelper.Instance.PostAsync(addUrl, JsonConvert.SerializeObject(entity));
             var addResult = JsonConvert.DeserializeObject<BaseResult>(resultStr);
-            
+
             //验证
             Assert.True(addResult.Code == 200);
 

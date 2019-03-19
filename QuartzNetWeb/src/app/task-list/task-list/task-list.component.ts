@@ -54,7 +54,12 @@ export class TaskListComponent implements OnInit {
       triggerType: ['1', [Validators.required]],
       intervalSecond: [],
       intervalUnit: ['1'],
+      authorization: []
     });
+  }
+  isShwoPass = false;
+  searchData() {
+    this.isShwoPass = !this.isShwoPass;
   }
 
   //移除本次异常记录
@@ -254,7 +259,7 @@ export class TaskListComponent implements OnInit {
   getJobLogs(name, group) {
     var url = this.baseUrl + "/api/Job/GetJobLogs";
     this.http.post(url, { name: name, group: group }, { headers: this.headers })
-      .subscribe((result: any) => {        
+      .subscribe((result: any) => {
         if (result === null) {
           this.msgWarning("暂无日志！");
           return;

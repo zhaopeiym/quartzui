@@ -1,8 +1,5 @@
 ﻿using Host.Common;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace Host
 {
@@ -48,6 +45,10 @@ namespace Host
         /// 请求参数（Post，Put请求用）
         /// </summary>
         public string RequestParameters { get; set; }
+        /// <summary>
+        /// Headers中的Authorization授权认证
+        /// </summary>
+        public string Authorization { get; set; }
         /// <summary>
         /// 请求类型
         /// </summary>
