@@ -60,7 +60,7 @@ namespace Host
 
                 stopwatch.Stop(); //  停止监视            
                 double seconds = stopwatch.Elapsed.TotalSeconds;  //总秒数
-                var logEndMsg = $@"End   - Code:{GetHashCode()} Type:{requestType} 耗时:{seconds}秒  Url:{requestUrl} Parameters:{requestParameters} JobName:{context.JobDetail.Key.Group}.{context.JobDetail.Key.Name}";
+                var logEndMsg = $@"End   - Code:{GetHashCode()} Type:{requestType} 耗时:{seconds}秒  Url:{requestUrl} Parameters:{requestParameters} Result:{result.MaxLeft(300)} JobName:{context.JobDetail.Key.Group}.{context.JobDetail.Key.Name}";
                 Log.Logger.Information(logEndMsg);
                 if (seconds >= warnTime)//如果请求超过20秒，记录警告日志     
                     logs.Add($"<p>{logEndMsg} Ok <span class='warning'>Time:{DateTime.Now.yyyMMddHHssmm2()}</span></p>");
