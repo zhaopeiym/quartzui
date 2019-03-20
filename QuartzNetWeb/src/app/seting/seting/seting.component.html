@@ -1,1 +1,42 @@
-<div>设置页面，紧张开发中。。。</div>
+<nz-breadcrumb style="margin:16px 0;">
+  <nz-breadcrumb-item>系统设置</nz-breadcrumb-item>
+</nz-breadcrumb>
+<div style="background:#fff; padding: 24px; min-height: 280px;">
+  <nz-tabset nzTabPosition="left" [nzSelectedIndex]="0">
+    <nz-tab nzTitle="邮箱设置" title="用来发送失败任务消息">
+      <form nz-form [formGroup]="validateForm">
+        <nz-form-item>
+          <nz-form-label [nzSm]="5" [nzXs]="24" nzFor="projectName">发件服务器</nz-form-label>
+          <nz-form-control [nzSm]="15" [nzXs]="24">
+            <input nz-input id="name" name="name" placeholder="如：smtp.163.com">
+          </nz-form-control>
+        </nz-form-item>
+        <nz-form-item>
+          <nz-form-label [nzSm]="5" [nzXs]="24" nzFor="projectName">发件邮箱</nz-form-label>
+          <nz-form-control [nzSm]="15" [nzXs]="24">
+            <input nz-input id="name" name="name" placeholder="如：test@163.com">
+          </nz-form-control>
+        </nz-form-item>
+        <nz-form-item>
+          <nz-form-label [nzSm]="5" [nzXs]="24" nzFor="projectName">邮箱密码</nz-form-label>
+          <nz-form-control [nzSm]="15" [nzXs]="24">
+            <input nz-input type="password" id="name" name="name" placeholder="如：123456">
+          </nz-form-control>
+        </nz-form-item>
+      </form>
+    </nz-tab>
+    <nz-tab nzTitle="刷新设置">
+      <form nz-form [formGroup]="validateForm">
+        <nz-form-item>
+          <nz-form-label [nzSm]="5" [nzXs]="24" nzFor="projectName" title="时间单位秒">页面定时刷新时间</nz-form-label>
+          <nz-form-control [nzSm]="15" [nzXs]="24">
+            <input nz-input id="name" name="name" placeholder="时间单位秒">
+          </nz-form-control>
+        </nz-form-item>
+      </form>
+    </nz-tab>
+    <nz-tab nzTitle="其他">
+      aaa
+    </nz-tab>
+  </nz-tabset>
+</div>

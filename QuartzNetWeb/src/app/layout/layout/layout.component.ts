@@ -13,7 +13,7 @@ import { Router } from '@angular/router';
   templateUrl: './layout.component.html',
   styleUrls: ['./layout.component.css']
 })
-export class LayoutComponent implements OnInit { 
+export class LayoutComponent implements OnInit {
   validateJobForm: FormGroup;
   isJobVisible: boolean;
   isVisible: boolean;
@@ -283,14 +283,17 @@ export class LayoutComponent implements OnInit {
   }
 
   //跳转到任务列表
-  jumpTaskList(){
-    debugger
+  jumpTaskList() {
     this.router.navigate(['/']);
   }
 
   //跳转到设置页面
-  jumpSeting(){
-    debugger
-    this.router.navigate(['/seting']); 
+  jumpSeting() {
+    this.router.navigate(['/seting']);
+  }
+
+  //跳转到说明
+  jumpExplain() {
+    this.router.navigate(['/explain']);
   }
 }

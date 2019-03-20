@@ -1,46 +1,81 @@
 .jobTable {
-    width: 100%;
-    padding: 0;
+  width: 100%;
+  padding: 0;
+  table-layout: fixed;
 }
 
 .jobTable th,
 .jobTable td {
-    padding: 5px;
+  padding: 5px;
 }
 
+.jobTable .td-url {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/*
+  超出部分显示省略号 
+  https://www.cnblogs.com/whb17bcdq/p/6549643.html */
+
 .jobTable th:nth-child(3) {
-    width: 13%;
+  width: 13%;
 }
 
 .jobTable th:nth-child(9) {
-    min-width: 5%;
+  min-width: 5%;
+}
+
+div::-webkit-scrollbar {
+  width: 10px;
+  /*滚动条宽度*/
+  height: 10px;
+  /*滚动条高度*/
+}
+
+/*定义滚动条轨道 内阴影+圆角*/
+
+div::-webkit-scrollbar-track {
+  background-color: rgb(248, 246, 246);
+  /*滚动条的背景颜色*/
+}
+
+/*定义滑块 内阴影+圆角*/
+
+div::-webkit-scrollbar-thumb {
+  border-radius: 10px;
+  /*滚动条的圆角*/
+  -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, .3);
+  background-color: rgb(241, 241, 241);
+  /*滚动条的背景颜色*/
 }
 
 .rowJobCont:nth-child(n+2) {
-    margin-top: 8px;
+  margin-top: 8px;
 }
 
 form nz-tag {
-    line-height: 39px;
-    margin-left: 5px;
+  line-height: 39px;
+  margin-left: 5px;
 }
 
 ::ng-deep .ant-form-item {
-    margin-bottom: 8px;
+  margin-bottom: 8px;
 }
 
 ::ng-deep.ant-form-item-with-help {
-    margin-bottom: 3px;
+  margin-bottom: 3px;
 }
 
 ::ng-deep .ant-calendar-picker {
-    width: 100%;
+  width: 100%;
 }
 
 ::ng-deep span.error {
-    color: red;
+  color: red;
 }
 
 ::ng-deep span.warning {
-    color: #faad14;
+  color: #faad14;
 }

@@ -110,7 +110,8 @@
       <nz-form-item>
         <nz-form-label [nzSpan]="5" nzFor="requestParameters">请求参数 </nz-form-label>
         <nz-form-control [nzSpan]="15">
-          <textarea row="4" formControlName="requestParameters" title='格式：{"key":"value","key2":"value2"}' placeholder="请输入请求参数（json字符串）" nz-input [(ngModel)]="jobInfoEntity.requestParameters"></textarea>
+          <textarea row="4" formControlName="requestParameters" title='格式：{"key":"value","key2":"value2"}' placeholder="请输入请求参数（json字符串）"
+            nz-input [(ngModel)]="jobInfoEntity.requestParameters"></textarea>
           <nz-form-explain *ngIf="validateJobForm.get('requestParameters').dirty && validateJobForm.get('requestParameters').errors"></nz-form-explain>
         </nz-form-control>
       </nz-form-item>
@@ -132,98 +133,97 @@
   <nz-collapse>
     <nz-collapse-panel *ngFor="let panel of resultData" [nzHeader]="panel.groupName" (nzActiveChange)="clickPanel($event,panel.groupName)"
       [nzActive]="panel.active">
-
-      <table class="jobTable">
-        <tr>
-          <th>任务名称</th>
-          <th>状态</th>
-          <th style="max-width: 12%;">Url</th>
-          <th>异常信息</th>
-          <th>开始时间</th>
-          <th>上次执行时间</th>
-          <th>下次执行时间</th>
-          <th>执行计划</th>
-          <th>描述</th>
-          <th>
-            <button nz-button [nzType]="'primary'" (click)="showJobModal(panel.groupName)">
-              <span>新增任务</span>
-            </button>
-          </th>
-        </tr>
-        <tr *ngFor="let jobInfo of panel.jobInfoList">
-          <td>
-            {{ jobInfo.name}}
-          </td>
-          <td>
-            <nz-tag *ngIf="jobInfo.displayState==='正常'" [nzColor]="'blue'"> {{ jobInfo.displayState}}</nz-tag>
-            <nz-tag *ngIf="jobInfo.displayState==='暂停'" [nzColor]="'volcano'"> {{ jobInfo.displayState}}</nz-tag>
-            <nz-tag *ngIf="jobInfo.displayState==='完成'" [nzColor]="'green'"> {{ jobInfo.displayState}}</nz-tag>
-            <nz-tag *ngIf="jobInfo.displayState==='异常'" [nzColor]="'magenta'"> {{ jobInfo.displayState}}</nz-tag>
-            <nz-tag *ngIf="jobInfo.displayState==='阻塞'" [nzColor]="'gold'"> {{ jobInfo.displayState}}</nz-tag>
-            <nz-tag *ngIf="jobInfo.displayState==='不存在'" [nzColor]="'purple'"> {{ jobInfo.displayState}}</nz-tag>
-          </td>
-          <td>
-            {{ jobInfo.requestUrl}}
-          </td>
-          <td>
-            <nz-tag nzMode="closeable" *ngIf="jobInfo.lastErrMsg" [nzColor]="'red'" (nzOnClose)="onClose(jobInfo.name,panel.groupName)"
-              (nzAfterClose)="afterClose()" (click)="showModalMsg('异常',jobInfo.lastErrMsg)">查看</nz-tag>
-            <span *ngIf="!jobInfo.lastErrMsg">--</span>
-          </td>
-          <td>
-            {{ jobInfo.beginTime | date:'yyyy-MM-dd HH:mm:ss'}}
-          </td>
-          <td>
-            {{ jobInfo.previousFireTime| date:'yyyy-MM-dd HH:mm:ss'}}
-          </td>
-          <td>
-            {{ jobInfo.nextFireTime| date:'yyyy-MM-dd HH:mm:ss'}}
-          </td>
-          <td>
-            {{ jobInfo.interval}}
-          </td>
-          <td>
-            {{ jobInfo.description||"--"}}
-          </td>
-          <td>
-            <button *ngIf="jobInfo.displayState==='暂停'" nz-button (click)="resumeJob(jobInfo.name,panel.groupName)"
-              nzType="default">恢复</button>
-            <button *ngIf="jobInfo.displayState!=='暂停'" nz-button (click)="stopJob(jobInfo.name,panel.groupName)"
-              nzType="default">暂停</button>
-            <nz-popconfirm [nzTitle]="'你确定删除这个任务？'" (nzOnConfirm)="removeJob(jobInfo.name,panel.groupName)"
-              (nzOnCancel)="confirm()">
-              <a nz-popconfirm>
-                <button nz-button nzType="danger" style="margin-left: 5px; margin-right: 5px;">删除</button>
-              </a>
-            </nz-popconfirm>
-            <nz-dropdown>
-              <button nz-button nz-dropdown>
-                <span>更多</span>
-                <i class="anticon anticon-down"></i>
+    
+        <table class="jobTable"  >
+          <tr>
+            <th style="width: 7%;">任务名称</th>
+            <th style="width: 4%;">状态</th>
+            <th class="td-url">Url</th>
+            <th style="width: 5%;">异常信息</th>
+            <th style="width: 9%;">开始时间</th>
+            <th style="width: 9%;">上次执行时间</th>
+            <th style="width: 9%;">下次执行时间</th>
+            <th style="width: 5%;">执行计划</th>
+            <th style="width: 7%;">描述</th>
+            <th style="width: 190px;">
+              <button nz-button [nzType]="'primary'" (click)="showJobModal(panel.groupName)">
+                <span>新增任务</span>
               </button>
-              <ul nz-menu style="border: 1px solid #D9D9D9;background-color: rgb(245, 245, 245)">
-                <li nz-menu-item>
-                  <a>
-                    <button nz-button (click)="editJob(jobInfo.name,panel.groupName)">编辑</button>
-                  </a>
-                </li>
-                <li nz-menu-item>
-                  <a>
-                    <button nz-button (click)="triggerJob(jobInfo.name,panel.groupName)">执行</button>
-                  </a>
-                </li>
-                <li nz-menu-item>
-                  <a>
-                    <button nz-button (click)="getJobLogs(jobInfo.name,panel.groupName)">日志</button>
-                  </a>
-                </li>
-              </ul>
-            </nz-dropdown>
+            </th>
+          </tr>
+          <tr *ngFor="let jobInfo of panel.jobInfoList">
+            <td>
+              {{ jobInfo.name}}
+            </td>
+            <td>
+              <nz-tag *ngIf="jobInfo.displayState==='正常'" [nzColor]="'blue'"> {{ jobInfo.displayState}}</nz-tag>
+              <nz-tag *ngIf="jobInfo.displayState==='暂停'" [nzColor]="'volcano'"> {{ jobInfo.displayState}}</nz-tag>
+              <nz-tag *ngIf="jobInfo.displayState==='完成'" [nzColor]="'green'"> {{ jobInfo.displayState}}</nz-tag>
+              <nz-tag *ngIf="jobInfo.displayState==='异常'" [nzColor]="'magenta'"> {{ jobInfo.displayState}}</nz-tag>
+              <nz-tag *ngIf="jobInfo.displayState==='阻塞'" [nzColor]="'gold'"> {{ jobInfo.displayState}}</nz-tag>
+              <nz-tag *ngIf="jobInfo.displayState==='不存在'" [nzColor]="'purple'"> {{ jobInfo.displayState}}</nz-tag>
+            </td>
+            <td class="td-url" title="{{ jobInfo.requestUrl}}">
+              {{ jobInfo.requestUrl}}
+            </td>
+            <td>
+              <nz-tag nzMode="closeable" *ngIf="jobInfo.lastErrMsg" [nzColor]="'red'" (nzOnClose)="onClose(jobInfo.name,panel.groupName)"
+                (nzAfterClose)="afterClose()" (click)="showModalMsg('异常',jobInfo.lastErrMsg)">查看</nz-tag>
+              <span *ngIf="!jobInfo.lastErrMsg">--</span>
+            </td>
+            <td>
+              {{ jobInfo.beginTime | date:'yyyy-MM-dd HH:mm:ss'}}
+            </td>
+            <td>
+              {{ jobInfo.previousFireTime| date:'yyyy-MM-dd HH:mm:ss'}}
+            </td>
+            <td>
+              {{ jobInfo.nextFireTime| date:'yyyy-MM-dd HH:mm:ss'}}
+            </td>
+            <td>
+              {{ jobInfo.interval}}
+            </td>
+            <td title=' {{ jobInfo.description||""}}'>
+              {{ jobInfo.description||"--"}}
+            </td>
+            <td>
+              <button *ngIf="jobInfo.displayState==='暂停'" nz-button (click)="resumeJob(jobInfo.name,panel.groupName)"
+                nzType="default">恢复</button>
+              <button *ngIf="jobInfo.displayState!=='暂停'" nz-button (click)="stopJob(jobInfo.name,panel.groupName)"
+                nzType="default">暂停</button>
+              <nz-popconfirm [nzTitle]="'你确定删除这个任务？'" (nzOnConfirm)="removeJob(jobInfo.name,panel.groupName)"
+                (nzOnCancel)="confirm()">
+                <a nz-popconfirm>
+                  <button nz-button nzType="danger" style="margin-left: 5px; margin-right: 5px;">删除</button>
+                </a>
+              </nz-popconfirm>
+              <nz-dropdown>
+                <button nz-button nz-dropdown>
+                  <span>更多</span>
+                  <i class="anticon anticon-down"></i>
+                </button>
+                <ul nz-menu style="border: 1px solid #D9D9D9;background-color: rgb(245, 245, 245)">
+                  <li nz-menu-item>
+                    <a>
+                      <button nz-button (click)="editJob(jobInfo.name,panel.groupName)">编辑</button>
+                    </a>
+                  </li>
+                  <li nz-menu-item>
+                    <a>
+                      <button nz-button (click)="triggerJob(jobInfo.name,panel.groupName)">执行</button>
+                    </a>
+                  </li>
+                  <li nz-menu-item>
+                    <a>
+                      <button nz-button (click)="getJobLogs(jobInfo.name,panel.groupName)">日志</button>
+                    </a>
+                  </li>
+                </ul>
+              </nz-dropdown>
 
-          </td>
-        </tr>
-      </table>
-
+            </td>
+          </tr>
+        </table>      
     </nz-collapse-panel>
   </nz-collapse>
 </div>

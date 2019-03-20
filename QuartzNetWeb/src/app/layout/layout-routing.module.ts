@@ -14,6 +14,10 @@ const routes: Routes = [
       {
         path: 'seting',
         loadChildren: "app/seting/seting.module#SetingModule"
+      },
+      {
+        path: 'explain',
+        loadChildren: "app/explain/explain.module#ExplainModule"
       }
     ]
   },
