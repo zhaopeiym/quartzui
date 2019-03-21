@@ -1,5 +1,6 @@
 ﻿using Host.Common;
 using System;
+using System.Collections.Generic;
 
 namespace Host
 {
@@ -46,9 +47,10 @@ namespace Host
         /// </summary>
         public string RequestParameters { get; set; }
         /// <summary>
-        /// Headers中的Authorization授权认证
+        /// Headers(可以包含如：Authorization授权认证)
+        /// 格式：{"Authorization":"userpassword.."}
         /// </summary>
-        public string Authorization { get; set; }
+        public string Headers { get; set; }
         /// <summary>
         /// 请求类型
         /// </summary>
@@ -58,5 +60,7 @@ namespace Host
         /// 描述
         /// </summary>
         public string Description { get; set; }
+
+        public MailMessageEnum MailMessage { get; set; }
     }
 }

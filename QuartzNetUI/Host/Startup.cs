@@ -47,7 +47,7 @@ namespace Host
 #endif
             #endregion
 
-            services.AddMvc();
+            services.AddMvc();                      
 
             services.AddSwaggerGen(options =>
             {

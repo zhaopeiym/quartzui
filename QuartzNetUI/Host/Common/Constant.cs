@@ -16,9 +16,13 @@ namespace Host.Common
         /// </summary>
         public static string REQUESTPARAMETERS = "RequestParameters";
         /// <summary>
-        /// Headers中的Authorization授权认证
+        /// Headers（可以包含：Authorization授权认证）
         /// </summary>
-        public static string AUTHORIZATION = "Authorization";
+        public static string HEADERS = "Headers";
+        /// <summary>
+        /// 是否发送邮件
+        /// </summary>
+        public static string MAILMESSAGE = "MailMessage";
         /// <summary>
         /// 请求类型 RequestType
         /// </summary>

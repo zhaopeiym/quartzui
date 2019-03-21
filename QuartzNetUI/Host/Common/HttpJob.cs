@@ -1,4 +1,6 @@
 ﻿using Host.Common;
+using Host.Controllers;
+using Newtonsoft.Json;
 using Quartz;
 using Serilog;
 using System;
@@ -22,7 +24,9 @@ namespace Host
             var requestUrl = context.JobDetail.JobDataMap.GetString(Constant.REQUESTURL);
             requestUrl = requestUrl?.IndexOf("http") == 0 ? requestUrl : "http://" + requestUrl;
             var requestParameters = context.JobDetail.JobDataMap.GetString(Constant.REQUESTPARAMETERS);
-            var authorization = context.JobDetail.JobDataMap.GetString(Constant.AUTHORIZATION);
+            var headersString = context.JobDetail.JobDataMap.GetString(Constant.HEADERS);
+            var mailMessage = (MailMessageEnum)int.Parse(context.JobDetail.JobDataMap.GetString(Constant.MAILMESSAGE) ?? "0");
+            var headers = JsonConvert.DeserializeObject<Dictionary<string, string>>(headersString?.Trim());
             var requestType = (RequestTypeEnum)int.Parse(context.JobDetail.JobDataMap.GetString(Constant.REQUESTTYPE));
 
             Stopwatch stopwatch = new Stopwatch();
@@ -43,23 +47,23 @@ namespace Host
                 switch (requestType)
                 {
                     case RequestTypeEnum.Get:
-                        result = await http.GetAsync(requestUrl, authorization);
+                        result = await http.GetAsync(requestUrl, headers);
                         break;
                     case RequestTypeEnum.Post:
-                        result = await http.PostAsync(requestUrl, requestParameters, authorization);
+                        result = await http.PostAsync(requestUrl, requestParameters, headers);
                         break;
                     case RequestTypeEnum.Put:
-                        result = await http.PutAsync(requestUrl, requestParameters, authorization);
+                        result = await http.PutAsync(requestUrl, requestParameters, headers);
                         break;
                     case RequestTypeEnum.Delete:
-                        result = await http.DeleteAsync(requestUrl, authorization);
+                        result = await http.DeleteAsync(requestUrl, headers);
                         break;
                 }
 
                 stopwatch.Stop(); //  停止监视            
                 double seconds = stopwatch.Elapsed.TotalSeconds;  //总秒数
-                var logEndMsg = $@"End   - Code:{GetHashCode()} Type:{requestType} 耗时:{seconds}秒  Url:{requestUrl} Parameters:{requestParameters} JobName:{context.JobDetail.Key.Group}.{context.JobDetail.Key.Name}";
-                Log.Logger.Information(logEndMsg);
+                var logEndMsg = $@"End   - Code:{GetHashCode()} Type:{requestType} 耗时:{seconds}秒  Url:{requestUrl} Parameters:{requestParameters} Result:{result.MaxLeft(300)} JobName:{context.JobDetail.Key.Group}.{context.JobDetail.Key.Name}";
+                await InformationAsync(logEndMsg, mailMessage);
                 if (seconds >= warnTime)//如果请求超过20秒，记录警告日志     
                     logs.Add($"<p>{logEndMsg} Ok <span class='warning'>Time:{DateTime.Now.yyyMMddHHssmm2()}</span></p>");
                 else
@@ -71,15 +75,58 @@ namespace Host
                 stopwatch.Stop(); //  停止监视            
                 double seconds = stopwatch.Elapsed.TotalSeconds;  //总秒数
                 var logEndMsg = $@"End   - Code:{GetHashCode()} Type:{requestType} 耗时:{seconds}秒  Url:{requestUrl} Parameters:{requestParameters} JobName:{context.JobDetail.Key.Group}.{context.JobDetail.Key.Name}";
-                Log.Logger.Error(ex, logEndMsg);
+                await ErrorAsync(ex, logEndMsg, mailMessage);
                 logs.Add($"<p>{logEndMsg} <span class='error'>Err:{ex.Message}</span> Time:{DateTime.Now.yyyMMddHHssmm2()}</p>");
             }
             finally
             {
                 context.JobDetail.JobDataMap[Constant.LOGLIST] = logs;
                 double seconds = stopwatch.Elapsed.TotalSeconds;  //总秒数
-                if (seconds >= warnTime)//如果请求超过20秒，记录警告日志                
-                    Log.Logger.Warning($@"End   - Code:{GetHashCode()} Type:{requestType} 耗时:{seconds}秒  Url:{requestUrl} Parameters:{requestParameters} JobName:{context.JobDetail.Key.Group}.{context.JobDetail.Key.Name}");
+                if (seconds >= warnTime)//如果请求超过20秒，记录警告日志    
+                {
+                    var msg = $@"End   - Code:{GetHashCode()} Type:{requestType} 耗时:{seconds}秒  Url:{requestUrl} Parameters:{requestParameters} JobName:{context.JobDetail.Key.Group}.{context.JobDetail.Key.Name}";
+                    await WarningAsync(msg, mailMessage);
+
+                }
+            }
+        }
+
+        public async Task WarningAsync(string msg, MailMessageEnum mailMessage)
+        {
+            Log.Logger.Warning(msg);
+            if (mailMessage == MailMessageEnum.All)
+            {
+                await new SetingController().SendMail(new Model.SendMailModel()
+                {
+                    Title = "任务调度[警告]消息",
+                    Content = msg
+                });
+            }
+        }
+
+        public async Task InformationAsync(string msg, MailMessageEnum mailMessage)
+        {
+            Log.Logger.Information(msg);
+            if (mailMessage == MailMessageEnum.All)
+            {
+                await new SetingController().SendMail(new Model.SendMailModel()
+                {
+                    Title = "任务调度消息",
+                    Content = msg
+                });
+            }
+        }
+
+        public async Task ErrorAsync(Exception ex, string msg, MailMessageEnum mailMessage)
+        {
+            Log.Logger.Error(ex, msg);
+            if (mailMessage == MailMessageEnum.Err)
+            {
+                await new SetingController().SendMail(new Model.SendMailModel()
+                {
+                    Title = "任务调度[异常]消息",
+                    Content = msg
+                });
             }
         }
     }

@@ -54,7 +54,8 @@ export class TaskListComponent implements OnInit {
       triggerType: ['1', [Validators.required]],
       intervalSecond: [],
       intervalUnit: ['1'],
-      authorization: []
+      headers: [],
+      mailMessage: ['0']
     });
   }
   isShwoPass = false;
@@ -142,6 +143,7 @@ export class TaskListComponent implements OnInit {
     this.validateJobForm.reset();
     this.validateJobForm.controls["triggerType"].setValue("1");
     this.validateJobForm.controls["intervalUnit"].setValue("1");
+    this.validateJobForm.controls["mailMessage"].setValue("0");
   }
 
   //新增-编辑 计划任务
@@ -155,6 +157,7 @@ export class TaskListComponent implements OnInit {
         return;
     }
     this.jobInfoEntity.intervalSecond = this.jobInfoEntity.intervalSecond * parseInt(this.validateJobForm.controls["intervalUnit"].value);
+    this.jobInfoEntity.mailMessage =  this.validateJobForm.value.mailMessage; 
     var url = this.baseUrl + "/api/Job/AddJob";
     if (this.modalTitle === "编辑任务")
       url = this.baseUrl + "/api/Job/ModifyJob";
@@ -172,12 +175,12 @@ export class TaskListComponent implements OnInit {
 
   //编辑任务
   editJob(name, group) {
-
     this.modalTitle = "编辑任务";
     var url = this.baseUrl + "/api/Job/QueryJob";
     this.http.post(url, { name: name, group: group }, { headers: this.headers })
       .subscribe((result: any) => {
         this.jobInfoEntity = result;
+        this.validateJobForm.controls["mailMessage"].setValue(result.mailMessage.toString());        
         this.jobInfoEntity.requestType = this.jobInfoEntity.requestType.toString();
         this.jobInfoEntity.triggerType = this.jobInfoEntity.triggerType.toString();
         this.isJobVisible = true;

@@ -68,7 +68,7 @@
           <nz-form-explain *ngIf="validateJobForm.get('cron').dirty && validateJobForm.get('cron').errors">Cron表达式必填</nz-form-explain>
         </nz-form-control>
         <nz-tag [nzColor]="'#2db7f5'">
-          <a href=" http://cron.qqe2.com/ " target="_blank">参考</a>
+          <a href=" http://www.pppet.net/ " target="_blank">参考</a>
         </nz-tag>
       </nz-form-item>
 
@@ -100,17 +100,18 @@
       </nz-form-item>
 
       <nz-form-item>
-        <nz-form-label [nzSpan]="5" nzFor="authorization">Authorization</nz-form-label>
+        <nz-form-label [nzSpan]="5" nzFor="headers">请求头 </nz-form-label>
         <nz-form-control [nzSpan]="15">
-          <input formControlName="authorization" title="警告：请考虑授权过期问题" (keyup.enter)="searchData()" type="{{isShwoPass?'text':'password'}}"
-            placeholder="请输入Headers中的Authorization授权认证" nz-input [(ngModel)]="jobInfoEntity.authorization" />
+          <input formControlName="headers" title='格式：{"key":"value","key2":"value2"}' (keyup.enter)="searchData()" type="{{isShwoPass?'text':'password'}}"
+            placeholder="请输入Headers信息，如：Cookies、授权认证等" nz-input [(ngModel)]="jobInfoEntity.headers" />
         </nz-form-control>
       </nz-form-item>
 
       <nz-form-item>
         <nz-form-label [nzSpan]="5" nzFor="requestParameters">请求参数 </nz-form-label>
         <nz-form-control [nzSpan]="15">
-          <textarea row="4" formControlName="requestParameters" placeholder="请输入请求参数（json字符串）" nz-input [(ngModel)]="jobInfoEntity.requestParameters"></textarea>
+          <textarea row="4" formControlName="requestParameters" title='格式：{"key":"value","key2":"value2"}' placeholder="请输入请求参数（json字符串）"
+            nz-input [(ngModel)]="jobInfoEntity.requestParameters"></textarea>
           <nz-form-explain *ngIf="validateJobForm.get('requestParameters').dirty && validateJobForm.get('requestParameters').errors"></nz-form-explain>
         </nz-form-control>
       </nz-form-item>
@@ -120,6 +121,17 @@
         <nz-form-control [nzSpan]="15">
           <textarea row="4" formControlName="description" placeholder="请输入任务描述" nz-input [(ngModel)]="jobInfoEntity.description"></textarea>
           <nz-form-explain *ngIf="validateJobForm.get('description').dirty && validateJobForm.get('description').errors"></nz-form-explain>
+        </nz-form-control>
+      </nz-form-item>
+
+      <nz-form-item>
+        <nz-form-label [nzSpan]="5">邮件通知 </nz-form-label>
+        <nz-form-control [nzSpan]="15">
+          <nz-radio-group formControlName="mailMessage">
+            <label nz-radio nzValue="0">不通知</label>
+            <label nz-radio nzValue="1" title="只有当任务出现异常时发送通知(需要在'系统设置'邮件)">通知异常</label>
+            <label nz-radio nzValue="2" title="每次执行一个任务都发送邮件通知(需要在'系统设置'邮件)">通知所有</label>
+          </nz-radio-group>
         </nz-form-control>
       </nz-form-item>
     </form>
@@ -135,16 +147,16 @@
 
       <table class="jobTable">
         <tr>
-          <th>任务名称</th>
-          <th>状态</th>
-          <th style="max-width: 12%;">Url</th>
-          <th>异常信息</th>
-          <th>开始时间</th>
-          <th>上次执行时间</th>
-          <th>下次执行时间</th>
-          <th>执行计划</th>
-          <th>描述</th>
-          <th>
+          <th style="width: 7%;">任务名称</th>
+          <th style="width: 4%;">状态</th>
+          <th class="td-url">Url</th>
+          <th style="width: 5%;">异常信息</th>
+          <th style="width: 9%;">开始时间</th>
+          <th style="width: 9%;">上次执行时间</th>
+          <th style="width: 9%;">下次执行时间</th>
+          <th style="width: 5%;">执行计划</th>
+          <th style="width: 7%;">描述</th>
+          <th style="width: 190px;">
             <button nz-button [nzType]="'primary'" (click)="showJobModal(panel.groupName)">
               <span>新增任务</span>
             </button>
@@ -162,7 +174,7 @@
             <nz-tag *ngIf="jobInfo.displayState==='阻塞'" [nzColor]="'gold'"> {{ jobInfo.displayState}}</nz-tag>
             <nz-tag *ngIf="jobInfo.displayState==='不存在'" [nzColor]="'purple'"> {{ jobInfo.displayState}}</nz-tag>
           </td>
-          <td>
+          <td class="td-url" title="{{ jobInfo.requestUrl}}">
             {{ jobInfo.requestUrl}}
           </td>
           <td>
@@ -182,7 +194,7 @@
           <td>
             {{ jobInfo.interval}}
           </td>
-          <td>
+          <td title=' {{ jobInfo.description||""}}'>
             {{ jobInfo.description||"--"}}
           </td>
           <td>
@@ -223,7 +235,6 @@
           </td>
         </tr>
       </table>
-
     </nz-collapse-panel>
   </nz-collapse>
 </div>

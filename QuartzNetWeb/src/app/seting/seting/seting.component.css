@@ -1,0 +1,16 @@
+nz-form-item {
+  width: 60%;
+}
+
+.but-con {
+  margin-top: 10px;
+  text-align: right;
+}
+
+.but-con button {
+  margin-right: 30px;
+}
+
+.but-con button:nth-child(2) {
+  margin-right: 110px;
+}
