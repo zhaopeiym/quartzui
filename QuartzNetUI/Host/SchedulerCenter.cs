@@ -111,6 +111,7 @@ namespace Host
                     { "RequestParameters",entity.RequestParameters},
                     { "RequestType", ((int)entity.RequestType).ToString()},
                     { Constant.HEADERS, entity.Headers},
+                    { Constant.MAILMESSAGE, ((int)entity.MailMessage).ToString()},
                 };
                 // 定义这个工作，并将其绑定到我们的IJob实现类                
                 IJobDetail job = JobBuilder.CreateForAsync<HttpJob>()
@@ -235,6 +236,7 @@ namespace Host
             entity.RequestType = (RequestTypeEnum)int.Parse(jobDetail.JobDataMap.GetString(Constant.REQUESTTYPE));
             entity.RequestParameters = jobDetail.JobDataMap.GetString(Constant.REQUESTPARAMETERS);
             entity.Headers = jobDetail.JobDataMap.GetString(Constant.HEADERS);
+            entity.MailMessage = (MailMessageEnum)int.Parse(jobDetail.JobDataMap.GetString(Constant.MAILMESSAGE) ?? "0");
             entity.Description = jobDetail.Description;
             return entity;
         }

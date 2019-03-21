@@ -20,6 +20,10 @@ namespace Host.Common
         /// </summary>
         public static string HEADERS = "Headers";
         /// <summary>
+        /// 是否发送邮件
+        /// </summary>
+        public static string MAILMESSAGE = "MailMessage";
+        /// <summary>
         /// 请求类型 RequestType
         /// </summary>
         public static string REQUESTTYPE = "RequestType";

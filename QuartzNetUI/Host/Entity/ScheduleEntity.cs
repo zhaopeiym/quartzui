@@ -60,5 +60,7 @@ namespace Host
         /// 描述
         /// </summary>
         public string Description { get; set; }
+
+        public MailMessageEnum MailMessage { get; set; }
     }
 }
