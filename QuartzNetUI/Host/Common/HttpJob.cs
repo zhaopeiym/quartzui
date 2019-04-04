@@ -1,5 +1,6 @@
 ﻿using Host.Common;
 using Host.Controllers;
+using Host.Model;
 using Newtonsoft.Json;
 using Quartz;
 using Serilog;
@@ -62,8 +63,22 @@ namespace Host
 
                 stopwatch.Stop(); //  停止监视            
                 double seconds = stopwatch.Elapsed.TotalSeconds;  //总秒数
-                var logEndMsg = $@"End   - Code:{GetHashCode()} Type:{requestType} 耗时:{seconds}秒  Url:{requestUrl} Parameters:{requestParameters} Result:{result.MaxLeft(300)} JobName:{context.JobDetail.Key.Group}.{context.JobDetail.Key.Name}";
-                await InformationAsync(logEndMsg, mailMessage);
+                var logEndMsg = $@"End   - Code:{GetHashCode()} Type:{requestType} 耗时:{seconds}秒  Url:{requestUrl} Parameters:{requestParameters} <span class='result'>Result:{result.MaxLeft(300)}</span> JobName:{context.JobDetail.Key.Group}.{context.JobDetail.Key.Name}";
+                try
+                {
+                    //这里需要和请求方约定好返回结果约定为HttpResultModel模型
+                    var httpResult = JsonConvert.DeserializeObject<HttpResultModel>(result);
+                    if (!httpResult.IsSuccess)
+                    {
+                        await ErrorAsync(new Exception(httpResult.ErrorMsg), logEndMsg, mailMessage);
+                    }
+                    else
+                        await InformationAsync(logEndMsg, mailMessage);
+                }
+                catch (Exception)
+                {
+                    await InformationAsync(logEndMsg, mailMessage);
+                }
                 if (seconds >= warnTime)//如果请求超过20秒，记录警告日志     
                     logs.Add($"<p>{logEndMsg} Ok <span class='warning'>Time:{DateTime.Now.yyyMMddHHssmm2()}</span></p>");
                 else
@@ -86,7 +101,6 @@ namespace Host
                 {
                     var msg = $@"End   - Code:{GetHashCode()} Type:{requestType} 耗时:{seconds}秒  Url:{requestUrl} Parameters:{requestParameters} JobName:{context.JobDetail.Key.Group}.{context.JobDetail.Key.Name}";
                     await WarningAsync(msg, mailMessage);
-
                 }
             }
         }
@@ -98,7 +112,7 @@ namespace Host
             {
                 await new SetingController().SendMail(new Model.SendMailModel()
                 {
-                    Title = "任务调度[警告]消息",
+                    Title = "任务调度【警告】消息",
                     Content = msg
                 });
             }
@@ -124,7 +138,7 @@ namespace Host
             {
                 await new SetingController().SendMail(new Model.SendMailModel()
                 {
-                    Title = "任务调度[异常]消息",
+                    Title = "任务调度【异常】消息",
                     Content = msg
                 });
             }
