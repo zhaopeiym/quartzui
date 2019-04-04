@@ -65,13 +65,14 @@ namespace Host
                 double seconds = stopwatch.Elapsed.TotalSeconds;  //总秒数
                 var logEndMsg = $@"End   - Code:{GetHashCode()} Type:{requestType} 耗时:{seconds}秒  Url:{requestUrl} Parameters:{requestParameters} <span class='result'>Result:{result.MaxLeft(300)}</span> JobName:{context.JobDetail.Key.Group}.{context.JobDetail.Key.Name}";
                 try
-                {
+                {                    
                     //这里需要和请求方约定好返回结果约定为HttpResultModel模型
                     var httpResult = JsonConvert.DeserializeObject<HttpResultModel>(result);
                     if (!httpResult.IsSuccess)
                     {
-                        await ErrorAsync(new Exception(httpResult.ErrorMsg), logEndMsg, mailMessage);
-                        context.JobDetail.JobDataMap[Constant.EXCEPTION] = logEndMsg;
+                        var mailMsg = $"<p>{logEndMsg} Err Time:{DateTime.Now.yyyMMddHHssmm2()}</p>";
+                        await ErrorAsync(new Exception(httpResult.ErrorMsg), mailMsg, mailMessage);
+                        context.JobDetail.JobDataMap[Constant.EXCEPTION] = mailMsg;
                     }
                     else
                         await InformationAsync(logEndMsg, mailMessage);
