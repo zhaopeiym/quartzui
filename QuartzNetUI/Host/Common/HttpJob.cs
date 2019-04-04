@@ -71,6 +71,7 @@ namespace Host
                     if (!httpResult.IsSuccess)
                     {
                         await ErrorAsync(new Exception(httpResult.ErrorMsg), logEndMsg, mailMessage);
+                        context.JobDetail.JobDataMap[Constant.EXCEPTION] = logEndMsg;
                     }
                     else
                         await InformationAsync(logEndMsg, mailMessage);
