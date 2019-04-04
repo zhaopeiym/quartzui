@@ -135,7 +135,7 @@ namespace Host
         public async Task ErrorAsync(Exception ex, string msg, MailMessageEnum mailMessage)
         {
             Log.Logger.Error(ex, msg);
-            if (mailMessage == MailMessageEnum.Err)
+            if (mailMessage == MailMessageEnum.Err || mailMessage == MailMessageEnum.All)
             {
                 await new SetingController().SendMail(new Model.SendMailModel()
                 {
