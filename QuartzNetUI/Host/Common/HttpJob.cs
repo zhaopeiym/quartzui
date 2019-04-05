@@ -63,9 +63,9 @@ namespace Host
 
                 stopwatch.Stop(); //  停止监视            
                 double seconds = stopwatch.Elapsed.TotalSeconds;  //总秒数
-                var logEndMsg = $@"End   - Code:{GetHashCode()} Type:{requestType} 耗时:{seconds}秒  Url:{requestUrl} Parameters:{requestParameters} <span class='result'>Result:{result.MaxLeft(300)}</span> JobName:{context.JobDetail.Key.Group}.{context.JobDetail.Key.Name}";
+                var logEndMsg = $@"End   - Code:{GetHashCode()} Type:{requestType} 耗时:{seconds}秒  Url:{requestUrl} Parameters:{requestParameters} <span class='result'>Result:{result.MaxRight(1300)}</span> JobName:{context.JobDetail.Key.Group}.{context.JobDetail.Key.Name}";
                 try
-                {                    
+                {
                     //这里需要和请求方约定好返回结果约定为HttpResultModel模型
                     var httpResult = JsonConvert.DeserializeObject<HttpResultModel>(result);
                     if (!httpResult.IsSuccess)
