@@ -70,7 +70,7 @@ namespace Host
                     var httpResult = JsonConvert.DeserializeObject<HttpResultModel>(result);
                     if (!httpResult.IsSuccess)
                     {
-                        var mailMsg = $"<p>{logEndMsg} Err:{result} Time:{DateTime.Now.yyyMMddHHssmm2()}</p>";
+                        var mailMsg = $"<p>{logEndMsg} ErrorMsg:{httpResult.ErrorMsg} Time:{DateTime.Now.yyyMMddHHssmm2()}</p>";
                         await ErrorAsync(new Exception(httpResult.ErrorMsg), mailMsg, mailMessage);
                         context.JobDetail.JobDataMap[Constant.EXCEPTION] = mailMsg;
                     }
