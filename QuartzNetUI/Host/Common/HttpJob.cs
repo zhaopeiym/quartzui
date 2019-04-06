@@ -19,8 +19,7 @@ namespace Host
         public async Task Execute(IJobExecutionContext context)
         {
             var maxLogCount = 20;//最多保存日志数量
-            var warnTime = 20;//接口请求超过多少秒记录警告日志
-
+            var warnTime = 20;//接口请求超过多少秒记录警告日志         
             //获取相关参数
             var requestUrl = context.JobDetail.JobDataMap.GetString(Constant.REQUESTURL);
             requestUrl = requestUrl?.IndexOf("http") == 0 ? requestUrl : "http://" + requestUrl;
@@ -34,13 +33,16 @@ namespace Host
             stopwatch.Restart(); //  开始监视代码运行时间
             var result = string.Empty;
 
-            var logBeginMsg = $@"Begin - Code:{GetHashCode()} Type:{requestType} Url:{requestUrl} Parameters:{requestParameters} JobName:{context.JobDetail.Key.Group}.{context.JobDetail.Key.Name}";
-            Log.Logger.Information(logBeginMsg);
+            var loginfo = new LogInfoModel();
+            loginfo.Url = requestUrl;
+            loginfo.BeginTime = DateTime.Now.yyyMMddHHssmm2();
+            loginfo.RequestType = requestType.ToString();
+            loginfo.Parameters = requestParameters;
+            loginfo.JobName = $"{context.JobDetail.Key.Group}.{context.JobDetail.Key.Name}";
 
             var logs = context.JobDetail.JobDataMap[Constant.LOGLIST] as List<string> ?? new List<string>();
             if (logs.Count >= maxLogCount)
                 logs.RemoveRange(0, logs.Count - maxLogCount);
-            logs.Add($"<p>{logBeginMsg} Time:{DateTime.Now.yyyMMddHHssmm2()}</p>");
 
             try
             {
@@ -62,47 +64,45 @@ namespace Host
                 }
 
                 stopwatch.Stop(); //  停止监视            
-                double seconds = stopwatch.Elapsed.TotalSeconds;  //总秒数                
-                var logEndMsg = $@"End   - Code:{GetHashCode()} Type:{requestType} 耗时:{seconds}秒  Url:{requestUrl} Parameters:{requestParameters} <span class='result'>Result:{result.MaxLeft(1000)}</span> JobName:{context.JobDetail.Key.Group}.{context.JobDetail.Key.Name}";
+                double seconds = stopwatch.Elapsed.TotalSeconds;  //总秒数                                
+                loginfo.EndTime = DateTime.Now.yyyMMddHHssmm2();
+                loginfo.Seconds = seconds;
+                loginfo.Result = $"<span class='result'>{result.MaxLeft(1000)}</span>";
                 try
                 {
                     //这里需要和请求方约定好返回结果约定为HttpResultModel模型
                     var httpResult = JsonConvert.DeserializeObject<HttpResultModel>(result);
                     if (!httpResult.IsSuccess)
                     {
-                        var mailMsg = $"<p>{logEndMsg} ErrorMsg:{httpResult.ErrorMsg} Time:{DateTime.Now.yyyMMddHHssmm2()}</p>";
-                        await ErrorAsync(new Exception(httpResult.ErrorMsg), mailMsg, mailMessage);
-                        context.JobDetail.JobDataMap[Constant.EXCEPTION] = mailMsg;
+                        loginfo.ErrorMsg = $"<span class='error'>{httpResult.ErrorMsg}</span>";
+                        await ErrorAsync(new Exception(httpResult.ErrorMsg), JsonConvert.SerializeObject(loginfo), mailMessage);
+                        context.JobDetail.JobDataMap[Constant.EXCEPTION] = JsonConvert.SerializeObject(loginfo);
                     }
                     else
-                        await InformationAsync(logEndMsg, mailMessage);
+                        await InformationAsync(JsonConvert.SerializeObject(loginfo), mailMessage);
                 }
                 catch (Exception)
                 {
-                    await InformationAsync(logEndMsg, mailMessage);
+                    await InformationAsync(JsonConvert.SerializeObject(loginfo), mailMessage);
                 }
-                if (seconds >= warnTime)//如果请求超过20秒，记录警告日志     
-                    logs.Add($"<p>{logEndMsg} Ok <span class='warning'>Time:{DateTime.Now.yyyMMddHHssmm2()}</span></p>");
-                else
-                    logs.Add($"<p>{logEndMsg} Ok Time:{DateTime.Now.yyyMMddHHssmm2()}</p>");
             }
             catch (Exception ex)
             {
-                context.JobDetail.JobDataMap[Constant.EXCEPTION] = $"Time:{DateTime.Now.yyyMMddHHssmm2()} Url:{requestUrl} Parameters:{requestParameters} Err:{ex.Message}";
                 stopwatch.Stop(); //  停止监视            
                 double seconds = stopwatch.Elapsed.TotalSeconds;  //总秒数
-                var logEndMsg = $@"End   - Code:{GetHashCode()} Type:{requestType} 耗时:{seconds}秒  Url:{requestUrl} Parameters:{requestParameters} JobName:{context.JobDetail.Key.Group}.{context.JobDetail.Key.Name}";
-                await ErrorAsync(ex, logEndMsg, mailMessage);
-                logs.Add($"<p>{logEndMsg} <span class='error'>Err:{ex.Message}</span> Time:{DateTime.Now.yyyMMddHHssmm2()}</p>");
+                loginfo.ErrorMsg = ex.Message + " " + ex.StackTrace;
+                context.JobDetail.JobDataMap[Constant.EXCEPTION] = JsonConvert.SerializeObject(loginfo);
+                loginfo.Seconds = seconds;
+                await ErrorAsync(ex, JsonConvert.SerializeObject(loginfo), mailMessage);
             }
             finally
             {
+                logs.Add($"<p>{JsonConvert.SerializeObject(loginfo)}</p>");
                 context.JobDetail.JobDataMap[Constant.LOGLIST] = logs;
                 double seconds = stopwatch.Elapsed.TotalSeconds;  //总秒数
                 if (seconds >= warnTime)//如果请求超过20秒，记录警告日志    
                 {
-                    var msg = $@"End   - Code:{GetHashCode()} Type:{requestType} 耗时:{seconds}秒  Url:{requestUrl} Parameters:{requestParameters} JobName:{context.JobDetail.Key.Group}.{context.JobDetail.Key.Name}";
-                    await WarningAsync(msg, mailMessage);
+                    await WarningAsync("耗时过长 - " + JsonConvert.SerializeObject(loginfo), mailMessage);
                 }
             }
         }
