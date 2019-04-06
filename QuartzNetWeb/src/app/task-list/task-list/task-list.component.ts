@@ -294,7 +294,11 @@ export class TaskListComponent implements OnInit {
     this.modalService.create({
       nzTitle: title,
       nzContent: content,
-      nzFooter: null
+      nzFooter: null,
+      nzBodyStyle: {
+        "max-height": '500px',
+        "overflow-y": "auto"
+      }
     });
   }
 
