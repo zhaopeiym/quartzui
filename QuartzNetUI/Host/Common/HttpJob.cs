@@ -75,15 +75,15 @@ namespace Host
                     if (!httpResult.IsSuccess)
                     {
                         loginfo.ErrorMsg = $"<span class='error'>{httpResult.ErrorMsg}</span>";
-                        await ErrorAsync(new Exception(httpResult.ErrorMsg), JsonConvert.SerializeObject(loginfo), mailMessage);
+                        await ErrorAsync(loginfo.JobName, new Exception(httpResult.ErrorMsg), JsonConvert.SerializeObject(loginfo), mailMessage);
                         context.JobDetail.JobDataMap[Constant.EXCEPTION] = JsonConvert.SerializeObject(loginfo);
                     }
                     else
-                        await InformationAsync(JsonConvert.SerializeObject(loginfo), mailMessage);
+                        await InformationAsync(loginfo.JobName, JsonConvert.SerializeObject(loginfo), mailMessage);
                 }
                 catch (Exception)
                 {
-                    await InformationAsync(JsonConvert.SerializeObject(loginfo), mailMessage);
+                    await InformationAsync(loginfo.JobName, JsonConvert.SerializeObject(loginfo), mailMessage);
                 }
             }
             catch (Exception ex)
@@ -93,7 +93,7 @@ namespace Host
                 loginfo.ErrorMsg = ex.Message + " " + ex.StackTrace;
                 context.JobDetail.JobDataMap[Constant.EXCEPTION] = JsonConvert.SerializeObject(loginfo);
                 loginfo.Seconds = seconds;
-                await ErrorAsync(ex, JsonConvert.SerializeObject(loginfo), mailMessage);
+                await ErrorAsync(loginfo.JobName, ex, JsonConvert.SerializeObject(loginfo), mailMessage);
             }
             finally
             {
@@ -102,45 +102,45 @@ namespace Host
                 double seconds = stopwatch.Elapsed.TotalSeconds;  //总秒数
                 if (seconds >= warnTime)//如果请求超过20秒，记录警告日志    
                 {
-                    await WarningAsync("耗时过长 - " + JsonConvert.SerializeObject(loginfo), mailMessage);
+                    await WarningAsync(loginfo.JobName, "耗时过长 - " + JsonConvert.SerializeObject(loginfo), mailMessage);
                 }
             }
         }
 
-        public async Task WarningAsync(string msg, MailMessageEnum mailMessage)
+        public async Task WarningAsync(string title, string msg, MailMessageEnum mailMessage)
         {
             Log.Logger.Warning(msg);
             if (mailMessage == MailMessageEnum.All)
             {
                 await new SetingController().SendMail(new Model.SendMailModel()
                 {
-                    Title = "任务调度【警告】消息",
+                    Title = $"任务调度-{title}【警告】消息",
                     Content = msg
                 });
             }
         }
 
-        public async Task InformationAsync(string msg, MailMessageEnum mailMessage)
+        public async Task InformationAsync(string title, string msg, MailMessageEnum mailMessage)
         {
             Log.Logger.Information(msg);
             if (mailMessage == MailMessageEnum.All)
             {
                 await new SetingController().SendMail(new Model.SendMailModel()
                 {
-                    Title = "任务调度消息",
+                    Title = $"任务调度-{title}消息",
                     Content = msg
                 });
             }
         }
 
-        public async Task ErrorAsync(Exception ex, string msg, MailMessageEnum mailMessage)
+        public async Task ErrorAsync(string title, Exception ex, string msg, MailMessageEnum mailMessage)
         {
             Log.Logger.Error(ex, msg);
             if (mailMessage == MailMessageEnum.Err || mailMessage == MailMessageEnum.All)
             {
                 await new SetingController().SendMail(new Model.SendMailModel()
                 {
-                    Title = "任务调度【异常】消息",
+                    Title = $"任务调度-{title}【异常】消息",
                     Content = msg
                 });
             }
