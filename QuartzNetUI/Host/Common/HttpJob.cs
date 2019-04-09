@@ -26,7 +26,7 @@ namespace Host
             var requestParameters = context.JobDetail.JobDataMap.GetString(Constant.REQUESTPARAMETERS);
             var headersString = context.JobDetail.JobDataMap.GetString(Constant.HEADERS);
             var mailMessage = (MailMessageEnum)int.Parse(context.JobDetail.JobDataMap.GetString(Constant.MAILMESSAGE) ?? "0");
-            var headers = JsonConvert.DeserializeObject<Dictionary<string, string>>(headersString?.Trim());
+            var headers = headersString != null ? JsonConvert.DeserializeObject<Dictionary<string, string>>(headersString?.Trim()) : null;
             var requestType = (RequestTypeEnum)int.Parse(context.JobDetail.JobDataMap.GetString(Constant.REQUESTTYPE));
 
             Stopwatch stopwatch = new Stopwatch();
