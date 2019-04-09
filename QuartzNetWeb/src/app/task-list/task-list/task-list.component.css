@@ -79,3 +79,7 @@ form nz-tag {
 ::ng-deep span.warning {
   color: #faad14;
 }
+
+::ng-deep span.result {
+  color: #0094ff;
+}
