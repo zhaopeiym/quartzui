@@ -29,6 +29,7 @@ export class TaskListComponent implements OnInit {
   public resultData: any = [{}];
   dateFormat = 'yyyy/MM/dd';
   jobInfoEntity: any = {};
+  refreshValue: any = 10;
 
   constructor(private http: HttpClient,
     private fb2: FormBuilder,
@@ -37,10 +38,11 @@ export class TaskListComponent implements OnInit {
     this.loadJobInfo();
     setInterval(() => {//定时刷新
       this.renovateJobInfo();
-    }, 1000 * 5);
+    }, 1000 * this.refreshValue);
   }
 
   ngOnInit(): void {
+    this.getRefreshInterval();
     this.validateJobForm = this.fb2.group({
       jobName: [null, [Validators.required]],
       beginTime: [null, [Validators.required]],
@@ -61,6 +63,18 @@ export class TaskListComponent implements OnInit {
   isShwoPass = false;
   searchData() {
     this.isShwoPass = !this.isShwoPass;
+  }
+
+  getRefreshInterval() {
+    var url = this.baseUrl + "/api/Seting/GetRefreshInterval";
+    this.http.post(url, {}, { headers: this.headers })
+      .subscribe((result: any) => {
+        this.refreshValue = result.intervalTime;
+      }, (err) => {
+
+      }, () => {
+
+      });
   }
 
   //移除本次异常记录
@@ -100,6 +114,7 @@ export class TaskListComponent implements OnInit {
 
   //刷新
   renovateJobInfo() {
+    
     var url = this.baseUrl + "/api/Job/GetAllJobBriefInfo";
     this.http.get(url, { headers: this.headers })
       .subscribe((result: any) => {
@@ -157,7 +172,7 @@ export class TaskListComponent implements OnInit {
         return;
     }
     this.jobInfoEntity.intervalSecond = this.jobInfoEntity.intervalSecond * parseInt(this.validateJobForm.controls["intervalUnit"].value);
-    this.jobInfoEntity.mailMessage =  this.validateJobForm.value.mailMessage; 
+    this.jobInfoEntity.mailMessage = this.validateJobForm.value.mailMessage;
     var url = this.baseUrl + "/api/Job/AddJob";
     if (this.modalTitle === "编辑任务")
       url = this.baseUrl + "/api/Job/ModifyJob";
@@ -180,7 +195,7 @@ export class TaskListComponent implements OnInit {
     this.http.post(url, { name: name, group: group }, { headers: this.headers })
       .subscribe((result: any) => {
         this.jobInfoEntity = result;
-        this.validateJobForm.controls["mailMessage"].setValue(result.mailMessage.toString());        
+        this.validateJobForm.controls["mailMessage"].setValue(result.mailMessage.toString());
         this.jobInfoEntity.requestType = this.jobInfoEntity.requestType.toString();
         this.jobInfoEntity.triggerType = this.jobInfoEntity.triggerType.toString();
         this.isJobVisible = true;
@@ -200,6 +215,7 @@ export class TaskListComponent implements OnInit {
       }, (err) => {
 
       }, () => {
+        
         this.renovateJobInfo();
       });
   }
@@ -213,6 +229,7 @@ export class TaskListComponent implements OnInit {
       }, (err) => {
 
       }, () => {
+        
         this.renovateJobInfo();
       });
   }
@@ -254,6 +271,7 @@ export class TaskListComponent implements OnInit {
       }, (err) => {
         this.msgError("执行失败！");
       }, () => {
+        
         this.renovateJobInfo();
       });
   }

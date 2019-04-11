@@ -15,6 +15,7 @@ import { environment } from '../../../environments/environment';
 })
 export class SetingComponent implements OnInit {
   validateForm: FormGroup;
+  refreshValue = 10;
   private baseUrl = environment.baseUrl;
   private headers = new HttpHeaders({
     'Content-Type': 'application/json'
@@ -58,7 +59,32 @@ export class SetingComponent implements OnInit {
       });
   }
 
+  saverefresh() {
+    var url = this.baseUrl + "/api/Seting/SaveRefreshInterval";    
+    this.http.post(url, { IntervalTime: this.refreshValue }, { headers: this.headers })
+      .subscribe((result: any) => {
+        this.message.success("保存成功");
+      }, (err) => {
+        this.message.error("保存失败");
+      }, () => {
+
+      });
+  }
+
+  getRefreshInterval() {
+    var url = this.baseUrl + "/api/Seting/GetRefreshInterval";
+    this.http.post(url, {}, { headers: this.headers })
+      .subscribe((result: any) => {
+        this.refreshValue = result.intervalTime;
+      }, (err) => {
+
+      }, () => {
+
+      });
+  }
+
   ngOnInit() {
+    this.getRefreshInterval();
     this.validateForm = this.fb.group({
       mailFrom: [null, [Validators.required]],
       mailPwd: [null, [Validators.required]],
