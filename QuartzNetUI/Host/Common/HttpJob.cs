@@ -82,7 +82,7 @@ namespace Host
                     try
                     {
                         //这里需要和请求方约定好返回结果约定为HttpResultModel模型
-                        var httpResult = JsonConvert.DeserializeObject<HttpResultModel>(result);
+                        var httpResult = JsonConvert.DeserializeObject<HttpResultModel>(HttpUtility.HtmlDecode(result));
                         if (!httpResult.IsSuccess)
                         {
                             loginfo.ErrorMsg = $"<span class='error'>{httpResult.ErrorMsg}</span>";
