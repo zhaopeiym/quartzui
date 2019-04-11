@@ -30,7 +30,7 @@ namespace Host.Tests
             var addUrl = httpBase + "/api/Job/AddJob";
             //添加测试数据
             var resultStr = await HttpHelper.Instance.PostAsync(addUrl, JsonConvert.SerializeObject(entity));
-            var addResult = JsonConvert.DeserializeObject<BaseResult>(resultStr);
+            var addResult = JsonConvert.DeserializeObject<BaseResult>(resultStr.Content.ReadAsStringAsync().Result);
 
             //验证
             Assert.True(addResult.Code == 200);
@@ -39,7 +39,7 @@ namespace Host.Tests
             var key = new JobKey(entity.JobName, entity.JobGroup);
             var delUrl = httpBase + "/api/Job/RemoveJob";
             var delResultStr = await HttpHelper.Instance.PostAsync(delUrl, JsonConvert.SerializeObject(key));
-            var delResult = JsonConvert.DeserializeObject<BaseResult>(delResultStr);
+            var delResult = JsonConvert.DeserializeObject<BaseResult>(delResultStr.Content.ReadAsStringAsync().Result);
             Assert.True(delResult.Code == 200);
         }
 
@@ -48,7 +48,7 @@ namespace Host.Tests
         {
             var url = httpBase + "/api/Job/GetAllJob";
             var obj = await HttpHelper.Instance.GetAsync(url);
-            var result = JsonConvert.DeserializeObject<List<JobBriefInfoEntity>>(obj);
+            var result = JsonConvert.DeserializeObject<List<JobBriefInfoEntity>>(obj.Content.ReadAsStringAsync().Result);
             Assert.True(result != null);
         }
 

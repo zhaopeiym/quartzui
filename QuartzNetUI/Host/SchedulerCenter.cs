@@ -159,12 +159,21 @@ namespace Host
                 if (isDelete)
                 {
                     await Scheduler.DeleteJob(new JobKey(jobName, jobGroup));
+                    result = new BaseResult
+                    {
+                        Code = 200,
+                        Msg = "删除任务计划成功！"
+                    };
                 }
-                result = new BaseResult
-                {
-                    Code = 200,
-                    Msg = "停止任务计划成功！"
-                };
+                else
+                {                  
+                    result = new BaseResult
+                    {
+                        Code = 200,
+                        Msg = "停止任务计划成功！"
+                    };
+                }
+              
             }
             catch (Exception ex)
             {

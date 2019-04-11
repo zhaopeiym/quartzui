@@ -9,28 +9,33 @@
           <nz-form-label [nzSm]="5" [nzXs]="24" nzFor="mailHost">发件服务器</nz-form-label>
           <nz-form-control [nzSm]="15" [nzXs]="24">
             <input nz-input formControlName="mailHost" placeholder="如：smtp.163.com">
-            <nz-form-explain *ngIf="validateForm.get('mailHost').dirty && validateForm.get('mailHost').errors">请填写发件服务器</nz-form-explain>
+            <nz-form-explain *ngIf="validateForm.get('mailHost').dirty && validateForm.get('mailHost').errors">请填写发件服务器
+            </nz-form-explain>
           </nz-form-control>
         </nz-form-item>
         <nz-form-item>
           <nz-form-label [nzSm]="5" [nzXs]="24" nzFor="mailFrom">发件邮箱</nz-form-label>
           <nz-form-control [nzSm]="15" [nzXs]="24">
             <input nz-input formControlName="mailFrom" placeholder="如：test@163.com">
-            <nz-form-explain *ngIf="validateForm.get('mailFrom').dirty && validateForm.get('mailFrom').errors">请填写发件邮箱</nz-form-explain>
+            <nz-form-explain *ngIf="validateForm.get('mailFrom').dirty && validateForm.get('mailFrom').errors">请填写发件邮箱
+            </nz-form-explain>
           </nz-form-control>
         </nz-form-item>
         <nz-form-item>
           <nz-form-label [nzSm]="5" [nzXs]="24" nzFor="mailPwd">邮箱密码</nz-form-label>
           <nz-form-control [nzSm]="15" [nzXs]="24">
             <input nz-input type="password" formControlName="mailPwd" placeholder="如：123456">
-            <nz-form-explain *ngIf="validateForm.get('mailPwd').dirty && validateForm.get('mailPwd').errors">请填写邮箱密码</nz-form-explain>
+            <nz-form-explain *ngIf="validateForm.get('mailPwd').dirty && validateForm.get('mailPwd').errors">请填写邮箱密码
+            </nz-form-explain>
           </nz-form-control>
         </nz-form-item>
         <nz-form-item>
           <nz-form-label [nzSm]="5" [nzXs]="24" nzFor="mailTo">收件邮箱</nz-form-label>
           <nz-form-control [nzSm]="15" [nzXs]="24">
-            <textarea row="4" nz-input formControlName="mailTo" placeholder="如：my@163.com;my2@163.com;(多个邮箱用分号分隔)"></textarea>
-            <nz-form-explain *ngIf="validateForm.get('mailTo').dirty && validateForm.get('mailTo').errors">请填写收件邮箱</nz-form-explain>
+            <textarea row="4" nz-input formControlName="mailTo"
+              placeholder="如：my@163.com;my2@163.com;(多个邮箱用分号分隔)"></textarea>
+            <nz-form-explain *ngIf="validateForm.get('mailTo').dirty && validateForm.get('mailTo').errors">请填写收件邮箱
+            </nz-form-explain>
           </nz-form-control>
         </nz-form-item>
         <nz-form-item>
@@ -42,12 +47,19 @@
       </form>
     </nz-tab>
     <nz-tab nzTitle="刷新设置">
-      <form nz-form [formGroup]="validateForm">
+      <form nz-form>
         <nz-form-item>
           <nz-form-label [nzSm]="5" [nzXs]="24" nzFor="projectName" title="时间单位秒">页面定时刷新时间</nz-form-label>
           <nz-form-control [nzSm]="15" [nzXs]="24">
-            <input nz-input id="name" name="name" title="时间单位秒" placeholder="时间单位秒">
+            <nz-input-group nzAddOnBefore="" nzAddOnAfter="秒">
+              <input nz-input id="name" name="name" [(ngModel)]="refreshValue" title="时间单位秒" placeholder="时间单位秒">
+            </nz-input-group>
           </nz-form-control>
+        </nz-form-item>
+        <nz-form-item>
+          <div class="but-con-refresh">
+            <button nz-button nzType="primary" (click)="saverefresh()">确定</button>
+          </div>
         </nz-form-item>
       </form>
     </nz-tab>

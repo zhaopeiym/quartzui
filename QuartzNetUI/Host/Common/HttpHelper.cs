@@ -40,7 +40,7 @@ namespace Host
         /// <param name="jsonString">请求参数（Json字符串）</param>
         /// <param name="headers">webapi做用户认证</param>
         /// <returns></returns>
-        public async Task<string> PostAsync(string url, string jsonString, Dictionary<string, string> headers = null)
+        public async Task<HttpResponseMessage> PostAsync(string url, string jsonString, Dictionary<string, string> headers = null)
         {
             if (string.IsNullOrWhiteSpace(jsonString))
                 jsonString = "{}";
@@ -49,7 +49,7 @@ namespace Host
 
             if (headers != null && headers.Any())
             {
-                //如果有headers认证等信息，则每个请求实力一个HttpClient
+                //如果有headers认证等信息，则每个请求实例一个HttpClient
                 using (HttpClient http = new HttpClient())
                 {
                     foreach (var item in headers)
@@ -57,14 +57,12 @@ namespace Host
                         http.DefaultRequestHeaders.Remove(item.Key);
                         http.DefaultRequestHeaders.TryAddWithoutValidation(item.Key, item.Value);
                     }
-                    var httpResponseMessage = await http.PostAsync(new Uri(url), content);
-                    return await httpResponseMessage.Content.ReadAsStringAsync();
+                    return await http.PostAsync(new Uri(url), content); 
                 }
             }
             else
             {
-                var httpResponseMessage = await GetHttpClient(url).PostAsync(new Uri(url), content);
-                return await httpResponseMessage.Content.ReadAsStringAsync();
+                return await GetHttpClient(url).PostAsync(new Uri(url), content); 
             }
         }
 
@@ -76,7 +74,7 @@ namespace Host
         /// <param name="content">请求参数</param>
         /// <param name="headers">webapi做用户认证</param>
         /// <returns></returns>
-        public async Task<string> PostAsync<T>(string url, T content, Dictionary<string, string> headers = null) where T : class
+        public async Task<HttpResponseMessage> PostAsync<T>(string url, T content, Dictionary<string, string> headers = null) where T : class
         {
             return await PostAsync(url, JsonConvert.SerializeObject(content), headers);
         }
@@ -87,11 +85,11 @@ namespace Host
         /// <param name="url">url地址</param>
         /// <param name="headers">webapi做用户认证</param>
         /// <returns></returns>
-        public async Task<string> GetAsync(string url, Dictionary<string, string> headers = null)
+        public async Task<HttpResponseMessage> GetAsync(string url, Dictionary<string, string> headers = null)
         {
             if (headers != null && headers.Any())
             {
-                //如果有headers认证等信息，则每个请求实力一个HttpClient
+                //如果有headers认证等信息，则每个请求实例一个HttpClient
                 using (HttpClient http = new HttpClient())
                 {
                     foreach (var item in headers)
@@ -99,14 +97,12 @@ namespace Host
                         http.DefaultRequestHeaders.Remove(item.Key);
                         http.DefaultRequestHeaders.TryAddWithoutValidation(item.Key, item.Value);
                     }
-                    var httpResponseMessage = await http.GetAsync(url);
-                    return await httpResponseMessage.Content.ReadAsStringAsync();
+                    return await http.GetAsync(url); 
                 }
             }
             else
             {
-                var httpResponseMessage = await GetHttpClient(url).GetAsync(url);
-                return await httpResponseMessage.Content.ReadAsStringAsync();
+                return await GetHttpClient(url).GetAsync(url); 
             }
         }
 
@@ -117,7 +113,7 @@ namespace Host
         /// <param name="jsonString">请求参数（Json字符串）</param>
         /// <param name="headers">webapi做用户认证</param>
         /// <returns></returns>
-        public async Task<string> PutAsync(string url, string jsonString, Dictionary<string, string> headers = null)
+        public async Task<HttpResponseMessage> PutAsync(string url, string jsonString, Dictionary<string, string> headers = null)
         {
             if (string.IsNullOrWhiteSpace(jsonString))
                 jsonString = "{}";
@@ -125,7 +121,7 @@ namespace Host
             content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
             if (headers != null && headers.Any())
             {
-                //如果有headers认证等信息，则每个请求实力一个HttpClient
+                //如果有headers认证等信息，则每个请求实例一个HttpClient
                 using (HttpClient http = new HttpClient())
                 {
                     foreach (var item in headers)
@@ -133,14 +129,12 @@ namespace Host
                         http.DefaultRequestHeaders.Remove(item.Key);
                         http.DefaultRequestHeaders.TryAddWithoutValidation(item.Key, item.Value);
                     }
-                    var httpResponseMessage = await http.PutAsync(url, content);
-                    return await httpResponseMessage.Content.ReadAsStringAsync();
+                    return await http.PutAsync(url, content); 
                 }
             }
             else
             {
-                var httpResponseMessage = await GetHttpClient(url).PutAsync(url, content);
-                return await httpResponseMessage.Content.ReadAsStringAsync();
+                return await GetHttpClient(url).PutAsync(url, content); 
             }
         }
 
@@ -152,7 +146,7 @@ namespace Host
         /// <param name="content">请求参数</param>
         /// <param name="headers">webapi做用户认证</param>
         /// <returns></returns>
-        public async Task<string> PutAsync<T>(string url, T content, Dictionary<string, string> headers = null)
+        public async Task<HttpResponseMessage> PutAsync<T>(string url, T content, Dictionary<string, string> headers = null)
         {
             return await PutAsync(url, JsonConvert.SerializeObject(content), headers);
         }
@@ -163,11 +157,11 @@ namespace Host
         /// <param name="url">url地址</param>
         /// <param name="authorization">webapi做用户认证</param>
         /// <returns></returns>
-        public async Task<string> DeleteAsync(string url, Dictionary<string, string> headers = null)
+        public async Task<HttpResponseMessage> DeleteAsync(string url, Dictionary<string, string> headers = null)
         {
             if (headers != null && headers.Any())
             {
-                //如果有headers认证等信息，则每个请求实力一个HttpClient
+                //如果有headers认证等信息，则每个请求实例一个HttpClient
                 using (HttpClient http = new HttpClient())
                 {
                     foreach (var item in headers)
@@ -175,14 +169,12 @@ namespace Host
                         http.DefaultRequestHeaders.Remove(item.Key);
                         http.DefaultRequestHeaders.TryAddWithoutValidation(item.Key, item.Value);
                     }
-                    var httpResponseMessage = await http.DeleteAsync(url);
-                    return await httpResponseMessage.Content.ReadAsStringAsync();
+                    return await http.DeleteAsync(url); 
                 }
             }
             else
             {
-                var httpResponseMessage = await GetHttpClient(url).DeleteAsync(url);
-                return await httpResponseMessage.Content.ReadAsStringAsync();
+                return await GetHttpClient(url).DeleteAsync(url); 
             }
         }
     }

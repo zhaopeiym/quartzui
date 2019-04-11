@@ -5,6 +5,12 @@ nz-form-item {
 .but-con {
   margin-top: 10px;
   text-align: right;
+  margin-right: 53px;
+}
+
+.but-con-refresh {
+  text-align: right;
+  margin-right: 163px;
 }
 
 .but-con button {
