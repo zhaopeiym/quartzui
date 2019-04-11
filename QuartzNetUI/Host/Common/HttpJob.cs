@@ -7,7 +7,9 @@ using Serilog;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Net.Http;
 using System.Threading.Tasks;
+using System.Web;
 using Talk.Extensions;
 
 namespace Host
@@ -31,7 +33,7 @@ namespace Host
 
             Stopwatch stopwatch = new Stopwatch();
             stopwatch.Restart(); //  开始监视代码运行时间
-            var result = string.Empty;
+            HttpResponseMessage response = new HttpResponseMessage();
 
             var loginfo = new LogInfoModel();
             loginfo.Url = requestUrl;
@@ -50,40 +52,50 @@ namespace Host
                 switch (requestType)
                 {
                     case RequestTypeEnum.Get:
-                        result = await http.GetAsync(requestUrl, headers);
+                        response = await http.GetAsync(requestUrl, headers);
                         break;
                     case RequestTypeEnum.Post:
-                        result = await http.PostAsync(requestUrl, requestParameters, headers);
+                        response = await http.PostAsync(requestUrl, requestParameters, headers);
                         break;
                     case RequestTypeEnum.Put:
-                        result = await http.PutAsync(requestUrl, requestParameters, headers);
+                        response = await http.PutAsync(requestUrl, requestParameters, headers);
                         break;
                     case RequestTypeEnum.Delete:
-                        result = await http.DeleteAsync(requestUrl, headers);
+                        response = await http.DeleteAsync(requestUrl, headers);
                         break;
                 }
+                var result = HttpUtility.HtmlEncode(await response.Content.ReadAsStringAsync());
 
                 stopwatch.Stop(); //  停止监视            
                 double seconds = stopwatch.Elapsed.TotalSeconds;  //总秒数                                
                 loginfo.EndTime = DateTime.Now.yyyMMddHHssmm2();
                 loginfo.Seconds = seconds;
                 loginfo.Result = $"<span class='result'>{result.MaxLeft(1000)}</span>";
-                try
+                if (!response.IsSuccessStatusCode)
                 {
-                    //这里需要和请求方约定好返回结果约定为HttpResultModel模型
-                    var httpResult = JsonConvert.DeserializeObject<HttpResultModel>(result);
-                    if (!httpResult.IsSuccess)
-                    {
-                        loginfo.ErrorMsg = $"<span class='error'>{httpResult.ErrorMsg}</span>";
-                        await ErrorAsync(loginfo.JobName, new Exception(httpResult.ErrorMsg), JsonConvert.SerializeObject(loginfo), mailMessage);
-                        context.JobDetail.JobDataMap[Constant.EXCEPTION] = JsonConvert.SerializeObject(loginfo);
-                    }
-                    else
-                        await InformationAsync(loginfo.JobName, JsonConvert.SerializeObject(loginfo), mailMessage);
+                    loginfo.ErrorMsg = $"<span class='error'>{result.MaxLeft(3000)}</span>";
+                    await ErrorAsync(loginfo.JobName, new Exception(result.MaxLeft(3000)), JsonConvert.SerializeObject(loginfo), mailMessage);
+                    context.JobDetail.JobDataMap[Constant.EXCEPTION] = JsonConvert.SerializeObject(loginfo);
                 }
-                catch (Exception)
+                else
                 {
-                    await InformationAsync(loginfo.JobName, JsonConvert.SerializeObject(loginfo), mailMessage);
+                    try
+                    {
+                        //这里需要和请求方约定好返回结果约定为HttpResultModel模型
+                        var httpResult = JsonConvert.DeserializeObject<HttpResultModel>(result);
+                        if (!httpResult.IsSuccess)
+                        {
+                            loginfo.ErrorMsg = $"<span class='error'>{httpResult.ErrorMsg}</span>";
+                            await ErrorAsync(loginfo.JobName, new Exception(httpResult.ErrorMsg), JsonConvert.SerializeObject(loginfo), mailMessage);
+                            context.JobDetail.JobDataMap[Constant.EXCEPTION] = JsonConvert.SerializeObject(loginfo);
+                        }
+                        else
+                            await InformationAsync(loginfo.JobName, JsonConvert.SerializeObject(loginfo), mailMessage);
+                    }
+                    catch (Exception)
+                    {
+                        await InformationAsync(loginfo.JobName, JsonConvert.SerializeObject(loginfo), mailMessage);
+                    }
                 }
             }
             catch (Exception ex)
