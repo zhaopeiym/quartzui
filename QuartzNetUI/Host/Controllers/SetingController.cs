@@ -55,6 +55,7 @@ namespace Host.Controllers
         /// 获取eMail信息
         /// </summary>
         /// <returns></returns>
+        [HttpPost]
         public async Task<MailEntity> GetMailInfo()
         {
             if (mailData == null)
@@ -64,7 +65,7 @@ namespace Host.Controllers
             }
             return mailData;
         }
-        //string title, string msg, MailEntity mail = null
+        
         /// <summary>
         /// 发送邮件
         /// </summary>
@@ -72,6 +73,7 @@ namespace Host.Controllers
         /// <param name="msg"></param>
         /// <param name="mail"></param>
         /// <returns></returns>
+        [HttpPost]
         public async Task<bool> SendMail([FromBody]SendMailModel model)
         {
             try
