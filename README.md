@@ -28,11 +28,12 @@ docker run -v /fileData/quartzuifile:/app/File  --restart=unless-stopped --privi
 - 方式2（可直接通过源码部署到windows或linux平台）   
 
 ## 效果图
-![1](https://user-images.githubusercontent.com/5820324/56856538-8e4a8900-698f-11e9-8cca-e93aa4aeca53.png)
-![2](https://user-images.githubusercontent.com/5820324/56856540-9c98a500-698f-11e9-8c6c-833df4f86196.png)
-![3](https://user-images.githubusercontent.com/5820324/56856542-a1f5ef80-698f-11e9-99c3-06375faf9151.png)
-![4](https://user-images.githubusercontent.com/5820324/56856543-a28e8600-698f-11e9-8add-fed7802b71bf.png)
-![5](https://user-images.githubusercontent.com/5820324/56856544-a28e8600-698f-11e9-9806-11107901faed.png)
+![1](https://user-images.githubusercontent.com/5820324/56856558-1c267400-6990-11e9-98a8-c1bf9bd0ba3c.png)
+![2](https://user-images.githubusercontent.com/5820324/56856559-1c267400-6990-11e9-8433-4705e0c4a984.png)
+![3](https://user-images.githubusercontent.com/5820324/56856560-1cbf0a80-6990-11e9-835c-268efac70d50.png)
+![4](https://user-images.githubusercontent.com/5820324/56856561-1cbf0a80-6990-11e9-8af6-a93ad0e09740.png)
+![5](https://user-images.githubusercontent.com/5820324/56856562-1d57a100-6990-11e9-8433-5d6e1d78880a.png)
+
 
 
 
