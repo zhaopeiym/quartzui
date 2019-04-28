@@ -102,7 +102,7 @@ namespace Host
             {
                 stopwatch.Stop(); //  停止监视            
                 double seconds = stopwatch.Elapsed.TotalSeconds;  //总秒数
-                loginfo.ErrorMsg = ex.Message + " " + ex.StackTrace;
+                loginfo.ErrorMsg = $"<span class='error'>{ex.Message} {ex.StackTrace}</span>";
                 context.JobDetail.JobDataMap[Constant.EXCEPTION] = JsonConvert.SerializeObject(loginfo);
                 loginfo.Seconds = seconds;
                 await ErrorAsync(loginfo.JobName, ex, JsonConvert.SerializeObject(loginfo), mailMessage);
