@@ -13,6 +13,7 @@ https://github.com/zhaopeiym/quartzui/wiki
 - 业务代码零污染
 - 语言无关
 - 傻瓜式配置
+- 异常请求邮件通知
 
 ## 使用
 - 方式1（docker使用）
@@ -27,11 +28,11 @@ docker run -v /fileData/quartzuifile:/app/File  --restart=unless-stopped --privi
 - 方式2（可直接通过源码部署到windows或linux平台）   
 
 ## 效果图
-![1](https://user-images.githubusercontent.com/5820324/40886833-b779990e-6771-11e8-88e2-8bd52ebec39f.png)
-![2](https://user-images.githubusercontent.com/5820324/40886838-c0597d14-6771-11e8-8b77-ffd1d24b5abd.png)
-![3](https://user-images.githubusercontent.com/5820324/40886841-c9c03938-6771-11e8-941e-e82063a7cf49.png)
-![4](https://user-images.githubusercontent.com/5820324/40886843-d4b209de-6771-11e8-8b22-b9224a43a06e.png)
-
+![1](https://user-images.githubusercontent.com/5820324/56856538-8e4a8900-698f-11e9-8cca-e93aa4aeca53.png)
+![2](https://user-images.githubusercontent.com/5820324/56856540-9c98a500-698f-11e9-8c6c-833df4f86196.png)
+![3](https://user-images.githubusercontent.com/5820324/56856542-a1f5ef80-698f-11e9-99c3-06375faf9151.png)
+![4](https://user-images.githubusercontent.com/5820324/56856543-a28e8600-698f-11e9-8add-fed7802b71bf.png)
+![5](https://user-images.githubusercontent.com/5820324/56856544-a28e8600-698f-11e9-9806-11107901faed.png)
 
 
 
