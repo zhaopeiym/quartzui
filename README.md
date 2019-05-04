@@ -25,7 +25,11 @@ docker run -v /fileData/quartzuifile:/app/File  --restart=unless-stopped --privi
 2、5088为映射到主机的端口
 3、直接在浏览器 ip:5088 即可访问。（注意防火墙是否打开了5088端口，或者在主机测试 curl 127.0.0.1:5088）
 ```
-- 方式2（可直接通过源码部署到windows或linux平台）   
+- 方式2（docker部署树莓派）
+```
+docker run -v /fileData/quartzuifile:/app/File  --restart=unless-stopped --privileged=true --name quartzui -dp 5088:80 bennyzhao/quartzui:RaspberryPi
+```
+- 方式3（可直接通过源码部署到windows或linux平台） 
 
 ## 效果图
 ![1](https://user-images.githubusercontent.com/5820324/56856558-1c267400-6990-11e9-98a8-c1bf9bd0ba3c.png)
