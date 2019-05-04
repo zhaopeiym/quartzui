@@ -1,4 +1,4 @@
-#»ù´¡¾µÏñ£¨ÓÃÀ´¹¹½¨¾µÏñ£©
+#åŸºç¡€é•œåƒï¼ˆç”¨æ¥æ„å»ºé•œåƒï¼‰
 FROM microsoft/dotnet:2.1-aspnetcore-runtime AS base
 WORKDIR /app
 EXPOSE 80
@@ -6,14 +6,14 @@ ENV TZ=Asia/Shanghai
 RUN cp /usr/share/zoneinfo/Asia/Shanghai /usr/share/zoneinfo/Asia/Beijing
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 
-#±àÒë£¨ÁÙÊ±¾µÏñ£¬Ö÷ÒªÓÃÀ´±àÒë·¢²¼ÏîÄ¿£©
+#ç¼–è¯‘ï¼ˆä¸´æ—¶é•œåƒï¼Œä¸»è¦ç”¨æ¥ç¼–è¯‘å‘å¸ƒé¡¹ç›®ï¼‰
 FROM microsoft/dotnet:2.1-sdk AS publish
 WORKDIR /src
 COPY . .
 WORKDIR /src/Host
 RUN dotnet publish -c Release -o /app
 
-#¹¹½¨¾µÏñ
+#æ„å»ºé•œåƒ
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app .
