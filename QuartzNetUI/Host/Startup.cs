@@ -1,18 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Builder;
+﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using Microsoft.Extensions.PlatformAbstractions;
 using Serilog;
 using Serilog.Events;
 using Swashbuckle.AspNetCore.Swagger;
+using System.IO;
 
 namespace Host
 {
@@ -47,7 +41,7 @@ namespace Host
 #endif
             #endregion
 
-            services.AddMvc();                      
+            services.AddMvc();
 
             services.AddSwaggerGen(options =>
             {
@@ -108,6 +102,8 @@ namespace Host
             //Serilog.Extensions.Logging
             //Serilog.Sinks.RollingFile
             //Serilog.Sinks.Async
+            var fileSize = 1024 * 1024 * 10;//10M
+            var fileCount = 2;
             Log.Logger = new LoggerConfiguration()
                                  .Enrich.FromLogContext()
                                  .MinimumLevel.Debug()
@@ -116,31 +112,31 @@ namespace Host
                                  .WriteTo.Logger(lg => lg.Filter.ByIncludingOnly(p => p.Level == LogEventLevel.Debug).WriteTo.Async(
                                      a =>
                                      {
-                                         a.RollingFile("File/logs/log-{Date}-Debug.txt");
+                                         a.RollingFile("File/logs/log-{Date}-Debug.txt", fileSizeLimitBytes: fileSize, retainedFileCountLimit: fileCount);
                                      }
                                  ))
                                  .WriteTo.Logger(lg => lg.Filter.ByIncludingOnly(p => p.Level == LogEventLevel.Information).WriteTo.Async(
                                      a =>
                                      {
-                                         a.RollingFile("File/logs/log-{Date}-Information.txt");
+                                         a.RollingFile("File/logs/log-{Date}-Information.txt", fileSizeLimitBytes: fileSize, retainedFileCountLimit: fileCount);
                                      }
                                  ))
                                  .WriteTo.Logger(lg => lg.Filter.ByIncludingOnly(p => p.Level == LogEventLevel.Warning).WriteTo.Async(
                                      a =>
                                      {
-                                         a.RollingFile("File/logs/log-{Date}-Warning.txt");
+                                         a.RollingFile("File/logs/log-{Date}-Warning.txt", fileSizeLimitBytes: fileSize, retainedFileCountLimit: fileCount);
                                      }
                                  ))
                                  .WriteTo.Logger(lg => lg.Filter.ByIncludingOnly(p => p.Level == LogEventLevel.Error).WriteTo.Async(
                                      a =>
                                      {
-                                         a.RollingFile("File/logs/log-{Date}-Error.txt");
+                                         a.RollingFile("File/logs/log-{Date}-Error.txt", fileSizeLimitBytes: fileSize, retainedFileCountLimit: fileCount);
                                      }
                                  ))
                                  .WriteTo.Logger(lg => lg.Filter.ByIncludingOnly(p => p.Level == LogEventLevel.Fatal).WriteTo.Async(
                                      a =>
                                      {
-                                         a.RollingFile("File/logs/log-{Date}-Fatal.txt");
+                                         a.RollingFile("File/logs/log-{Date}-Fatal.txt", fileSizeLimitBytes: fileSize, retainedFileCountLimit: fileCount);
 
                                      }
                                  ))
@@ -148,7 +144,7 @@ namespace Host
                                  .WriteTo.Logger(lg => lg.Filter.ByIncludingOnly(p => true)).WriteTo.Async(
                                      a =>
                                      {
-                                         a.RollingFile("File/logs/log-{Date}-All.txt");
+                                         a.RollingFile("File/logs/log-{Date}-All.txt", fileSizeLimitBytes: fileSize, retainedFileCountLimit: fileCount);
                                      }
                                  )
                                 .CreateLogger();
