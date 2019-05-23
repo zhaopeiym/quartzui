@@ -61,7 +61,7 @@
     <None Update="Dockerfile[树莓派]">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="tables_sqlite.sql">
+    <None Update="Tables\tables_sqlite.sql">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>

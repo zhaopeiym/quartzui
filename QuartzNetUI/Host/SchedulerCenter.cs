@@ -30,12 +30,28 @@ namespace Host
         /// 任务调度对象
         /// </summary>
         public static readonly SchedulerCenter Instance;
+
         static SchedulerCenter()
         {
             Instance = new SchedulerCenter();
         }
 
+        IDbProvider dbProvider;
+        string driverDelegateType;
+
+        /// <summary>
+        /// 配置Scheduler 仅初始化时生效
+        /// </summary>
+        /// <param name="dbProvider"></param>
+        /// <param name="driverDelegateType"></param>
+        public void Setting(IDbProvider dbProvider, string driverDelegateType)
+        {
+            this.driverDelegateType = driverDelegateType;
+            this.dbProvider = dbProvider;
+        }
+
         private IScheduler _scheduler;
+
         /// <summary>
         /// 返回任务计划（调度器）
         /// </summary>
@@ -50,23 +66,27 @@ namespace Host
                 }
 
                 //如果不存在sqlite数据库，则创建
-                if (!File.Exists("File/sqliteScheduler.db"))
+                if (driverDelegateType.Equals(typeof(SQLiteDelegate).AssemblyQualifiedName)
+                    && !File.Exists("File/sqliteScheduler.db"))
                 {
-                    if (!Directory.Exists("File"))
-                        Directory.CreateDirectory("File");
+                    if (!Directory.Exists("File")) Directory.CreateDirectory("File");
+
                     using (var connection = new SqliteConnection("Data Source=File/sqliteScheduler.db"))
                     {
                         connection.OpenAsync().Wait();
-                        string sql = File.ReadAllTextAsync("tables_sqlite.sql").Result;
+                        string sql = File.ReadAllTextAsync("Tables/tables_sqlite.sql").Result;
                         var command = new SqliteCommand(sql, connection);
                         command.ExecuteNonQuery();
                         connection.Close();
                     }
                 }
 
-                //MySql存储
-                //DBConnectionManager.Instance.AddConnectionProvider("default", new DbProvider("MySql", "server=192.168.10.133;user id=root;password=pass;persistsecurityinfo=True;database=quartz"));
-                DBConnectionManager.Instance.AddConnectionProvider("default", new DbProvider("SQLite-Microsoft", "Data Source=File/sqliteScheduler.db"));
+                if (dbProvider == null || string.IsNullOrEmpty(driverDelegateType))
+                {
+                    throw new Exception("dbProvider or driverDelegateType is null");
+                }
+
+                DBConnectionManager.Instance.AddConnectionProvider("default", dbProvider);
                 var serializer = new JsonObjectSerializer();
                 serializer.Initialize();
                 var jobStore = new JobStoreTX
@@ -74,8 +94,7 @@ namespace Host
                     DataSource = "default",
                     TablePrefix = "QRTZ_",
                     InstanceId = "AUTO",
-                    //DriverDelegateType = typeof(MySQLDelegate).AssemblyQualifiedName, //MySql存储
-                    DriverDelegateType = typeof(SQLiteDelegate).AssemblyQualifiedName,  //SQLite存储
+                    DriverDelegateType = driverDelegateType,
                     ObjectSerializer = serializer
                 };
                 DirectSchedulerFactory.Instance.CreateScheduler("benny" + "Scheduler", "AUTO", new DefaultThreadPool(), jobStore);
@@ -166,14 +185,14 @@ namespace Host
                     };
                 }
                 else
-                {                  
+                {
                     result = new BaseResult
                     {
                         Code = 200,
                         Msg = "停止任务计划成功！"
                     };
                 }
-              
+
             }
             catch (Exception ex)
             {
@@ -332,6 +351,9 @@ namespace Host
         /// <returns></returns>          
         public async Task<bool> RemoveErrLog(string jobGroup, string jobName)
         {
+            if (!driverDelegateType.Equals(typeof(SQLiteDelegate).AssemblyQualifiedName))
+                return false;
+
             using (var connection = new SqliteConnection("Data Source=File/sqliteScheduler.db"))
             {
                 string sql = $@"SELECT

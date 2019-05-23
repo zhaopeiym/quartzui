@@ -15,9 +15,14 @@ namespace Host.Controllers
     public class JobController : Controller
     {
         private SchedulerCenter scheduler;
-        public JobController()
+
+        /// <summary>
+        /// 任务调度对象
+        /// </summary>
+        /// <param name="schedulerCenter"></param>
+        public JobController(SchedulerCenter schedulerCenter)
         {
-            scheduler = SchedulerCenter.Instance;
+            this.scheduler = schedulerCenter;
         }
 
         /// <summary>

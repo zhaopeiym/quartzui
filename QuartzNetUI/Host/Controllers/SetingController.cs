@@ -8,6 +8,9 @@ using System.Threading.Tasks;
 
 namespace Host.Controllers
 {
+    /// <summary>
+    /// 设置
+    /// </summary>
     [Route("api/[controller]/[Action]")]
     [EnableCors("AllowSameDomain")] //允许跨域 
     public class SetingController : Controller

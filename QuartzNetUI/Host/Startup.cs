@@ -3,6 +3,9 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.PlatformAbstractions;
+using Quartz;
+using Quartz.Impl.AdoJobStore;
+using Quartz.Impl.AdoJobStore.Common;
 using Serilog;
 using Serilog.Events;
 using Swashbuckle.AspNetCore.Swagger;
@@ -57,6 +60,8 @@ namespace Host
                 var xmlPath = Path.Combine(basePath, "Host.xml");
                 options.IncludeXmlComments(xmlPath);
             });
+
+            services.AddSingleton(GetScheduler());
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -148,6 +153,33 @@ namespace Host
                                      }
                                  )
                                 .CreateLogger();
+        }
+
+        private SchedulerCenter GetScheduler()
+        {
+            string dbProviderName = Configuration.GetSection("Quartz")["dbProviderName"];
+            string connectionString = Configuration.GetSection("Quartz")["connectionString"];
+
+            string driverDelegateType = string.Empty;
+
+            switch (dbProviderName)
+            {
+                case "SQLite-Microsoft":
+                    driverDelegateType = typeof(SQLiteDelegate).AssemblyQualifiedName; break;
+                case "MySql":
+                    driverDelegateType = typeof(MySQLDelegate).AssemblyQualifiedName; break;
+                case "Oracle":
+                    driverDelegateType = typeof(OracleDelegate).AssemblyQualifiedName; break;
+                case "MSSQL":
+                    driverDelegateType = typeof(SqlServerDelegate).AssemblyQualifiedName; break;
+                default:
+                    throw new System.Exception("dbProviderName unreasonable");
+            }
+
+            SchedulerCenter schedulerCenter = SchedulerCenter.Instance;
+            schedulerCenter.Setting(new DbProvider(dbProviderName, connectionString), driverDelegateType);
+
+            return schedulerCenter;
         }
     }
 }
