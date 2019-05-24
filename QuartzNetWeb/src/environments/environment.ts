@@ -5,5 +5,5 @@
 
 export const environment = {
   production: false,
-  baseUrl: "http://localhost:52725"//   开发的时候可以先设置本地接口地址
+  baseUrl: "http://localhost:52726"//   开发的时候可以先设置本地接口地址
 };
