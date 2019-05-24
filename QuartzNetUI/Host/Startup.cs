@@ -165,13 +165,19 @@ namespace Host
             switch (dbProviderName)
             {
                 case "SQLite-Microsoft":
+                case "SQLite":
                     driverDelegateType = typeof(SQLiteDelegate).AssemblyQualifiedName; break;
                 case "MySql":
                     driverDelegateType = typeof(MySQLDelegate).AssemblyQualifiedName; break;
-                case "Oracle":
+                case "OracleODPManaged":
                     driverDelegateType = typeof(OracleDelegate).AssemblyQualifiedName; break;
-                case "MSSQL":
+                case "SQLServer":
+                case "SQLServerMOT":
                     driverDelegateType = typeof(SqlServerDelegate).AssemblyQualifiedName; break;
+                case "Npgsql":
+                    driverDelegateType = typeof(PostgreSQLDelegate).AssemblyQualifiedName; break;
+                case "Firebird":
+                    driverDelegateType = typeof(FirebirdDelegate).AssemblyQualifiedName; break;
                 default:
                     throw new System.Exception("dbProviderName unreasonable");
             }

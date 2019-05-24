@@ -95,7 +95,7 @@ namespace Host
                     TablePrefix = "QRTZ_",
                     InstanceId = "AUTO",
                     DriverDelegateType = driverDelegateType,
-                    ObjectSerializer = serializer
+                    ObjectSerializer = serializer,
                 };
                 DirectSchedulerFactory.Instance.CreateScheduler("benny" + "Scheduler", "AUTO", new DefaultThreadPool(), jobStore);
                 _scheduler = SchedulerRepository.Instance.Lookup("benny" + "Scheduler").Result;
