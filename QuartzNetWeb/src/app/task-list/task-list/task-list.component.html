@@ -102,8 +102,8 @@
       <nz-form-item>
         <nz-form-label [nzSpan]="5" nzFor="headers">请求头 </nz-form-label>
         <nz-form-control [nzSpan]="15">
-          <input formControlName="headers" title='格式：{"key":"value","key2":"value2"}' (keyup.enter)="searchData()" type="{{isShwoPass?'text':'password'}}"
-            placeholder="请输入Headers信息，如：Cookies、授权认证等" nz-input [(ngModel)]="jobInfoEntity.headers" />
+          <textarea formControlName="headers" title='格式：{"key":"value","key2":"value2"}'
+            placeholder="请输入Headers信息，如：Cookies、授权认证等" nz-input [(ngModel)]="jobInfoEntity.headers" ></textarea>
         </nz-form-control>
       </nz-form-item>
 
