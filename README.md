@@ -2,6 +2,8 @@
 [![996.icu](https://img.shields.io/badge/link-996.icu-red.svg)](https://996.icu)
 [![GitHub license](https://img.shields.io/github/license/alienwow/SnowLeopard.svg)](https://github.com/zhaopeiym/quartzui/blob/master/LICENSE)
 
+## 注意：请不要跑在IIS上，因为IIS会自动回收。建议使用docker运行，或者直接用命令dotnet Host.dll。
+
 ## 说明文档 
 https://github.com/zhaopeiym/quartzui/wiki  
 
@@ -14,8 +16,6 @@ https://github.com/zhaopeiym/quartzui/wiki
 - 语言无关
 - 傻瓜式配置
 - 异常请求邮件通知
-
-## 注意：请不要跑在IIS上，因为IIS会自动回收。建议使用docker运行，或者直接用命令dotnet Host.dll。
 
 ## 使用
 - 方式1（docker使用）
