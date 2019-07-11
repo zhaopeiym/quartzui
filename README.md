@@ -15,6 +15,8 @@ https://github.com/zhaopeiym/quartzui/wiki
 - 傻瓜式配置
 - 异常请求邮件通知
 
+## 注意：请不要跑在IIS上，因为IIS会自动回收。建议使用docker运行，或者直接用命令dotnet Host.dll。
+
 ## 使用
 - 方式1（docker使用）
 ```
