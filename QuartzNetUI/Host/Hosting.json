@@ -1,0 +1,3 @@
+{
+  "server.urls": "http://*:8501;http://localhost:8502"
+}

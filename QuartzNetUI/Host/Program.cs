@@ -14,12 +14,17 @@ namespace Host
     {
         public static void Main(string[] args)
         {
-            BuildWebHost(args).Run();
+            IConfigurationRoot configuration = new ConfigurationBuilder().SetBasePath(Environment.CurrentDirectory)
+                                           .AddJsonFile("Hosting.json")
+                                           .Build();
+            string url = configuration["server.urls"];
+            CreateWebHostBuilder(args).UseUrls(url).Build().Run();
         }
 
-        public static IWebHost BuildWebHost(string[] args) =>
-            WebHost.CreateDefaultBuilder(args)
-                .UseStartup<Startup>()
-                .Build();
+        public static IWebHostBuilder CreateWebHostBuilder(string[] args)
+        {
+            return WebHost.CreateDefaultBuilder(args)
+                    .UseStartup<Startup>();
+        }
     }
 }
