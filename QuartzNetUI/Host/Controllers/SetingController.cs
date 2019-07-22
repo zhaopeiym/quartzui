@@ -3,7 +3,9 @@ using Host.Model;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 using MimeKit;
+using NETCore.Encrypt;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System.Threading.Tasks;
 
 namespace Host.Controllers
@@ -25,7 +27,25 @@ namespace Host.Controllers
         public async Task<bool> SaveMailInfo([FromBody]MailEntity mailEntity)
         {
             mailData = mailEntity;
-            await System.IO.File.WriteAllTextAsync(filePath, JsonConvert.SerializeObject(mailEntity));
+            //加密邮件信息
+            #region 生成密钥及向量
+            var aseKey = EncryptProvider.CreateAesKey();
+            var key = aseKey.Key;
+            var iv = aseKey.IV;
+            #endregion
+
+            #region 加密邮件信息并组织Json数据
+            var t1 = JsonConvert.SerializeObject(mailEntity);
+            var encrypted = EncryptProvider.AESEncrypt(EncryptProvider.AESEncrypt(t1, key), key, iv);
+            var t2 = new
+            {
+                mail = encrypted,
+                pwd = key,
+                pwd1 = iv,
+            };
+            #endregion
+
+            await System.IO.File.WriteAllTextAsync(filePath, JsonConvert.SerializeObject(t2));
             return true;
         }
 
@@ -60,8 +80,17 @@ namespace Host.Controllers
         {
             if (mailData == null)
             {
-                var mail = await System.IO.File.ReadAllTextAsync(filePath);
-                mailData = JsonConvert.DeserializeObject<MailEntity>(mail);
+                #region 从文件中取出对应的值并解密
+                var t2 = await System.IO.File.ReadAllTextAsync(filePath);
+                JObject o = JObject.Parse(t2);
+                var pwd = o["pwd"].ToString();
+                var pwd1 = o["pwd1"].ToString();
+                var t1 = o["mail"].ToString();
+                var decrypted = EncryptProvider.AESDecrypt(EncryptProvider.AESDecrypt(t1, pwd, pwd1), pwd);
+                #endregion 从文件中取出对应的值并解密
+
+                //var mail = await System.IO.File.ReadAllTextAsync(filePath);
+                mailData = JsonConvert.DeserializeObject<MailEntity>(decrypted);
             }
             return mailData;
         }
