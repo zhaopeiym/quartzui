@@ -1,15 +1,15 @@
-﻿using Microsoft.AspNetCore.Builder;
+﻿using System.Collections.Generic;
+using System.IO;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.PlatformAbstractions;
-using Quartz;
 using Quartz.Impl.AdoJobStore;
 using Quartz.Impl.AdoJobStore.Common;
 using Serilog;
 using Serilog.Events;
 using Swashbuckle.AspNetCore.Swagger;
-using System.IO;
 
 namespace Host
 {
@@ -29,19 +29,20 @@ namespace Host
             LogConfig();
 
             #region 跨域     
-#if DEBUG
             services.AddCors(options =>
-               options.AddPolicy("AllowSameDomain",
-                    builder => builder.WithOrigins("https://*", "http://*")
-                    .AllowAnyMethod()
-                    .AllowAnyHeader()
-                    .AllowAnyOrigin()    //允许任何来源的主机访问
-                    .AllowCredentials()  //指定处理cookie
-                    )
-           );
-#else
-             services.AddCors(options => options.AddPolicy("AllowSameDomain", builder => { }));
-#endif
+            {
+                options.AddPolicy("AllowSameDomain", policyBuilder =>
+                {
+                    policyBuilder.AllowAnyHeader()
+                        .AllowAnyMethod()
+                        //.WithMethods("GET", "POST")
+                        .AllowCredentials();//指定处理cookie
+
+                    var cfg = Configuration.GetSection("AllowedHosts").Get<List<string>>();
+                    if (cfg == null || cfg.Contains("*")) policyBuilder.AllowAnyOrigin(); //允许任何来源的主机访问
+                    else policyBuilder.WithOrigins(cfg.ToArray()); //允许类似http://localhost:8080等主机访问
+                });
+            });
             #endregion
 
             services.AddMvc();
