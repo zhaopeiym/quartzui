@@ -1,8 +1,13 @@
-﻿using Dapper;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Threading.Tasks;
 using Host.Common;
 using Host.Entity;
+using Host.Repositories;
 using Microsoft.Data.Sqlite;
-using Newtonsoft.Json.Linq;
+using Microsoft.Extensions.Configuration;
 using Quartz;
 using Quartz.Impl;
 using Quartz.Impl.AdoJobStore;
@@ -12,12 +17,6 @@ using Quartz.Impl.Triggers;
 using Quartz.Simpl;
 using Quartz.Util;
 using Serilog;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Host
 {
@@ -199,7 +198,7 @@ namespace Host
                 result = new BaseResult
                 {
                     Code = 505,
-                    Msg = "停止任务计划失败"
+                    Msg = "停止任务计划失败" + ex.Message
                 };
             }
             return result;
@@ -272,8 +271,7 @@ namespace Host
         /// <summary>
         /// 立即执行
         /// </summary>
-        /// <param name="jobGroup"></param>
-        /// <param name="jobName"></param>
+        /// <param name="jobKey"></param>
         /// <returns></returns>
         public async Task<bool> TriggerJobAsync(JobKey jobKey)
         {
@@ -351,30 +349,11 @@ namespace Host
         /// <returns></returns>          
         public async Task<bool> RemoveErrLog(string jobGroup, string jobName)
         {
-            if (!driverDelegateType.Equals(typeof(SQLiteDelegate).AssemblyQualifiedName))
-                return false;
+            ILogRepositorie logRepositorie = LogRepositorieFactory.CreateLogRepositorie(driverDelegateType, dbProvider);
 
-            using (var connection = new SqliteConnection("Data Source=File/sqliteScheduler.db"))
-            {
-                string sql = $@"SELECT
-	                                JOB_DATA
-                                FROM
-	                                QRTZ_JOB_DETAILS
-                                WHERE
-	                                JOB_NAME = @jobName
-                                AND JOB_GROUP = @jobGroup";
+            if (logRepositorie == null) return false;
 
-                var byteArray = await connection.ExecuteScalarAsync<byte[]>(sql, new { jobName, jobGroup });
-                var jsonStr = Encoding.Default.GetString(byteArray);
-                JObject source = JObject.Parse(jsonStr);
-                source.Remove("Exception");//移除异常日志 
-                var modifySql = $@"UPDATE QRTZ_JOB_DETAILS
-                                    SET JOB_DATA = @jobData
-                                    WHERE
-	                                    JOB_NAME = @jobName
-                                    AND JOB_GROUP = @jobGroup;";
-                await connection.ExecuteAsync(modifySql, new { jobName, jobGroup, jobData = source.ToString() });
-            }
+            await logRepositorie.RemoveErrLogAsync(jobGroup, jobName);
 
             var jobKey = new JobKey(jobName, jobGroup);
             var jobDetail = await Scheduler.GetJobDetail(jobKey);
@@ -466,10 +445,13 @@ namespace Host
                .WithIdentity(entity.JobName, entity.JobGroup)
                .StartAt(entity.BeginTime)//开始时间
                .EndAt(entity.EndTime)//结束数据
-               .WithSimpleSchedule(x => x
-                   .WithIntervalInSeconds(entity.IntervalSecond.Value)//执行时间间隔，单位秒
-                   .WithRepeatCount(entity.RunTimes.Value))//执行次数、默认从0开始
-                   .ForJob(entity.JobName, entity.JobGroup)//作业名称
+               .WithSimpleSchedule(x =>
+               {
+                   x.WithIntervalInSeconds(entity.IntervalSecond.Value)//执行时间间隔，单位秒
+                        .WithRepeatCount(entity.RunTimes.Value)//执行次数、默认从0开始
+                        .WithMisfireHandlingInstructionFireNow();
+               })
+               .ForJob(entity.JobName, entity.JobGroup)//作业名称
                .Build();
             }
             else
@@ -478,10 +460,13 @@ namespace Host
                .WithIdentity(entity.JobName, entity.JobGroup)
                .StartAt(entity.BeginTime)//开始时间
                .EndAt(entity.EndTime)//结束数据
-               .WithSimpleSchedule(x => x
-                   .WithIntervalInSeconds(entity.IntervalSecond.Value)//执行时间间隔，单位秒
-                   .RepeatForever())//无限循环
-                   .ForJob(entity.JobName, entity.JobGroup)//作业名称
+               .WithSimpleSchedule(x =>
+               {
+                   x.WithIntervalInSeconds(entity.IntervalSecond.Value)//执行时间间隔，单位秒
+                        .RepeatForever()//无限循环
+                        .WithMisfireHandlingInstructionFireNow();
+               })
+               .ForJob(entity.JobName, entity.JobGroup)//作业名称
                .Build();
             }
 
@@ -496,10 +481,11 @@ namespace Host
         {
             // 作业触发器
             return TriggerBuilder.Create()
+
                    .WithIdentity(entity.JobName, entity.JobGroup)
                    .StartAt(entity.BeginTime)//开始时间
                    .EndAt(entity.EndTime)//结束时间
-                   .WithCronSchedule(entity.Cron)//指定cron表达式
+                   .WithCronSchedule(entity.Cron, cronScheduleBuilder => cronScheduleBuilder.WithMisfireHandlingInstructionFireAndProceed())//指定cron表达式
                    .ForJob(entity.JobName, entity.JobGroup)//作业名称
                    .Build();
         }
