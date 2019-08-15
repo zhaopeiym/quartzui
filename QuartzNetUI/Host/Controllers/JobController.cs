@@ -92,8 +92,7 @@ namespace Host.Controllers
         /// <summary>
         /// 立即执行
         /// </summary>
-        /// <param name="jobGroup"></param>
-        /// <param name="jobName"></param>
+        /// <param name="job"></param>
         /// <returns></returns>
         [HttpPost]
         public async Task<bool> TriggerJob([FromBody]JobKey job)

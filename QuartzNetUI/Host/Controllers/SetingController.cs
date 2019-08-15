@@ -68,13 +68,11 @@ namespace Host.Controllers
             }
             return mailData;
         }
-        
+
         /// <summary>
         /// 发送邮件
         /// </summary>
-        /// <param name="title"></param>
-        /// <param name="msg"></param>
-        /// <param name="mail"></param>
+        /// <param name="model"></param>
         /// <returns></returns>
         [HttpPost]
         public async Task<bool> SendMail([FromBody]SendMailModel model)

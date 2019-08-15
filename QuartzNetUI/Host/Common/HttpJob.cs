@@ -37,7 +37,7 @@ namespace Host
 
             var loginfo = new LogInfoModel();
             loginfo.Url = requestUrl;
-            loginfo.BeginTime = DateTime.Now.yyyMMddHHssmm2();
+            loginfo.BeginTime = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
             loginfo.RequestType = requestType.ToString();
             loginfo.Parameters = requestParameters;
             loginfo.JobName = $"{context.JobDetail.Key.Group}.{context.JobDetail.Key.Name}";
@@ -68,7 +68,7 @@ namespace Host
 
                 stopwatch.Stop(); //  停止监视            
                 double seconds = stopwatch.Elapsed.TotalSeconds;  //总秒数                                
-                loginfo.EndTime = DateTime.Now.yyyMMddHHssmm2();
+                loginfo.EndTime = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
                 loginfo.Seconds = seconds;
                 loginfo.Result = $"<span class='result'>{result.MaxLeft(1000)}</span>";
                 if (!response.IsSuccessStatusCode)

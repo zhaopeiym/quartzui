@@ -154,8 +154,8 @@ namespace Host
         /// <summary>
         /// Delete请求
         /// </summary>
-        /// <param name="url">url地址</param>
-        /// <param name="authorization">webapi做用户认证</param>
+        /// <param name="url"></param>
+        /// <param name="headers">webapi做用户认证</param>
         /// <returns></returns>
         public async Task<HttpResponseMessage> DeleteAsync(string url, Dictionary<string, string> headers = null)
         {
