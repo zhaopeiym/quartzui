@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -39,8 +40,10 @@ namespace Host
                         .AllowCredentials();//指定处理cookie
 
                     var cfg = Configuration.GetSection("AllowedHosts").Get<List<string>>();
-                    if (cfg == null || cfg.Contains("*")) policyBuilder.AllowAnyOrigin(); //允许任何来源的主机访问
-                    else policyBuilder.WithOrigins(cfg.ToArray()); //允许类似http://localhost:8080等主机访问
+                    if (cfg?.Contains("*") ?? false)
+                        policyBuilder.AllowAnyOrigin(); //允许任何来源的主机访问
+                    else if (cfg?.Any() ?? false)
+                        policyBuilder.WithOrigins(cfg.ToArray()); //允许类似http://localhost:8080等主机访问
                 });
             });
             #endregion
@@ -93,6 +96,9 @@ namespace Host
             app.UseDefaultFiles();
             app.UseStaticFiles();
 
+            //https://docs.microsoft.com/en-us/aspnet/core/security/cors?view=aspnetcore-3.0
+            app.UseCors("AllowSameDomain");
+
             app.UseSwagger();
             app.UseSwaggerUI(c =>
             {
@@ -102,7 +108,7 @@ namespace Host
             app.UseRouting();
             app.UseAuthorization();
             app.UseEndpoints(endpoints =>
-            {              
+            {
                 endpoints.MapControllers();
             });
         }
