@@ -84,3 +84,16 @@ form nz-tag {
 ::ng-deep span.result {
   color: #0094ff;
 }
+
+
+::ng-deep .ant-btn-danger {
+  color: #f5222d;
+  background-color: #f5f5f5;
+  border-color: #d9d9d9;
+  text-shadow: initial;
+  box-shadow: initial;
+}
+
+::ng-deep .ant-btn-danger:hover { 
+  background-color: #FF4D4F; 
+}

@@ -10,6 +10,7 @@ const routes: Routes = [
       {
         path: '',
         loadChildren: "app/task-list/task-list.module#TaskListModule"
+        // loadChildren: () => import('app/task-list/task-list.module').then(m => m.TaskListModule)      
       },
       {
         path: 'seting',
