@@ -10,7 +10,7 @@ import { TaskListComponent } from './task-list/task-list.component';
   imports: [
     CommonModule,
     TaskListRoutingModule,
-    NgZorroAntdModule.forRoot(),
+    NgZorroAntdModule,
     FormsModule,
     ReactiveFormsModule
   ],

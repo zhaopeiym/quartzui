@@ -10,7 +10,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
   imports: [
     CommonModule,
     LayoutRoutingModule,
-    NgZorroAntdModule.forRoot(),
+    NgZorroAntdModule,
     FormsModule,
     ReactiveFormsModule
   ],

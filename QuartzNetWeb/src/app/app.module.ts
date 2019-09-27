@@ -21,7 +21,7 @@ import { AppRoutingModule } from './app-routing.module';
     HttpClientModule,
     ReactiveFormsModule,
     BrowserAnimationsModule,
-    NgZorroAntdModule.forRoot()
+    NgZorroAntdModule
   ],
   providers: [
     { provide: NZ_I18N, useValue: zh_CN },// 这里设置当前全局使用的语言包
