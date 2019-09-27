@@ -23,6 +23,7 @@
     "@angular/platform-browser-dynamic": "^8.2.8",
     "@angular/router": "^8.2.8",
     "core-js": "^2.4.1",
+    "handlebars": "^4.0.14",
     "ng-zorro-antd": "^8.3.1",
     "rxjs": "^6.5.3",
     "rxjs-compat": "^6.2.2",
