@@ -56,8 +56,12 @@ div::-webkit-scrollbar-thumb {
 }
 
 form nz-tag {
-  line-height: 39px;
+  /* line-height: 39px;
+  margin-left: 5px; */
+
+  line-height: 20px;
   margin-left: 5px;
+  margin-top: 8px;
 }
 
 ::ng-deep .ant-form-item {
@@ -94,6 +98,12 @@ form nz-tag {
   box-shadow: initial;
 }
 
-::ng-deep .ant-btn-danger:hover { 
-  background-color: #FF4D4F; 
+::ng-deep .ant-btn-danger:hover {
+  background-color: #FF4D4F;
+}
+
+.yanjing {
+  padding: 10px;
+  width: 40px;
+  height: 40px;
 }
