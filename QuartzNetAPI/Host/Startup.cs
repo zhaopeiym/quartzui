@@ -49,7 +49,7 @@ namespace Host
             #endregion
 
             //services.AddMvc();
-            services.AddControllersWithViews();
+            services.AddControllersWithViews().AddNewtonsoftJson();
 
             services.AddSwaggerGen(options =>
             {

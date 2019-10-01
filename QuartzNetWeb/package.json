@@ -22,6 +22,8 @@
     "@angular/platform-browser": "^8.2.8",
     "@angular/platform-browser-dynamic": "^8.2.8",
     "@angular/router": "^8.2.8",
+    "@ngx-translate/core": "^11.0.1",
+    "@ngx-translate/http-loader": "^4.0.0",
     "core-js": "^2.4.1",
     "handlebars": "^4.3.3",
     "ng-zorro-antd": "^8.3.1",

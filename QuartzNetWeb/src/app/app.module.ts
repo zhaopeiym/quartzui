@@ -7,9 +7,14 @@ import { NgZorroAntdModule, NZ_I18N, zh_CN } from 'ng-zorro-antd';
 
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { ReactiveFormsModule, FormsModule } from '@angular/forms';
-import { HttpClientModule } from '@angular/common/http';
-import { AppRoutingModule } from './app-routing.module'; 
+import { HttpClientModule, HttpClient } from '@angular/common/http';
+import { AppRoutingModule } from './app-routing.module';
 
+import { TranslateModule, TranslateLoader } from '@ngx-translate/core';
+import { TranslateHttpLoader } from '@ngx-translate/http-loader';
+export function HttpLoaderFactory(http: HttpClient) {
+  return new TranslateHttpLoader(http);
+}
 @NgModule({
   declarations: [
     AppComponent
@@ -21,7 +26,14 @@ import { AppRoutingModule } from './app-routing.module';
     HttpClientModule,
     ReactiveFormsModule,
     BrowserAnimationsModule,
-    NgZorroAntdModule
+    NgZorroAntdModule,
+    TranslateModule.forRoot({
+      loader: {
+        provide: TranslateLoader,
+        useFactory: HttpLoaderFactory,
+        deps: [HttpClient]
+      }
+    })
   ],
   providers: [
     { provide: NZ_I18N, useValue: zh_CN },// 这里设置当前全局使用的语言包
