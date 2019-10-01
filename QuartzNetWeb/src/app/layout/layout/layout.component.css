@@ -21,3 +21,7 @@ nz-layout {
   min-height: 100%;
   height: initial !important;
 }
+
+::ng-deep .ant-modal {
+  width: 610px !important;
+}
