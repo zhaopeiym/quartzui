@@ -8,3 +8,4 @@
 /QuartzNetAPI/Host/File/Mail.txt
 /QuartzNetAPI/Host/RaspberryPi
 /QuartzNetWeb/.vscode
+/QuartzNetAPI/Host/File/sqliteScheduler.db-journal
