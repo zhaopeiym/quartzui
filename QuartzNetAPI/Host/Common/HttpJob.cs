@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using System.Web;
 using Talk.Extensions;
@@ -18,8 +19,26 @@ namespace Host
     [PersistJobDataAfterExecution]
     public class HttpJob : IJob
     {
+        private readonly IHttpClientFactory httpClientFactory;
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="httpClientFactory"></param>
+        public HttpJob(IHttpClientFactory httpClientFactory)
+        {
+            this.httpClientFactory = httpClientFactory;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="context"></param>
+        /// <returns></returns>
         public async Task Execute(IJobExecutionContext context)
         {
+            Console.WriteLine($"{DateTime.Now.ToLongTimeString()} 开始执行 {context.JobDetail.Key.Group}:{context.JobDetail.Key.Name}");
+            
             var maxLogCount = 20;//最多保存日志数量
             var warnTime = 20;//接口请求超过多少秒记录警告日志         
             //获取相关参数
@@ -48,26 +67,34 @@ namespace Host
 
             try
             {
-                var http = HttpHelper.Instance;
+                var client = httpClientFactory.CreateClient("polly");
+                foreach (var item in headers ?? new Dictionary<string, string>())
+                {
+                    client.DefaultRequestHeaders.Remove(item.Key);
+                    client.DefaultRequestHeaders.TryAddWithoutValidation(item.Key, item.Value);
+                }
+
+                StringContent content = new StringContent(requestParameters ?? "");
+                content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
                 switch (requestType)
                 {
                     case RequestTypeEnum.Get:
-                        response = await http.GetAsync(requestUrl, headers);
+                        response = await client.GetAsync(requestUrl);
                         break;
                     case RequestTypeEnum.Post:
-                        response = await http.PostAsync(requestUrl, requestParameters, headers);
+                        response = await client.PostAsync(requestUrl, content);
                         break;
                     case RequestTypeEnum.Put:
-                        response = await http.PutAsync(requestUrl, requestParameters, headers);
+                        response = await client.PutAsync(requestUrl, content);
                         break;
                     case RequestTypeEnum.Delete:
-                        response = await http.DeleteAsync(requestUrl, headers);
+                        response = await client.DeleteAsync(requestUrl);
                         break;
                 }
                 var result = HttpUtility.HtmlEncode(await response.Content.ReadAsStringAsync());
 
                 stopwatch.Stop(); //  停止监视            
-                double seconds = stopwatch.Elapsed.TotalSeconds;  //总秒数                                
+                double seconds = stopwatch.Elapsed.TotalSeconds;  //总秒数           
                 loginfo.EndTime = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
                 loginfo.Seconds = seconds;
                 loginfo.Result = $"<span class='result'>{result.MaxLeft(1000)}</span>";
@@ -100,7 +127,7 @@ namespace Host
             }
             catch (Exception ex)
             {
-                stopwatch.Stop(); //  停止监视            
+                stopwatch.Stop(); //  停止监视
                 double seconds = stopwatch.Elapsed.TotalSeconds;  //总秒数
                 loginfo.ErrorMsg = $"<span class='error'>{ex.Message} {ex.StackTrace}</span>";
                 context.JobDetail.JobDataMap[Constant.EXCEPTION] = JsonConvert.SerializeObject(loginfo);
@@ -109,6 +136,7 @@ namespace Host
             }
             finally
             {
+
                 logs.Add($"<p>{JsonConvert.SerializeObject(loginfo)}</p>");
                 context.JobDetail.JobDataMap[Constant.LOGLIST] = logs;
                 double seconds = stopwatch.Elapsed.TotalSeconds;  //总秒数

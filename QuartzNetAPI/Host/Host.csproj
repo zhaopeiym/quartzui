@@ -44,6 +44,8 @@
     <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="3.0.0" />    
     <PackageReference Include="Microsoft.Data.SQLite" Version="3.0.0" />    
     <PackageReference Include="Microsoft.Extensions.PlatformAbstractions" Version="1.1.0" />
+    <PackageReference Include="Microsoft.Extensions.Http.Polly" Version="3.1.6" />
+    <PackageReference Include="MySql.Data" Version="8.0.21" />
     <PackageReference Include="Oracle.ManagedDataAccess.Core" Version="2.19.31" />
     <PackageReference Include="Quartz" Version="3.0.7" />
     <PackageReference Include="Quartz.Serialization.Json" Version="3.0.7" />
