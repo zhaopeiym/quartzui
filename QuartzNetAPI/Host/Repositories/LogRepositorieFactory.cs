@@ -33,34 +33,35 @@ namespace Host.Repositories
         /// <summary>
         /// 
         /// </summary>
+        /// <param name="schedulerName"></param>
         /// <returns></returns>
-        public ILogRepositorie CreateLogRepositorie()
+        public ILogRepositorie CreateLogRepositorie(string schedulerName)
         {
             string dataSourceName = quartzOptions.TryGetAndReturn("quartz.jobStore.dataSource") ?? "default";
             string tablePrefix = quartzOptions.TryGetAndReturn("quartz.jobStore.tablePrefix") ?? "QRTZ_";
             string provider = quartzOptions.TryGetAndReturn("quartz.dataSource.default.provider") ?? "";
             if (provider.IndexOf("Oracle", StringComparison.CurrentCultureIgnoreCase) > -1)
             {
-                return new LogRepositorieOracle(dataSourceName, tablePrefix);
+                return new LogRepositorieOracle(dataSourceName, tablePrefix, schedulerName);
             }
-            return new LogRepositorieDefault(dataSourceName, tablePrefix);
+            return new LogRepositorieDefault(dataSourceName, tablePrefix, schedulerName);
         }
 
-    //    public static ILogRepositorie CreateLogRepositorie(string driverDelegateType, IDbProvider dbProvider)
-    //    {
+        //    public static ILogRepositorie CreateLogRepositorie(string driverDelegateType, IDbProvider dbProvider)
+        //    {
 
-    //        if (driverDelegateType == typeof(SQLiteDelegate).AssemblyQualifiedName)
-    //        {
-    //            return new LogRepositorieSQLite();
-    //        }
-    //        else if (driverDelegateType == typeof(OracleDelegate).AssemblyQualifiedName)
-    //        {
-    //            return new LogRepositorieOracle(dbProvider);
-    //        }
-    //        else
-    //        {
-    //            return null;
-    //        }
-    //    }
+        //        if (driverDelegateType == typeof(SQLiteDelegate).AssemblyQualifiedName)
+        //        {
+        //            return new LogRepositorieSQLite();
+        //        }
+        //        else if (driverDelegateType == typeof(OracleDelegate).AssemblyQualifiedName)
+        //        {
+        //            return new LogRepositorieOracle(dbProvider);
+        //        }
+        //        else
+        //        {
+        //            return null;
+        //        }
+        //    }
     }
 }

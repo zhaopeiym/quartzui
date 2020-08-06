@@ -216,7 +216,10 @@ namespace Host
         public async Task<List<string>> GetJobLogsAsync(JobKey jobKey)
         {
             var jobDetail = await scheduler.GetJobDetail(jobKey);
-            return jobDetail.JobDataMap[Constant.LOGLIST] as List<string>;
+            var logs = (jobDetail.JobDataMap[Constant.LOGLIST] as List<string>)?? new List<string>();
+            logs.Reverse();
+            return logs;
+
         }
 
         /// <summary>
@@ -278,7 +281,7 @@ namespace Host
         /// <returns></returns>          
         public async Task<bool> RemoveErrLog(string jobGroup, string jobName)
         {
-            var logRepositorie = logRepositorieFactory.CreateLogRepositorie();
+            var logRepositorie = logRepositorieFactory.CreateLogRepositorie(scheduler.SchedulerName);
             if (logRepositorie == null) return false;
             await logRepositorie.RemoveErrLogAsync(jobGroup, jobName);
 

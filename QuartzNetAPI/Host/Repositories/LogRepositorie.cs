@@ -16,6 +16,7 @@ namespace Host.Repositories
     public class LogRepositorieDefault : ILogRepositorie
     {
         private readonly string dataSourceName;
+        private readonly string schedulerName;
         private readonly string tablePrefix;
 
         /// <summary>
@@ -23,10 +24,12 @@ namespace Host.Repositories
         /// </summary>
         /// <param name="dataSourceName"></param>
         /// <param name="tablePrefix"></param>
-        public LogRepositorieDefault(string dataSourceName, string tablePrefix)
+        /// <param name="schedulerName"></param>
+        public LogRepositorieDefault(string dataSourceName, string tablePrefix, string schedulerName)
         {
             this.dataSourceName = dataSourceName;
             this.tablePrefix = tablePrefix;
+            this.schedulerName = schedulerName;
         }
 
         /// <summary>
@@ -45,9 +48,10 @@ namespace Host.Repositories
 	                                {tablePrefix}JOB_DETAILS
                                 WHERE
 	                                JOB_NAME = @jobName
+	                            AND SCHED_NAME = @schedulerName
                                 AND JOB_GROUP = @jobGroup";
 
-                var byteArray = await connection.ExecuteScalarAsync<byte[]>(sql, new { jobName, jobGroup });
+                var byteArray = await connection.ExecuteScalarAsync<byte[]>(sql, new { jobName, jobGroup, schedulerName });
                 var jsonStr = Encoding.Default.GetString(byteArray);
                 JObject source = JObject.Parse(jsonStr);
                 source.Remove("Exception");//移除异常日志 
@@ -55,8 +59,9 @@ namespace Host.Repositories
                                     SET JOB_DATA = @jobData
                                     WHERE
 	                                    JOB_NAME = @jobName
+	                                AND SCHED_NAME = @schedulerName
                                     AND JOB_GROUP = @jobGroup";
-                await connection.ExecuteAsync(modifySql, new { jobName, jobGroup, jobData = source.ToString() });
+                await connection.ExecuteAsync(modifySql, new { jobName, jobGroup, schedulerName, jobData = source.ToString() });
                 return true;
             }
         }
@@ -69,16 +74,19 @@ namespace Host.Repositories
     {
         private readonly string dataSourceName;
         private readonly string tablePrefix;
+        private readonly string schedulerName;
 
         /// <summary>
         /// 
         /// </summary>
         /// <param name="dataSourceName"></param>
         /// <param name="tablePrefix"></param>
-        public LogRepositorieOracle(string dataSourceName, string tablePrefix)
+        /// <param name="schedulerName"></param>
+        public LogRepositorieOracle(string dataSourceName, string tablePrefix, string schedulerName)
         {
             this.dataSourceName = dataSourceName;
             this.tablePrefix = tablePrefix;
+            this.schedulerName = schedulerName;
         }
 
         public async Task<bool> RemoveErrLogAsync(string jobGroup, string jobName)
@@ -93,9 +101,10 @@ namespace Host.Repositories
 	                                {tablePrefix}JOB_DETAILS
                                 WHERE
 	                                JOB_NAME = :jobName
+	                            AND SCHED_NAME = :schedulerName
                                 AND JOB_GROUP = :jobGroup";
 
-                    var byteArray = await connection.ExecuteScalarAsync<byte[]>(sql, new { jobName, jobGroup });
+                    var byteArray = await connection.ExecuteScalarAsync<byte[]>(sql, new { jobName, jobGroup, schedulerName });
                     var jsonStr = Encoding.UTF8.GetString(byteArray);
                     JObject source = JObject.Parse(jsonStr);
                     source.Remove("Exception");//移除异常日志 
@@ -103,13 +112,15 @@ namespace Host.Repositories
                                     SET JOB_DATA = :jobData
                                     WHERE
 	                                    JOB_NAME = :jobName
+	                                AND SCHED_NAME = :schedulerName
                                     AND JOB_GROUP = :jobGroup";
-                    await connection.ExecuteAsync(modifySql, new { jobName, jobGroup, jobData = Encoding.UTF8.GetBytes(source.ToString()) });
+                    await connection.ExecuteAsync(modifySql, new { jobName, jobGroup, schedulerName, jobData = Encoding.UTF8.GetBytes(source.ToString()) });
                 }
                 return true;
             }
             catch (Exception ex)
             {
+                System.Console.WriteLine(ex.Message);
                 return false;
             }
         }
