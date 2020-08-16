@@ -1,9 +1,13 @@
-using Host.Common;
-using Host.Entity;
-using Newtonsoft.Json;
-using Quartz;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+
+using Host.Common;
+using Host.Entity;
+
+using Newtonsoft.Json;
+
+using Quartz;
+
 using Xunit;
 
 namespace Host.Tests

@@ -1,14 +1,18 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.PlatformAbstractions;
 using Microsoft.OpenApi.Models;
+
 using Quartz.Impl.AdoJobStore;
 using Quartz.Impl.AdoJobStore.Common;
+
 using Serilog;
 using Serilog.Events;
 
@@ -35,15 +39,16 @@ namespace Host
                 options.AddPolicy("AllowSameDomain", policyBuilder =>
                 {
                     policyBuilder.AllowAnyHeader()
-                        .AllowAnyMethod()
+                        .AllowAnyMethod();
                         //.WithMethods("GET", "POST")
-                        .AllowCredentials();//指定处理cookie
 
                     var cfg = Configuration.GetSection("AllowedHosts").Get<List<string>>();
                     if (cfg?.Contains("*") ?? false)
-                        policyBuilder.AllowAnyOrigin(); //允许任何来源的主机访问
+                        //允许任何来源的主机访问
+                        policyBuilder.AllowAnyOrigin();
                     else if (cfg?.Any() ?? false)
-                        policyBuilder.WithOrigins(cfg.ToArray()); //允许类似http://localhost:8080等主机访问
+                        //允许类似http://localhost:8080等主机访问
+                        policyBuilder.AllowCredentials().WithOrigins(cfg.ToArray()); 
                 });
             });
             #endregion
@@ -70,7 +75,7 @@ namespace Host
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             if (env.IsDevelopment())
             {
@@ -96,9 +101,6 @@ namespace Host
             app.UseDefaultFiles();
             app.UseStaticFiles();
 
-            //https://docs.microsoft.com/en-us/aspnet/core/security/cors?view=aspnetcore-3.0
-            app.UseCors("AllowSameDomain");
-
             app.UseSwagger();
             app.UseSwaggerUI(c =>
             {
@@ -106,6 +108,8 @@ namespace Host
             });
 
             app.UseRouting();
+            //https://docs.microsoft.com/en-us/aspnet/core/security/cors?view=aspnetcore-3.0
+            app.UseCors("AllowSameDomain");
             app.UseAuthorization();
             app.UseEndpoints(endpoints =>
             {
