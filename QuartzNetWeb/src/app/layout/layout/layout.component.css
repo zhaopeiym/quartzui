@@ -1,14 +1,27 @@
 .logo {
-    width: 120px;
-    height: 31px;
-    background: rgba(255, 255, 255, .2);
-    margin: 16px 24px 16px 0;
-    float: left;
-    border-radius: 6px;
-    margin: 16px;
-    line-height: 31px;
-    overflow: hidden;
-    text-align: center;
-    color: #fff;
-    font-size: 16px;
+  width: 120px;
+  height: 31px;
+  background: rgba(255, 255, 255, .2);
+  margin: 16px 24px 16px 0;
+  float: left;
+  border-radius: 6px;
+  margin: 16px;
+  line-height: 31px;
+  overflow: hidden;
+  text-align: center;
+  color: #fff;
+  font-size: 16px;
+}
+
+.ant-layout-content {
+  min-height: initial;
+}
+
+nz-layout {
+  min-height: 100%;
+  height: initial !important;
+}
+
+::ng-deep .ant-modal {
+  width: 610px !important;
 }

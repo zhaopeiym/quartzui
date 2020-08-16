@@ -56,8 +56,12 @@ div::-webkit-scrollbar-thumb {
 }
 
 form nz-tag {
-  line-height: 39px;
+  /* line-height: 39px;
+  margin-left: 5px; */
+
+  line-height: 20px;
   margin-left: 5px;
+  margin-top: 8px;
 }
 
 ::ng-deep .ant-form-item {
@@ -83,4 +87,23 @@ form nz-tag {
 
 ::ng-deep span.result {
   color: #0094ff;
+}
+
+
+::ng-deep .ant-btn-danger {
+  color: #f5222d;
+  background-color: #f5f5f5;
+  border-color: #d9d9d9;
+  text-shadow: initial;
+  box-shadow: initial;
+}
+
+::ng-deep .ant-btn-danger:hover {
+  background-color: #FF4D4F;
+}
+
+.yanjing {
+  padding: 10px;
+  width: 40px;
+  height: 40px;
 }

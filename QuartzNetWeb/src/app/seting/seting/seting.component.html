@@ -1,12 +1,13 @@
 <nz-breadcrumb style="margin:16px 0;">
-  <nz-breadcrumb-item>系统设置</nz-breadcrumb-item>
+  <nz-breadcrumb-item>{{'system.setup.breadcrumb' | translate}}</nz-breadcrumb-item>
 </nz-breadcrumb>
 <div style="background:#fff; padding: 24px; min-height: 280px;">
   <nz-tabset nzTabPosition="left" [nzSelectedIndex]="0">
-    <nz-tab nzTitle="邮箱设置" title="用来发送失败任务消息">
+    <nz-tab nzTitle="{{'system.setup.tabset.tab.邮箱设置' | translate}}" title="用来发送失败任务消息">
       <form nz-form [formGroup]="validateForm">
         <nz-form-item>
-          <nz-form-label [nzSm]="5" [nzXs]="24" nzFor="mailHost">发件服务器</nz-form-label>
+          <nz-form-label [nzSm]="5" [nzXs]="24" nzFor="mailHost">{{'system.setup.label.发件服务器' | translate}}
+          </nz-form-label>
           <nz-form-control [nzSm]="15" [nzXs]="24">
             <input nz-input formControlName="mailHost" placeholder="如：smtp.163.com">
             <nz-form-explain *ngIf="validateForm.get('mailHost').dirty && validateForm.get('mailHost').errors">请填写发件服务器
@@ -14,7 +15,8 @@
           </nz-form-control>
         </nz-form-item>
         <nz-form-item>
-          <nz-form-label [nzSm]="5" [nzXs]="24" nzFor="mailFrom">发件邮箱</nz-form-label>
+          <nz-form-label [nzSm]="5" [nzXs]="24" nzFor="mailFrom">{{'system.setup.label.发件邮箱' | translate}}
+          </nz-form-label>
           <nz-form-control [nzSm]="15" [nzXs]="24">
             <input nz-input formControlName="mailFrom" placeholder="如：test@163.com">
             <nz-form-explain *ngIf="validateForm.get('mailFrom').dirty && validateForm.get('mailFrom').errors">请填写发件邮箱
@@ -22,7 +24,8 @@
           </nz-form-control>
         </nz-form-item>
         <nz-form-item>
-          <nz-form-label [nzSm]="5" [nzXs]="24" nzFor="mailPwd">邮箱密码</nz-form-label>
+          <nz-form-label [nzSm]="5" [nzXs]="24" nzFor="mailPwd">{{'system.setup.label.邮箱密码' | translate}}
+          </nz-form-label>
           <nz-form-control [nzSm]="15" [nzXs]="24">
             <input nz-input type="password" formControlName="mailPwd" placeholder="如：123456">
             <nz-form-explain *ngIf="validateForm.get('mailPwd').dirty && validateForm.get('mailPwd').errors">请填写邮箱密码
@@ -30,7 +33,7 @@
           </nz-form-control>
         </nz-form-item>
         <nz-form-item>
-          <nz-form-label [nzSm]="5" [nzXs]="24" nzFor="mailTo">收件邮箱</nz-form-label>
+          <nz-form-label [nzSm]="5" [nzXs]="24" nzFor="mailTo">{{'system.setup.label.收件邮箱' | translate}}</nz-form-label>
           <nz-form-control [nzSm]="15" [nzXs]="24">
             <textarea row="4" nz-input formControlName="mailTo"
               placeholder="如：my@163.com;my2@163.com;(多个邮箱用分号分隔)"></textarea>
@@ -40,31 +43,33 @@
         </nz-form-item>
         <nz-form-item>
           <div class="but-con">
-            <button nz-button nzType="dashed" (click)="testMail()" title="测试邮件是否配置成功">测试</button>
-            <button nz-button nzType="primary" (click)="handleOk()">确定</button>
+            <button nz-button nzType="dashed" (click)="testMail()"
+              title="测试邮件是否配置成功">{{'system.setup.button.测试' | translate}}</button>
+            <button nz-button nzType="primary" (click)="handleOk()">{{'system.setup.button.确定' | translate}}</button>
           </div>
         </nz-form-item>
       </form>
     </nz-tab>
-    <nz-tab nzTitle="刷新设置">
+    <nz-tab nzTitle="{{'system.setup.tabset.tab.刷新设置' | translate}}">
       <form nz-form>
         <nz-form-item>
-          <nz-form-label [nzSm]="5" [nzXs]="24" nzFor="projectName" title="时间单位秒">页面定时刷新时间</nz-form-label>
+          <nz-form-label [nzSm]="5" [nzXs]="24" nzFor="projectName" title="时间单位秒">
+            {{'system.setup.label.页面定时刷新时间' | translate}}</nz-form-label>
           <nz-form-control [nzSm]="15" [nzXs]="24">
-            <nz-input-group nzAddOnBefore="" nzAddOnAfter="秒">
+            <nz-input-group nzAddOnBefore="" nzAddOnAfter="{{'system.setup.label.秒' | translate}}">
               <input nz-input id="name" name="name" [(ngModel)]="refreshValue" title="时间单位秒" placeholder="时间单位秒">
             </nz-input-group>
           </nz-form-control>
         </nz-form-item>
         <nz-form-item>
           <div class="but-con-refresh">
-            <button nz-button nzType="primary" (click)="saverefresh()">确定</button>
+            <button nz-button nzType="primary" (click)="saverefresh()">{{'system.setup.button.确定' | translate}}</button>
           </div>
         </nz-form-item>
       </form>
     </nz-tab>
-    <nz-tab nzTitle="其他">
+    <!-- <nz-tab nzTitle="其他">
       其他
-    </nz-tab>
+    </nz-tab> -->
   </nz-tabset>
 </div>

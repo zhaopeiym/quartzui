@@ -9,15 +9,18 @@ const routes: Routes = [
     children: [
       {
         path: '',
-        loadChildren: "app/task-list/task-list.module#TaskListModule"
+        // loadChildren: "app/task-list/task-list.module#TaskListModule"
+        loadChildren: () => import('../../app/task-list/task-list.module').then(m => m.TaskListModule)
       },
       {
         path: 'seting',
-        loadChildren: "app/seting/seting.module#SetingModule"
+        // loadChildren: "app/seting/seting.module#SetingModule"
+        loadChildren: () => import('../../app/seting/seting.module').then(m => m.SetingModule)
       },
       {
         path: 'explain',
-        loadChildren: "app/explain/explain.module#ExplainModule"
+        // loadChildren: "app/explain/explain.module#ExplainModule"
+        loadChildren: () => import('../../app/explain/explain.module').then(m => m.ExplainModule)
       }
     ]
   },

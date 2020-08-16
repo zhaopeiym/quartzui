@@ -1,22 +1,25 @@
 <nz-layout class="layout" style="height: 100%;">
   <nz-header>
-    <div class="logo">任务调度平台</div>
+    <div class="logo">{{ 'logTitle' | translate }}</div>
     <ul nz-menu [nzTheme]="'dark'" [nzMode]="'horizontal'" style="line-height: 64px;">
       <li nz-menu-item>
-        <a (click)="jumpTaskList()">任务列表</a>
+        <a (click)="jumpTaskList()">{{TaskList}}</a>
       </li>
       <li nz-menu-item>
-        <a (click)="jumpSeting()">系统设置</a>
+        <a (click)="jumpSeting()">{{Seting}}</a>
       </li>
       <li nz-menu-item>
-          <a (click)="jumpExplain()">使用说明</a></li>
+        <a (click)="jumpExplain()">{{Explain}}</a></li>
       <li nz-menu-item>
         <a target="_blank" href="https://github.com/zhaopeiym/quartzui">GitHub</a>
+      </li>
+      <li nz-menu-item style="float: right">
+        <a (click)="switchLanguage()">{{Language}}</a>
       </li>
     </ul>
   </nz-header>
   <nz-content style="padding:0 50px;">
-      <router-outlet></router-outlet>
+    <router-outlet></router-outlet>
   </nz-content>
   <nz-footer style="text-align: center;"> ©2018 Implement By
     <a href="https://github.com/zhaopeiym" target="_blank">农码一生</a>

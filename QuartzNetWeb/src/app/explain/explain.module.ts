@@ -10,7 +10,7 @@ import { NgZorroAntdModule } from 'ng-zorro-antd';
   imports: [
     CommonModule,
     ExplainRoutingModule,
-    NgZorroAntdModule.forRoot(),
+    NgZorroAntdModule,
     FormsModule,
     ReactiveFormsModule
   ],

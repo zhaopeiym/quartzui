@@ -6,6 +6,8 @@ import { AbstractControl, FormBuilder, FormGroup, Validators } from '@angular/fo
 import { NgModule } from '@angular/core';
 import { NzNotificationService, NzTreeModule, NzModalService } from 'ng-zorro-antd';
 import { environment } from '../../../environments/environment';
+import { ThrowStmt } from '@angular/compiler';
+import { TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-task-list',
@@ -21,6 +23,7 @@ export class TaskListComponent implements OnInit {
   jobGroupDescribe: any;
   isCron = true;
   modalTitle = "新增任务";
+  breadcrumbtasklist = "任务列表";
   title = 'app';
   private headers = new HttpHeaders({
     'Content-Type': 'application/json'
@@ -30,10 +33,13 @@ export class TaskListComponent implements OnInit {
   dateFormat = 'yyyy/MM/dd';
   jobInfoEntity: any = {};
   refreshValue: any = 10;
+  showPass = false;
+  showPassIocUrl: string = "/assets/images/yanjing1.png";
 
   constructor(private http: HttpClient,
     private fb2: FormBuilder,
     private notification: NzNotificationService,
+    private translate: TranslateService,
     private modalService: NzModalService) {
     this.loadJobInfo();
     setInterval(() => {//定时刷新
@@ -114,7 +120,7 @@ export class TaskListComponent implements OnInit {
 
   //刷新
   renovateJobInfo() {
-    
+
     var url = this.baseUrl + "/api/Job/GetAllJobBriefInfo";
     this.http.get(url, { headers: this.headers })
       .subscribe((result: any) => {
@@ -136,6 +142,16 @@ export class TaskListComponent implements OnInit {
   showJobModal(groupName) {
     this.isJobVisible = true;
     this.jobInfoEntity.jobGroup = groupName;
+
+    if (this.modalTitle === "新增任务") {
+      this.jobInfoEntity.beginTime = new Date();
+    }
+    if (this.translate.currentLang === "en") {
+      if (this.modalTitle === "新增任务")
+        this.modalTitle = "Add Task";
+      else if (this.modalTitle === "编辑任务")
+        this.modalTitle = "Editor Task";
+    }
   }
 
   //取消
@@ -174,7 +190,7 @@ export class TaskListComponent implements OnInit {
     this.jobInfoEntity.intervalSecond = this.jobInfoEntity.intervalSecond * parseInt(this.validateJobForm.controls["intervalUnit"].value);
     this.jobInfoEntity.mailMessage = this.validateJobForm.value.mailMessage;
     var url = this.baseUrl + "/api/Job/AddJob";
-    if (this.modalTitle === "编辑任务")
+    if (this.modalTitle === "编辑任务" || this.modalTitle === "Editor Task")
       url = this.baseUrl + "/api/Job/ModifyJob";
     this.http.post(url, this.jobInfoEntity, { headers: this.headers })
       .subscribe((result: any) => {
@@ -190,7 +206,10 @@ export class TaskListComponent implements OnInit {
 
   //编辑任务
   editJob(name, group) {
-    this.modalTitle = "编辑任务";
+    if (this.translate.currentLang === "en")
+      this.modalTitle = "Editor Task";
+    else
+      this.modalTitle = "编辑任务";
     var url = this.baseUrl + "/api/Job/QueryJob";
     this.http.post(url, { name: name, group: group }, { headers: this.headers })
       .subscribe((result: any) => {
@@ -215,7 +234,7 @@ export class TaskListComponent implements OnInit {
       }, (err) => {
 
       }, () => {
-        
+
         this.renovateJobInfo();
       });
   }
@@ -229,7 +248,7 @@ export class TaskListComponent implements OnInit {
       }, (err) => {
 
       }, () => {
-        
+
         this.renovateJobInfo();
       });
   }
@@ -271,7 +290,7 @@ export class TaskListComponent implements OnInit {
       }, (err) => {
         this.msgError("执行失败！");
       }, () => {
-        
+
         this.renovateJobInfo();
       });
   }
@@ -318,6 +337,11 @@ export class TaskListComponent implements OnInit {
         "overflow-y": "auto"
       }
     });
+  }
+
+  switchPass() {
+    this.showPass = !this.showPass;
+    this.showPassIocUrl = this.showPass ? "/assets/images/yanjing1.png" : "/assets/images/yanjing2.png";
   }
 
   msgError(str): void {

@@ -1,5 +1,5 @@
 <nz-breadcrumb style="margin:16px 0;">
-  <nz-breadcrumb-item>任务列表</nz-breadcrumb-item>
+  <nz-breadcrumb-item>{{ 'task.list.任务列表' | translate }}</nz-breadcrumb-item>
 </nz-breadcrumb>
 <div style="background:#fff; padding: 24px; min-height: 280px;">
 
@@ -9,85 +9,105 @@
     <form nz-form [formGroup]="validateJobForm">
 
       <nz-form-item>
-        <nz-form-label [nzSpan]="5" nzRequired nzFor="jobName">任务组名</nz-form-label>
+        <nz-form-label [nzSpan]="6" nzRequired nzFor="jobName">{{ 'task.list.modal.label.任务组名' | translate }}
+        </nz-form-label>
         <nz-form-control [nzSpan]="15">
           <input nz-input placeholder="请输入任务组名字" formControlName="jobGroup" [(ngModel)]="jobInfoEntity.jobGroup">
-          <nz-form-explain *ngIf="validateJobForm.get('jobGroup').dirty && validateJobForm.get('jobGroup').errors">任务组名字必填</nz-form-explain>
+          <nz-form-explain *ngIf="validateJobForm.get('jobGroup').dirty && validateJobForm.get('jobGroup').errors">
+            任务组名字必填</nz-form-explain>
         </nz-form-control>
       </nz-form-item>
 
       <nz-form-item>
-        <nz-form-label [nzSpan]="5" nzRequired nzFor="jobName">任务名称</nz-form-label>
+        <nz-form-label [nzSpan]="6" nzRequired nzFor="jobName">{{ 'task.list.modal.label.任务名称' | translate }}
+        </nz-form-label>
         <nz-form-control [nzSpan]="15">
           <input nz-input placeholder="请输入任务名字" formControlName="jobName" [(ngModel)]="jobInfoEntity.jobName">
-          <nz-form-explain *ngIf="validateJobForm.get('jobName').dirty && validateJobForm.get('jobName').errors">任务名字必填</nz-form-explain>
+          <nz-form-explain *ngIf="validateJobForm.get('jobName').dirty && validateJobForm.get('jobName').errors">任务名字必填
+          </nz-form-explain>
         </nz-form-control>
       </nz-form-item>
 
       <nz-form-item>
-        <nz-form-label [nzSpan]="5" nzRequired nzFor="requestUrl">请求地址</nz-form-label>
+        <nz-form-label [nzSpan]="6" nzRequired nzFor="requestUrl">{{ 'task.list.modal.label.请求地址' | translate }}
+        </nz-form-label>
         <nz-form-control [nzSpan]="15">
           <input nz-input formControlName="requestUrl" placeholder="请输入请求地址" [(ngModel)]="jobInfoEntity.requestUrl">
-          <nz-form-explain *ngIf="validateJobForm.get('requestUrl').dirty && validateJobForm.get('requestUrl').errors">请求地址必填</nz-form-explain>
+          <nz-form-explain *ngIf="validateJobForm.get('requestUrl').dirty && validateJobForm.get('requestUrl').errors">
+            请求地址必填</nz-form-explain>
 
         </nz-form-control>
       </nz-form-item>
 
       <nz-form-item>
-        <nz-form-label [nzSpan]="5" nzRequired nzFor="beginTime">开始时间</nz-form-label>
+        <nz-form-label [nzSpan]="6" nzRequired nzFor="beginTime">{{ 'task.list.modal.label.开始时间' | translate }}
+        </nz-form-label>
         <nz-form-control [nzSpan]="15">
           <nz-date-picker style="width: 100%;" formControlName="beginTime" [(ngModel)]="jobInfoEntity.beginTime"
             nzShowTime></nz-date-picker>
-          <nz-form-explain *ngIf="validateJobForm.get('beginTime').dirty && validateJobForm.get('beginTime').errors">开始时间必填</nz-form-explain>
+          <nz-form-explain *ngIf="validateJobForm.get('beginTime').dirty && validateJobForm.get('beginTime').errors">
+            开始时间必填</nz-form-explain>
         </nz-form-control>
       </nz-form-item>
 
       <nz-form-item>
-        <nz-form-label [nzSpan]="5" nzFor="endTime">结束时间</nz-form-label>
+        <nz-form-label [nzSpan]="6" nzFor="endTime">{{ 'task.list.modal.label.结束时间' | translate }}</nz-form-label>
         <nz-form-control [nzSpan]="15">
           <nz-date-picker formControlName="endTime" [(ngModel)]="jobInfoEntity.endTime" nzShowTime></nz-date-picker>
-          <nz-form-explain *ngIf="validateJobForm.get('endTime').dirty && validateJobForm.get('endTime').errors"></nz-form-explain>
+          <nz-form-explain *ngIf="validateJobForm.get('endTime').dirty && validateJobForm.get('endTime').errors">
+          </nz-form-explain>
         </nz-form-control>
       </nz-form-item>
 
       <nz-form-item>
-        <nz-form-label [nzSpan]="5" nzRequired nzFor="triggerType">触发器类型</nz-form-label>
+        <nz-form-label [nzSpan]="6" nzRequired nzFor="triggerType">{{ 'task.list.modal.label.触发器类型' | translate }}
+        </nz-form-label>
         <nz-form-control [nzSpan]="15">
-          <nz-select formControlName="triggerType" [(ngModel)]="jobInfoEntity.triggerType" (ngModelChange)="changeTriggerType($event)">
+          <nz-select formControlName="triggerType" [(ngModel)]="jobInfoEntity.triggerType"
+            (ngModelChange)="changeTriggerType($event)">
             <nz-option nzValue="2" nzLabel="Simple"></nz-option>
             <nz-option nzValue="1" nzLabel="Cron"></nz-option>
           </nz-select>
-          <nz-form-explain *ngIf="validateJobForm.get('triggerType').dirty && validateJobForm.get('triggerType').errors">触发器类型必填</nz-form-explain>
+          <nz-form-explain
+            *ngIf="validateJobForm.get('triggerType').dirty && validateJobForm.get('triggerType').errors">触发器类型必填
+          </nz-form-explain>
         </nz-form-control>
       </nz-form-item>
 
       <nz-form-item *ngIf="isCron">
-        <nz-form-label [nzSpan]="5" nzRequired nzFor="cron">Cron表达式</nz-form-label>
+        <nz-form-label [nzSpan]="6" nzRequired nzFor="cron">{{ 'task.list.modal.label.Cron表达式' | translate }}
+        </nz-form-label>
         <nz-form-control [nzSpan]="15">
           <input nz-input formControlName="cron" placeholder="请输入Cron表达式" [(ngModel)]="jobInfoEntity.cron">
-          <nz-form-explain *ngIf="validateJobForm.get('cron').dirty && validateJobForm.get('cron').errors">Cron表达式必填</nz-form-explain>
+          <nz-form-explain *ngIf="validateJobForm.get('cron').dirty && validateJobForm.get('cron').errors">Cron表达式必填
+          </nz-form-explain>
         </nz-form-control>
         <nz-tag [nzColor]="'#2db7f5'">
-          <a href=" http://www.pppet.net/ " target="_blank">参考</a>
+          <a href=" http://www.pppet.net/ " target="_blank">{{ 'task.list.modal.label.参考' | translate }}</a>
         </nz-tag>
       </nz-form-item>
 
       <nz-form-item *ngIf="!isCron">
-        <nz-form-label [nzSpan]="5" nzRequired nzFor="intervalSecond">间隔时间</nz-form-label>
+        <nz-form-label [nzSpan]="6" nzRequired nzFor="intervalSecond">{{ 'task.list.modal.label.间隔时间' | translate }}
+        </nz-form-label>
         <nz-form-control [nzSpan]="15">
-          <input style="width: 70%;" nz-input formControlName="intervalSecond" placeholder="请输入间隔时间" [(ngModel)]="jobInfoEntity.intervalSecond">
+          <input style="width: 70%;" nz-input formControlName="intervalSecond" placeholder="请输入间隔时间"
+            [(ngModel)]="jobInfoEntity.intervalSecond">
           <nz-select style="width: 30%; " formControlName="intervalUnit">
-            <nz-option nzValue="1" nzLabel="秒"></nz-option>
-            <nz-option nzValue="60" nzLabel="分"></nz-option>
-            <nz-option nzValue="3600" nzLabel="时"></nz-option>
-            <nz-option nzValue="86400" nzLabel="天"></nz-option>
+            <nz-option nzValue="1" nzLabel="{{ 'task.list.modal.label.秒' | translate }}"></nz-option>
+            <nz-option nzValue="60" nzLabel="{{ 'task.list.modal.label.分' | translate }}"></nz-option>
+            <nz-option nzValue="3600" nzLabel="{{ 'task.list.modal.label.时' | translate }}"></nz-option>
+            <nz-option nzValue="86400" nzLabel="{{ 'task.list.modal.label.天' | translate }}"></nz-option>
           </nz-select>
-          <nz-form-explain *ngIf="validateJobForm.get('intervalSecond').dirty && validateJobForm.get('intervalSecond').errors">间隔时间必填</nz-form-explain>
+          <nz-form-explain
+            *ngIf="validateJobForm.get('intervalSecond').dirty && validateJobForm.get('intervalSecond').errors">间隔时间必填
+          </nz-form-explain>
         </nz-form-control>
       </nz-form-item>
 
       <nz-form-item>
-        <nz-form-label [nzSpan]="5" nzRequired nzFor="requestType"> 请求类型</nz-form-label>
+        <nz-form-label [nzSpan]="6" nzRequired nzFor="requestType">{{ 'task.list.modal.label.请求类型' | translate }}
+        </nz-form-label>
         <nz-form-control [nzSpan]="15">
           <nz-radio-group formControlName="requestType" [(ngModel)]="jobInfoEntity.requestType">
             <label nz-radio nzValue="1">Get</label>
@@ -95,42 +115,56 @@
             <label nz-radio nzValue="4">Put</label>
             <label nz-radio nzValue="8">Delete</label>
           </nz-radio-group>
-          <nz-form-explain *ngIf="validateJobForm.get('requestType').dirty && validateJobForm.get('requestType').errors">请求类型必填</nz-form-explain>
+          <nz-form-explain
+            *ngIf="validateJobForm.get('requestType').dirty && validateJobForm.get('requestType').errors">请求类型必填
+          </nz-form-explain>
         </nz-form-control>
       </nz-form-item>
 
       <nz-form-item>
-        <nz-form-label [nzSpan]="5" nzFor="headers">请求头 </nz-form-label>
+        <nz-form-label [nzSpan]="6" nzFor="headers">{{ 'task.list.modal.label.请求头' | translate }}</nz-form-label>
         <nz-form-control [nzSpan]="15">
-          <textarea formControlName="headers" title='格式：{"key":"value","key2":"value2"}'
-            placeholder="请输入Headers信息，如：Cookies、授权认证等" nz-input [(ngModel)]="jobInfoEntity.headers" ></textarea>
+          <!-- <textarea formControlName="headers" title='格式：{"key":"value","key2":"value2"}'
+            placeholder="请输入Headers信息，如：Cookies、授权认证等" nz-input [(ngModel)]="jobInfoEntity.headers"></textarea> -->
+          <input nz-input formControlName="headers" type="{{showPass?'text':'password'}}"
+            title='格式：{"key":"value","key2":"value2"}' placeholder="请输入Headers信息，如：Cookies、授权认证等"
+            [(ngModel)]="jobInfoEntity.headers">
         </nz-form-control>
+        <img class="yanjing" (click)="switchPass()" src="{{showPassIocUrl}}" />
       </nz-form-item>
 
       <nz-form-item>
-        <nz-form-label [nzSpan]="5" nzFor="requestParameters">请求参数 </nz-form-label>
+        <nz-form-label [nzSpan]="6" nzFor="requestParameters">{{ 'task.list.modal.label.请求参数' | translate }}
+        </nz-form-label>
         <nz-form-control [nzSpan]="15">
-          <textarea row="4" formControlName="requestParameters" title='格式：{"key":"value","key2":"value2"}' placeholder="请输入请求参数（json字符串）"
-            nz-input [(ngModel)]="jobInfoEntity.requestParameters"></textarea>
-          <nz-form-explain *ngIf="validateJobForm.get('requestParameters').dirty && validateJobForm.get('requestParameters').errors"></nz-form-explain>
+          <textarea row="4" formControlName="requestParameters" title='格式：{"key":"value","key2":"value2"}'
+            placeholder="请输入请求参数（json字符串）" nz-input [(ngModel)]="jobInfoEntity.requestParameters"></textarea>
+          <nz-form-explain
+            *ngIf="validateJobForm.get('requestParameters').dirty && validateJobForm.get('requestParameters').errors">
+          </nz-form-explain>
         </nz-form-control>
       </nz-form-item>
 
       <nz-form-item>
-        <nz-form-label [nzSpan]="5">任务描述 </nz-form-label>
+        <nz-form-label [nzSpan]="6">{{ 'task.list.modal.label.任务描述' | translate }} </nz-form-label>
         <nz-form-control [nzSpan]="15">
-          <textarea row="4" formControlName="description" placeholder="请输入任务描述" nz-input [(ngModel)]="jobInfoEntity.description"></textarea>
-          <nz-form-explain *ngIf="validateJobForm.get('description').dirty && validateJobForm.get('description').errors"></nz-form-explain>
+          <textarea row="4" formControlName="description" placeholder="请输入任务描述" nz-input
+            [(ngModel)]="jobInfoEntity.description"></textarea>
+          <nz-form-explain
+            *ngIf="validateJobForm.get('description').dirty && validateJobForm.get('description').errors">
+          </nz-form-explain>
         </nz-form-control>
       </nz-form-item>
 
       <nz-form-item>
-        <nz-form-label [nzSpan]="5">邮件通知 </nz-form-label>
+        <nz-form-label [nzSpan]="6">{{ 'task.list.modal.label.邮件通知' | translate }} </nz-form-label>
         <nz-form-control [nzSpan]="15">
           <nz-radio-group formControlName="mailMessage">
-            <label nz-radio nzValue="0">不通知</label>
-            <label nz-radio nzValue="1" title="只有当任务出现异常时发送通知(需要在'系统设置'邮件)">通知异常</label>
-            <label nz-radio nzValue="2" title="每次执行一个任务都发送邮件通知(需要在'系统设置'邮件)">通知所有</label>
+            <label nz-radio nzValue="0">{{ 'task.list.modal.label.不通知' | translate }}</label>
+            <label nz-radio nzValue="1"
+              title="只有当任务出现异常时发送通知(需要在'系统设置'邮件)">{{ 'task.list.modal.label.通知异常' | translate }}</label>
+            <label nz-radio nzValue="2"
+              title="每次执行一个任务都发送邮件通知(需要在'系统设置'邮件)">{{ 'task.list.modal.label.通知所有' | translate }}</label>
           </nz-radio-group>
         </nz-form-control>
       </nz-form-item>
@@ -138,27 +172,27 @@
   </nz-modal>
   <!-- 新增任务 （初始化没有任务）-->
   <button *ngIf="!resultData.length" nz-button [nzType]="'primary'" (click)="showJobModal('default')">
-    <span>新增任务</span>
+    <span>{{ 'task.list.table.th.button.新增任务' | translate }}</span>
   </button>
   <!-- 任务列表 -->
   <nz-collapse>
-    <nz-collapse-panel *ngFor="let panel of resultData" [nzHeader]="panel.groupName" (nzActiveChange)="clickPanel($event,panel.groupName)"
-      [nzActive]="panel.active">
+    <nz-collapse-panel *ngFor="let panel of resultData" [nzHeader]="panel.groupName"
+      (nzActiveChange)="clickPanel($event,panel.groupName)" [nzActive]="panel.active">
 
       <table class="jobTable">
         <tr>
-          <th style="width: 7%;">任务名称</th>
-          <th style="width: 4%;">状态</th>
-          <th class="td-url">Url</th>
-          <th style="width: 5%;">异常信息</th>
-          <th style="width: 9%;">开始时间</th>
-          <th style="width: 9%;">上次执行时间</th>
-          <th style="width: 9%;">下次执行时间</th>
-          <th style="width: 5%;">执行计划</th>
-          <th style="width: 7%;">描述</th>
-          <th style="width: 190px;">
+          <th style="width: 7%;">{{ 'task.list.table.th.任务名称' | translate }}</th>
+          <th style="width: 4%;">{{ 'task.list.table.th.状态' | translate }}</th>
+          <th class="td-url">{{ 'task.list.table.th.Url' | translate }}</th>
+          <th style="width: 5%;">{{ 'task.list.table.th.异常信息' | translate }}</th>
+          <th style="width: 9%;">{{ 'task.list.table.th.开始时间' | translate }}</th>
+          <th style="width: 9%;">{{ 'task.list.table.th.上次执行时间' | translate }}</th>
+          <th style="width: 9%;">{{ 'task.list.table.th.下次执行时间' | translate }}</th>
+          <th style="width: 5%;">{{ 'task.list.table.th.执行计划' | translate }}</th>
+          <th style="width: 7%;">{{ 'task.list.table.th.描述' | translate }}</th>
+          <th style="width: 215px;">
             <button nz-button [nzType]="'primary'" (click)="showJobModal(panel.groupName)">
-              <span>新增任务</span>
+              <span>{{ 'task.list.table.th.button.新增任务' | translate }}</span>
             </button>
           </th>
         </tr>
@@ -178,8 +212,9 @@
             {{ jobInfo.requestUrl}}
           </td>
           <td>
-            <nz-tag nzMode="closeable" *ngIf="jobInfo.lastErrMsg" [nzColor]="'red'" (nzOnClose)="onClose(jobInfo.name,panel.groupName)"
-              (nzAfterClose)="afterClose()" (click)="showModalMsg('异常',jobInfo.lastErrMsg)">查看</nz-tag>
+            <nz-tag nzMode="closeable" *ngIf="jobInfo.lastErrMsg" [nzColor]="'red'"
+              (nzOnClose)="onClose(jobInfo.name,panel.groupName)" (nzAfterClose)="afterClose()"
+              (click)="showModalMsg('异常',jobInfo.lastErrMsg)">{{ 'task.list.table.th.tag.查看' | translate }}</nz-tag>
             <span *ngIf="!jobInfo.lastErrMsg">--</span>
           </td>
           <td>
@@ -199,34 +234,38 @@
           </td>
           <td>
             <button *ngIf="jobInfo.displayState==='暂停'" nz-button (click)="resumeJob(jobInfo.name,panel.groupName)"
-              nzType="default">恢复</button>
+              nzType="default">{{ 'task.list.table.th.button.恢复' | translate }}</button>
             <button *ngIf="jobInfo.displayState!=='暂停'" nz-button (click)="stopJob(jobInfo.name,panel.groupName)"
-              nzType="default">暂停</button>
+              nzType="default">{{ 'task.list.table.th.button.暂停' | translate }}</button>
             <nz-popconfirm [nzTitle]="'你确定删除这个任务？'" (nzOnConfirm)="removeJob(jobInfo.name,panel.groupName)"
               (nzOnCancel)="confirm()">
               <a nz-popconfirm>
-                <button nz-button nzType="danger" style="margin-left: 5px; margin-right: 5px;">删除</button>
+                <button nz-button nzType="danger"
+                  style="margin-left: 5px; margin-right: 5px;">{{ 'task.list.table.th.button.删除' | translate }}</button>
               </a>
             </nz-popconfirm>
             <nz-dropdown>
               <button nz-button nz-dropdown>
-                <span>更多</span>
+                <span>{{ 'task.list.table.th.button.更多' | translate }}</span>
                 <i class="anticon anticon-down"></i>
               </button>
               <ul nz-menu style="border: 1px solid #D9D9D9;background-color: rgb(245, 245, 245)">
                 <li nz-menu-item>
                   <a>
-                    <button nz-button (click)="editJob(jobInfo.name,panel.groupName)">编辑</button>
+                    <button nz-button
+                      (click)="editJob(jobInfo.name,panel.groupName)">{{ 'task.list.table.th.button.编辑' | translate }}</button>
                   </a>
                 </li>
                 <li nz-menu-item>
                   <a>
-                    <button nz-button (click)="triggerJob(jobInfo.name,panel.groupName)">执行</button>
+                    <button nz-button
+                      (click)="triggerJob(jobInfo.name,panel.groupName)">{{ 'task.list.table.th.button.执行' | translate }}</button>
                   </a>
                 </li>
                 <li nz-menu-item>
                   <a>
-                    <button nz-button (click)="getJobLogs(jobInfo.name,panel.groupName)">日志</button>
+                    <button nz-button
+                      (click)="getJobLogs(jobInfo.name,panel.groupName)">{{ 'task.list.table.th.button.日志' | translate }}</button>
                   </a>
                 </li>
               </ul>
