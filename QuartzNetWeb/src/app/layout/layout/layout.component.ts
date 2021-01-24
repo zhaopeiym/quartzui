@@ -114,6 +114,10 @@ export class LayoutComponent implements OnInit {
     this.router.navigate(['/explain']);
   }
 
+  clickGitHub() {
+    window.open("https://github.com/zhaopeiym/quartzui");
+  }
+
   // 切换语言
   switchLanguage() {
     this.IsEnglish = !this.IsEnglish;

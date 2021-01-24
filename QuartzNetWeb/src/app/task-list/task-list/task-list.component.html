@@ -91,14 +91,18 @@
         <nz-form-label [nzSpan]="6" nzRequired nzFor="intervalSecond">{{ 'task.list.modal.label.间隔时间' | translate }}
         </nz-form-label>
         <nz-form-control [nzSpan]="15">
-          <input style="width: 70%;" nz-input formControlName="intervalSecond" placeholder="请输入间隔时间"
-            [(ngModel)]="jobInfoEntity.intervalSecond">
-          <nz-select style="width: 30%; " formControlName="intervalUnit">
-            <nz-option nzValue="1" nzLabel="{{ 'task.list.modal.label.秒' | translate }}"></nz-option>
-            <nz-option nzValue="60" nzLabel="{{ 'task.list.modal.label.分' | translate }}"></nz-option>
-            <nz-option nzValue="3600" nzLabel="{{ 'task.list.modal.label.时' | translate }}"></nz-option>
-            <nz-option nzValue="86400" nzLabel="{{ 'task.list.modal.label.天' | translate }}"></nz-option>
-          </nz-select>
+          <nz-input-group nzCompact>
+            <!-- <input type="text" nz-input [ngModel]="'0571'" style="width: 20%;" />
+                <input type="text" nz-input [ngModel]="'26888888'" style="width:30%;" /> -->
+            <input style="width: 70%;" nz-input formControlName="intervalSecond" placeholder="请输入间隔时间"
+              [(ngModel)]="jobInfoEntity.intervalSecond">
+            <nz-select style="width: 30%; " formControlName="intervalUnit">
+              <nz-option nzValue="1" nzLabel="{{ 'task.list.modal.label.秒' | translate }}"></nz-option>
+              <nz-option nzValue="60" nzLabel="{{ 'task.list.modal.label.分' | translate }}"></nz-option>
+              <nz-option nzValue="3600" nzLabel="{{ 'task.list.modal.label.时' | translate }}"></nz-option>
+              <nz-option nzValue="86400" nzLabel="{{ 'task.list.modal.label.天' | translate }}"></nz-option>
+            </nz-select>
+          </nz-input-group>
           <nz-form-explain
             *ngIf="validateJobForm.get('intervalSecond').dirty && validateJobForm.get('intervalSecond').errors">间隔时间必填
           </nz-form-explain>

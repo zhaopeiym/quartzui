@@ -35,6 +35,7 @@ export class TaskListComponent implements OnInit {
   refreshValue: any = 10;
   showPass = false;
   showPassIocUrl: string = "/assets/images/yanjing1.png";
+  editJobInfoEntity: any;
 
   constructor(private http: HttpClient,
     private fb2: FormBuilder,
@@ -237,7 +238,10 @@ export class TaskListComponent implements OnInit {
     var url = this.baseUrl + "/api/Job/AddJob";
     if (this.modalTitle === "编辑任务" || this.modalTitle === "Editor Task")
       url = this.baseUrl + "/api/Job/ModifyJob";
-    this.http.post(url, this.jobInfoEntity, { headers: this.headers })
+    this.http.post(url, {
+      NewScheduleEntity: this.jobInfoEntity,
+      OldScheduleEntity: this.editJobInfoEntity
+    }, { headers: this.headers })
       .subscribe((result: any) => {
         this.msgInfo("保存任务计划成功！");
       }, (err) => {
@@ -262,6 +266,8 @@ export class TaskListComponent implements OnInit {
         this.validateJobForm.controls["mailMessage"].setValue(result.mailMessage.toString());
         this.jobInfoEntity.requestType = this.jobInfoEntity.requestType.toString();
         this.jobInfoEntity.triggerType = this.jobInfoEntity.triggerType.toString();
+
+        this.editJobInfoEntity = JSON.parse(JSON.stringify(this.jobInfoEntity));
         this.isJobVisible = true;
       }, (err) => {
 
@@ -387,7 +393,7 @@ export class TaskListComponent implements OnInit {
             "overflow-y": "auto"
           }
         });
-      }); 
+      });
   }
 
   switchPass() {

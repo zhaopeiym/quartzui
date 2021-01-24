@@ -15,7 +15,7 @@ namespace Host.Model
         /// <summary>
         /// 耗时（秒）
         /// </summary>
-        public double Seconds { get; set; }
+        public string ExecuteTime { get; set; }
         /// <summary>
         /// 任务名称
         /// </summary>

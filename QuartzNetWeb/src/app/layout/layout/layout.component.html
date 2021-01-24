@@ -10,8 +10,8 @@
       </li>
       <li nz-menu-item nzSelected="{{currentUrl=='explain'}}">
         <a (click)="jumpExplain()">{{Explain}}</a></li>
-      <li class="nomenu" style="padding: 0 20px">
-        <a target="_blank" href="https://github.com/zhaopeiym/quartzui">GitHub</a>
+      <li class="nomenu" (click)="clickGitHub()" style="padding: 0 20px">
+        <a>GitHub</a>
       </li>
       <li class="nomenu" style="float: right;padding: 0 20px" (click)="switchLanguage()">
         <a>{{Language}}</a>
