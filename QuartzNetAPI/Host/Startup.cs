@@ -36,16 +36,15 @@ namespace Host
             {
                 options.AddPolicy("AllowSameDomain", policyBuilder =>
                 {
-                    policyBuilder.AllowAnyHeader()
+                    policyBuilder
                         .AllowAnyMethod()
-                        .AllowAnyHeader()
-                        .AllowCredentials();//指定处理cookie
+                        .AllowAnyHeader();
 
                     var allowedHosts = Configuration.GetSection("AllowedHosts").Get<List<string>>();
                     if (allowedHosts?.Any(t => t == "*") ?? false)
                         policyBuilder.AllowAnyOrigin(); //允许任何来源的主机访问
                     else if (allowedHosts?.Any() ?? false)
-                        policyBuilder.WithOrigins(allowedHosts.ToArray()); //允许类似http://localhost:8080等主机访问
+                        policyBuilder.AllowCredentials().WithOrigins(allowedHosts.ToArray()); //允许类似http://localhost:8080等主机访问
                 });
             });
 
