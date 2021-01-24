@@ -48,7 +48,7 @@ namespace Host
                 });
             });
 
-            services.AddRouting(r => r.SuppressCheckForUnhandledSecurityMetadata = true);
+            //services.AddRouting(r => r.SuppressCheckForUnhandledSecurityMetadata = true);
             #endregion
 
             //services.AddMvc();
@@ -99,11 +99,7 @@ namespace Host
             //app.UseMvcWithDefaultRoute();
 
             app.UseDefaultFiles();
-            app.UseStaticFiles();
-
-            //https://docs.microsoft.com/en-us/aspnet/core/security/cors?view=aspnetcore-3.0
-            app.UseCors("AllowSameDomain");
-
+            app.UseStaticFiles(); 
             app.UseSwagger();
             app.UseSwaggerUI(c =>
             {
@@ -111,6 +107,8 @@ namespace Host
             });
 
             app.UseRouting();
+            //https://docs.microsoft.com/en-us/aspnet/core/security/cors?view=aspnetcore-3.0
+            app.UseCors("AllowSameDomain");
             app.UseAuthorization();
             app.UseEndpoints(endpoints =>
             {
