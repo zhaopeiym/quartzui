@@ -12,6 +12,7 @@ import { debounceTime } from 'rxjs/operators';
 
 import { TranslateService } from '@ngx-translate/core';
 import { fromEvent } from 'rxjs';
+import { Util } from '../../../shared/util';
 
 @Component({
   selector: 'app-layout',
@@ -27,10 +28,7 @@ export class LayoutComponent implements OnInit {
   isCron = true;
   modalTitle = "新增任务";
   title = 'app';
-  // logTitle = "任务调度平台";
-  private headers = new HttpHeaders({
-    'Content-Type': 'application/json'
-  });
+  // logTitle = "任务调度平台";  
   private baseUrl = environment.baseUrl;// "http://localhost:52725";   开发的时候可以先设置本地接口地址
   public resultData: any = [{}];
   dateFormat = 'yyyy/MM/dd';
@@ -154,5 +152,10 @@ export class LayoutComponent implements OnInit {
     this.Seting = "系统设置";
     this.Explain = "使用说明";
     this.translate.use("zh");
+  }
+
+  logout() {
+    Util.SetStorage("userInfo", {});
+    this.router.navigate(['/signin']);
   }
 }

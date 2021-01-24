@@ -13,8 +13,11 @@
       <li class="nomenu" (click)="clickGitHub()" style="padding: 0 20px">
         <a>GitHub</a>
       </li>
-      <li class="nomenu" style="float: right;padding: 0 20px" (click)="switchLanguage()">
+      <li class="nomenu" style="padding: 0 20px" (click)="switchLanguage()">
         <a>{{Language}}</a>
+      </li>
+      <li class="nomenu" style="float: right;padding: 0 20px" (click)="logout()">
+        <a>{{ 'system.setup.注销' | translate }}</a>
       </li>
     </ul>
   </nz-header>

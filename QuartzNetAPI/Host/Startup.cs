@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Host.Filters;
 using Host.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -52,7 +53,11 @@ namespace Host
             #endregion
 
             //services.AddMvc();
-            services.AddControllersWithViews().AddNewtonsoftJson();
+            services.AddControllersWithViews(
+                t =>
+                {
+                    t.Filters.Add<AuthorizationFilter>();
+                }).AddNewtonsoftJson();
 
             services.AddHostedService<HostedService>();
 
@@ -99,7 +104,7 @@ namespace Host
             //app.UseMvcWithDefaultRoute();
 
             app.UseDefaultFiles();
-            app.UseStaticFiles(); 
+            app.UseStaticFiles();
             app.UseSwagger();
             app.UseSwaggerUI(c =>
             {

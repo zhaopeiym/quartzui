@@ -8,6 +8,9 @@ import { NzNotificationService, NzTreeModule, NzModalService } from 'ng-zorro-an
 import { environment } from '../../../environments/environment';
 import { ThrowStmt } from '@angular/compiler';
 import { TranslateService } from '@ngx-translate/core';
+import { Util } from '../../../shared/util';
+import { Router } from '@angular/router';
+import { MyHttpService } from '../../../shared/myhttp';
 
 @Component({
   selector: 'app-task-list',
@@ -25,9 +28,6 @@ export class TaskListComponent implements OnInit {
   modalTitle = "新增任务";
   breadcrumbtasklist = "任务列表";
   title = 'app';
-  private headers = new HttpHeaders({
-    'Content-Type': 'application/json'
-  });
   private baseUrl = environment.baseUrl;// "http://localhost:52725";   开发的时候可以先设置本地接口地址
   public resultData: any = [{}];
   dateFormat = 'yyyy/MM/dd';
@@ -37,10 +37,12 @@ export class TaskListComponent implements OnInit {
   showPassIocUrl: string = "/assets/images/yanjing1.png";
   editJobInfoEntity: any;
 
-  constructor(private http: HttpClient,
+  constructor(
     private fb2: FormBuilder,
     private notification: NzNotificationService,
     private translate: TranslateService,
+    private router: Router,
+    private http: MyHttpService,
     private modalService: NzModalService) {
     this.loadJobInfo();
     setInterval(() => {//定时刷新
@@ -74,14 +76,11 @@ export class TaskListComponent implements OnInit {
 
   getRefreshInterval() {
     var url = this.baseUrl + "/api/Seting/GetRefreshInterval";
-    this.http.post(url, {}, { headers: this.headers })
-      .subscribe((result: any) => {
-        this.refreshValue = result.intervalTime;
-      }, (err) => {
+    this.http.post(url, {}, (result: any) => {
+      this.refreshValue = result.intervalTime;
+    }, (err) => {
 
-      }, () => {
-
-      });
+    });
   }
 
   //移除本次异常记录
@@ -89,14 +88,11 @@ export class TaskListComponent implements OnInit {
     //event.preventDefault();//紧张默认行为(这里可以禁止关闭)
     event.stopPropagation();//停止传播 
     var url = this.baseUrl + "/api/Job/RemoveErrLog";
-    this.http.post(url, { name: name, group: group }, { headers: this.headers })
-      .subscribe((result: any) => {
+    this.http.post(url, { name: name, group: group }, (result: any) => {
 
-      }, (err) => {
+    }, (err) => {
 
-      }, () => {
-
-      });
+    });
   }
 
   afterClose() {
@@ -105,8 +101,8 @@ export class TaskListComponent implements OnInit {
   //加载
   loadJobInfo(isReset?) {
     var url = this.baseUrl + "/api/Job/GetAllJob";
-    this.http.get(url, { headers: this.headers })
-      .subscribe((result: any) => {
+    this.http.get(url,
+      (result: any) => {
         result.forEach(element => {
           element.active = localStorage.getItem(element.groupName);
         });
@@ -130,34 +126,33 @@ export class TaskListComponent implements OnInit {
           });
         });
         this.resultData = result;
-      }, (err) => {
 
-      }, () => {
         if (isReset !== false)
           this.formReset();
+      }, (err) => {
       });
   }
 
   //刷新
   renovateJobInfo() {
-
     var url = this.baseUrl + "/api/Job/GetAllJobBriefInfo";
-    this.http.get(url, { headers: this.headers })
-      .subscribe((result: any) => {
-        this.resultData.forEach(element => {
-          var jobs = result.find(t => t.groupName === element.groupName);
-          element.jobInfoList.forEach(eleJob => {
-            var jobs = result.find(t => t.groupName === element.groupName).jobInfoList;
-            var job = jobs.find(t => t.name === eleJob.name);
-            //更新部分数据
-            eleJob.previousFireTime = job.previousFireTime;
-            eleJob.nextFireTime = job.nextFireTime;
-            eleJob.lastErrMsg = job.lastErrMsg;
-            eleJob.displayState = job.displayState;
-            this.setStateColor(eleJob);
-          });
+    this.http.get(url, (result: any) => {
+      this.resultData.forEach(element => {
+        var jobs = result.find(t => t.groupName === element.groupName);
+        element.jobInfoList && element.jobInfoList.forEach(eleJob => {
+          var jobs = result.find(t => t.groupName === element.groupName).jobInfoList;
+          var job = jobs.find(t => t.name === eleJob.name);
+          //更新部分数据
+          eleJob.previousFireTime = job.previousFireTime;
+          eleJob.nextFireTime = job.nextFireTime;
+          eleJob.lastErrMsg = job.lastErrMsg;
+          eleJob.displayState = job.displayState;
+          this.setStateColor(eleJob);
         });
       });
+    }, (err) => {
+
+    });
   }
 
   //设置状态颜色
@@ -227,8 +222,8 @@ export class TaskListComponent implements OnInit {
   handleJobOk() {
     /*  e.stopPropagation();
      e.preventDefault(); */
-     var url, entity: any;
-     
+    var url, entity: any;
+
     if (!this.validateJobForm.valid) {
       this.validata();
       if (!this.validateJobForm.valid)
@@ -236,7 +231,7 @@ export class TaskListComponent implements OnInit {
     }
     this.jobInfoEntity.intervalSecond = this.jobInfoEntity.intervalSecond * parseInt(this.validateJobForm.controls["intervalUnit"].value);
     this.jobInfoEntity.mailMessage = this.validateJobForm.value.mailMessage;
-    
+
     //编辑
     if (this.modalTitle === "编辑任务" || this.modalTitle === "Editor Task") {
       url = this.baseUrl + "/api/Job/ModifyJob";
@@ -249,14 +244,12 @@ export class TaskListComponent implements OnInit {
       url = this.baseUrl + "/api/Job/AddJob";
       entity = this.jobInfoEntity;
     }
-    this.http.post(url, entity, { headers: this.headers })
-      .subscribe((result: any) => {
-        this.msgInfo("保存任务计划成功！");
-      }, (err) => {
-        this.msgError("保存任务计划失败！");
-      }, () => {
-        this.loadJobInfo();
-      });
+    this.http.post(url, entity, (result: any) => {
+      this.msgInfo("保存任务计划成功！");
+      this.loadJobInfo();
+    }, (err) => {
+      this.msgError("保存任务计划失败！");
+    });
 
     this.isJobVisible = false;
   }
@@ -268,62 +261,51 @@ export class TaskListComponent implements OnInit {
     else
       this.modalTitle = "编辑任务";
     var url = this.baseUrl + "/api/Job/QueryJob";
-    this.http.post(url, { name: name, group: group }, { headers: this.headers })
-      .subscribe((result: any) => {
-        this.jobInfoEntity = result;
-        this.validateJobForm.controls["mailMessage"].setValue(result.mailMessage.toString());
-        this.jobInfoEntity.requestType = this.jobInfoEntity.requestType.toString();
-        this.jobInfoEntity.triggerType = this.jobInfoEntity.triggerType.toString();
+    this.http.post(url, { name: name, group: group }, (result: any) => {
+      this.jobInfoEntity = result;
+      this.validateJobForm.controls["mailMessage"].setValue(result.mailMessage.toString());
+      this.jobInfoEntity.requestType = this.jobInfoEntity.requestType.toString();
+      this.jobInfoEntity.triggerType = this.jobInfoEntity.triggerType.toString();
 
-        this.editJobInfoEntity = JSON.parse(JSON.stringify(this.jobInfoEntity));
-        this.isJobVisible = true;
-      }, (err) => {
+      this.editJobInfoEntity = JSON.parse(JSON.stringify(this.jobInfoEntity));
+      this.isJobVisible = true;
+    }, (err) => {
 
-      }, () => {
-
-      });
+    });
   }
 
   //暂停
   stopJob(name, group) {
     var url = this.baseUrl + "/api/Job/StopJob";
-    this.http.post(url, { name: name, group: group }, { headers: this.headers })
-      .subscribe((result: any) => {
-        this.msgInfo(result.msg);
-      }, (err) => {
+    this.http.post(url, { name: name, group: group }, (result: any) => {
+      this.msgInfo(result.msg);
+      this.renovateJobInfo();
+    }, (err) => {
 
-      }, () => {
-
-        this.renovateJobInfo();
-      });
+    });
   }
 
   //恢复
   resumeJob(name, group) {
     var url = this.baseUrl + "/api/Job/ResumeJob";
-    this.http.post(url, { name: name, group: group }, { headers: this.headers })
-      .subscribe((result: any) => {
-        this.msgInfo(result.msg);
-      }, (err) => {
+    this.http.post(url, { name: name, group: group }, (result: any) => {
+      this.msgInfo(result.msg);
+      this.renovateJobInfo();
+    }, (err) => {
 
-      }, () => {
-
-        this.renovateJobInfo();
-      });
+    });
   }
 
   //删除
   removeJob(name, group) {
 
     var url = this.baseUrl + "/api/Job/RemoveJob";
-    this.http.post(url, { name: name, group: group }, { headers: this.headers })
-      .subscribe((result: any) => {
-        this.msgInfo(result.msg);
-      }, (err) => {
+    this.http.post(url, { name: name, group: group }, (result: any) => {
+      this.msgInfo(result.msg);
+      this.loadJobInfo();
+    }, (err) => {
 
-      }, () => {
-        this.loadJobInfo();
-      });
+    });
   }
 
   //修改触发器类型时
@@ -343,45 +325,41 @@ export class TaskListComponent implements OnInit {
   //立即执行
   triggerJob(name, group) {
     var url = this.baseUrl + "/api/Job/TriggerJob";
-    this.http.post(url, { name: name, group: group }, { headers: this.headers })
-      .subscribe((result: any) => {
-        this.msgInfo("执行成功！");
-      }, (err) => {
-        this.msgError("执行失败！");
-      }, () => {
-
-        this.renovateJobInfo();
-      });
+    this.http.post(url, { name: name, group: group }, (result: any) => {
+      this.msgInfo("执行成功！");
+      this.renovateJobInfo();
+    }, (err) => {
+      this.msgError("执行失败！");
+    });
   }
 
   //查看日志
   getJobLogs(name, group) {
     var url = this.baseUrl + "/api/Job/GetJobLogs";
-    this.http.post(url, { name: name, group: group }, { headers: this.headers })
-      .subscribe((result: any) => {
-        if (result === null) {
-          this.msgWarning("暂无日志！");
-          return;
-        }
-        var logs = result.join("");
-        /*result.forEach(element => {
-          //logs += "<p>" + element + "</p>" 
-        }); */
-        this.translate.get("task.list.table.th.button.日志")
-          .subscribe(title => {
-            this.modalService.create({
-              nzTitle: title,
-              nzContent: logs,
-              nzFooter: null,
-              nzBodyStyle: {
-                "max-height": '500px',
-                "overflow-y": "auto"
-              }
-            });
+    this.http.post(url, { name: name, group: group }, (result: any) => {
+      if (result === null) {
+        this.msgWarning("暂无日志！");
+        return;
+      }
+      var logs = result.join("");
+      /*result.forEach(element => {
+        //logs += "<p>" + element + "</p>" 
+      }); */
+      this.translate.get("task.list.table.th.button.日志")
+        .subscribe(title => {
+          this.modalService.create({
+            nzTitle: title,
+            nzContent: logs,
+            nzFooter: null,
+            nzBodyStyle: {
+              "max-height": '500px',
+              "overflow-y": "auto"
+            }
           });
-      }, (err) => {
-        this.msgError("查询失败！");
-      });
+        });
+    }, (err) => {
+      this.msgError("查询失败！");
+    });
   }
 
   //切换 折叠任务组

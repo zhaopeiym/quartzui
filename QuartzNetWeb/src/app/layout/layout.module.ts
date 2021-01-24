@@ -9,6 +9,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { TranslateModule, TranslateLoader } from '@ngx-translate/core';
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 import { HttpClient } from '@angular/common/http';
+import { MyHttpService } from '../../shared/myhttp';
 export function HttpLoaderFactory(http: HttpClient) {
   return new TranslateHttpLoader(http);
 }
@@ -28,6 +29,9 @@ export function HttpLoaderFactory(http: HttpClient) {
       }
     })
   ],
-  declarations: [LayoutComponent]
+  declarations: [LayoutComponent],
+  providers: [
+    MyHttpService
+  ],
 })
 export class LayoutModule { }

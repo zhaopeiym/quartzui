@@ -68,6 +68,29 @@
         </nz-form-item>
       </form>
     </nz-tab>
+    <nz-tab nzTitle="{{'system.setup.tabset.tab.登录设置' | translate}}">
+      <form nz-form>
+        <nz-form-item>
+          <nz-form-label [nzSm]="5" [nzXs]="24" nzFor="projectName" title="登录口令">
+            {{'system.setup.label.旧登录口令' | translate}}</nz-form-label>
+          <nz-form-control [nzSm]="15" [nzXs]="24">
+            <input nz-input id="name" name="name" type="password" [(ngModel)]="oldPassword">
+          </nz-form-control>
+        </nz-form-item>
+        <nz-form-item>
+          <nz-form-label [nzSm]="5" [nzXs]="24" nzFor="projectName" title="登录口令">
+            {{'system.setup.label.新登录口令' | translate}}</nz-form-label>
+          <nz-form-control [nzSm]="15" [nzXs]="24">
+            <input nz-input id="name" name="name" type="password" [(ngModel)]="newPassword">
+          </nz-form-control>
+        </nz-form-item>
+        <nz-form-item>
+          <div class="but-con-refresh">
+            <button nz-button nzType="primary" (click)="seaveLogin()">{{'system.setup.button.确定' | translate}}</button>
+          </div>
+        </nz-form-item>
+      </form>
+    </nz-tab>
     <!-- <nz-tab nzTitle="其他">
       其他
     </nz-tab> -->

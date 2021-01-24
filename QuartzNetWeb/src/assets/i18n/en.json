@@ -59,10 +59,12 @@
         "任务列表": "Task list"
     },
     "system.setup": {
+        "注销":"logout",
         "breadcrumb": "system setup",
         "tabset.tab": {
             "邮箱设置": "Mailbox settings",
-            "刷新设置": "Refresh settings"
+            "刷新设置": "Refresh settings",
+            "登录设置": "Login settings"
         },
         "label": {
             "页面定时刷新时间": "Page refresh time",
@@ -70,7 +72,9 @@
             "发件邮箱": "MailFrom",
             "邮箱密码": "MailPassword",
             "收件邮箱": "MailTo",
-            "秒": "second"
+            "秒": "second",
+            "旧登录口令": "Old login password",
+            "新登录口令": "New login password"
         },
         "button": {
             "确定": "Ok",

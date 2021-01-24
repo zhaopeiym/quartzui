@@ -9,6 +9,7 @@ import { TaskListComponent } from './task-list/task-list.component';
 import { TranslateModule, TranslateLoader } from '@ngx-translate/core';
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 import { HttpClient } from '@angular/common/http';
+import { MyHttpService } from '../../shared/myhttp';
 export function HttpLoaderFactory(http: HttpClient) {
   return new TranslateHttpLoader(http);
 }
@@ -27,6 +28,9 @@ export function HttpLoaderFactory(http: HttpClient) {
         deps: [HttpClient]
       }
     })
+  ],
+  providers: [
+    MyHttpService
   ],
   declarations: [TaskListComponent]
 })
