@@ -227,7 +227,8 @@ export class TaskListComponent implements OnInit {
   handleJobOk() {
     /*  e.stopPropagation();
      e.preventDefault(); */
-
+     var url, entity: any;
+     
     if (!this.validateJobForm.valid) {
       this.validata();
       if (!this.validateJobForm.valid)
@@ -235,13 +236,20 @@ export class TaskListComponent implements OnInit {
     }
     this.jobInfoEntity.intervalSecond = this.jobInfoEntity.intervalSecond * parseInt(this.validateJobForm.controls["intervalUnit"].value);
     this.jobInfoEntity.mailMessage = this.validateJobForm.value.mailMessage;
-    var url = this.baseUrl + "/api/Job/AddJob";
-    if (this.modalTitle === "编辑任务" || this.modalTitle === "Editor Task")
+    
+    //编辑
+    if (this.modalTitle === "编辑任务" || this.modalTitle === "Editor Task") {
       url = this.baseUrl + "/api/Job/ModifyJob";
-    this.http.post(url, {
-      NewScheduleEntity: this.jobInfoEntity,
-      OldScheduleEntity: this.editJobInfoEntity
-    }, { headers: this.headers })
+      entity = {
+        NewScheduleEntity: this.jobInfoEntity,
+        OldScheduleEntity: this.editJobInfoEntity
+      }
+    }
+    else {//新增
+      url = this.baseUrl + "/api/Job/AddJob";
+      entity = this.jobInfoEntity;
+    }
+    this.http.post(url, entity, { headers: this.headers })
       .subscribe((result: any) => {
         this.msgInfo("保存任务计划成功！");
       }, (err) => {
