@@ -109,7 +109,7 @@ namespace Host
             }
             finally
             {
-                logs.Add($"<p>{JsonConvert.SerializeObject(loginfo)}</p>");
+                logs.Add($"<p class='msgList'>{JsonConvert.SerializeObject(loginfo)}</p>");
                 context.JobDetail.JobDataMap[Constant.LOGLIST] = logs;
                 double seconds = stopwatch.Elapsed.TotalSeconds;  //总秒数
                 if (seconds >= warnTime)//如果请求超过20秒，记录警告日志    

@@ -109,6 +109,25 @@ export class TaskListComponent implements OnInit {
         result.forEach(element => {
           element.active = localStorage.getItem(element.groupName);
         });
+        result.forEach(item => {
+          item.jobInfoList.forEach(eleJob => {
+            switch (eleJob.requestType) {
+              case "1":
+                eleJob.requestTypeDispaly = "Get";
+                break;
+              case "2":
+                eleJob.requestTypeDispaly = "Post";
+                break;
+              case "3":
+                eleJob.requestTypeDispaly = "Put";
+                break;
+              case "4":
+                eleJob.requestTypeDispaly = "Delete";
+                break;
+            }
+            this.setStateColor(eleJob);
+          });
+        });
         this.resultData = result;
       }, (err) => {
 
@@ -134,9 +153,35 @@ export class TaskListComponent implements OnInit {
             eleJob.nextFireTime = job.nextFireTime;
             eleJob.lastErrMsg = job.lastErrMsg;
             eleJob.displayState = job.displayState;
+            this.setStateColor(eleJob);
           });
         });
       });
+  }
+
+  //设置状态颜色
+  setStateColor(eleJob) {
+    switch (eleJob.displayState) {
+      case "正常":
+        eleJob.stateColor = "blue";
+        break;
+      case "暂停":
+        eleJob.stateColor = "volcano";
+        break;
+      case "完成":
+        eleJob.stateColor = "green";
+        break;
+      case "异常":
+        eleJob.stateColor = "magenta";
+        break;
+      case "阻塞":
+        eleJob.stateColor = "gold";
+        break;
+      case "不存在":
+        eleJob.stateColor = "purple";
+        break;
+    }
+    eleJob.stateTranslate = 'task.list.table.th.tag.' + eleJob.displayState;
   }
 
   showJobModal(groupName) {
@@ -308,15 +353,18 @@ export class TaskListComponent implements OnInit {
         /*result.forEach(element => {
           //logs += "<p>" + element + "</p>" 
         }); */
-        this.modalService.create({
-          nzTitle: '日志',
-          nzContent: logs,
-          nzFooter: null,
-          nzBodyStyle: {
-            "max-height": '500px',
-            "overflow-y": "auto"
-          }
-        });
+        this.translate.get("task.list.table.th.button.日志")
+          .subscribe(title => {
+            this.modalService.create({
+              nzTitle: title,
+              nzContent: logs,
+              nzFooter: null,
+              nzBodyStyle: {
+                "max-height": '500px',
+                "overflow-y": "auto"
+              }
+            });
+          });
       }, (err) => {
         this.msgError("查询失败！");
       });
@@ -328,15 +376,18 @@ export class TaskListComponent implements OnInit {
   }
 
   showModalMsg(title, content) {
-    this.modalService.create({
-      nzTitle: title,
-      nzContent: content,
-      nzFooter: null,
-      nzBodyStyle: {
-        "max-height": '500px',
-        "overflow-y": "auto"
-      }
-    });
+    this.translate.get("task.list.table.th.tag." + title)
+      .subscribe(title => {
+        this.modalService.create({
+          nzTitle: title,
+          nzContent: content,
+          nzFooter: null,
+          nzBodyStyle: {
+            "max-height": '500px',
+            "overflow-y": "auto"
+          }
+        });
+      }); 
   }
 
   switchPass() {
