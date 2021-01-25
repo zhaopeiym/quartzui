@@ -9,3 +9,4 @@
 /QuartzNetAPI/Host/RaspberryPi
 /QuartzNetWeb/.vscode
 /QuartzNetAPI/Host/File/sqliteScheduler.db-journal
+/QuartzNetAPI/Host/File/LoginPassword.json

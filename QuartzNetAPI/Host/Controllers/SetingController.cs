@@ -56,9 +56,7 @@ namespace Host.Controllers
         [HttpPost]
         public async Task<bool> SaveLoginInfo([FromBody] UpdateLoginInfoEntity entity)
         {
-            if (LoginInfo == null)
-                LoginInfo = JsonConvert.DeserializeObject<UpdateLoginInfoEntity>(await System.IO.File.ReadAllTextAsync(loginPasswordPath)) ?? new UpdateLoginInfoEntity();
-
+            LoginInfo = await GetLoginAsync();
             if (LoginInfo.NewPassword == entity.OldPassword)
             {
                 await System.IO.File.WriteAllTextAsync(loginPasswordPath, JsonConvert.SerializeObject(entity));
@@ -77,14 +75,24 @@ namespace Host.Controllers
         public async Task<LoginInfoOutput> VerifyLoginInfo([FromBody] LoginInfoEntity input)
         {
             var output = new LoginInfoOutput();
-            if (LoginInfo == null)
-                LoginInfo = JsonConvert.DeserializeObject<UpdateLoginInfoEntity>(await System.IO.File.ReadAllTextAsync(loginPasswordPath)) ?? new UpdateLoginInfoEntity();
+            LoginInfo = await GetLoginAsync();
             byte[] base64 = System.Text.Encoding.Default.GetBytes(LoginInfo.NewPassword);
             if (input.Password == Convert.ToBase64String(base64))
             {
-                output.Token = DateTime.Now.ToString().DES3Encrypt();
+                output.Token = $"{DateTime.Now}".DES3Encrypt();
             }
             return output;
+        }
+
+        /// <summary>
+        /// 获取登录信息
+        /// </summary>
+        /// <returns></returns>
+        public async Task<UpdateLoginInfoEntity> GetLoginAsync()
+        {
+            if (LoginInfo == null)
+                LoginInfo = JsonConvert.DeserializeObject<UpdateLoginInfoEntity>(await System.IO.File.ReadAllTextAsync(loginPasswordPath)) ?? new UpdateLoginInfoEntity();
+            return LoginInfo;
         }
 
         /// <summary>
