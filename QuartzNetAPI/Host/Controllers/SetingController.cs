@@ -88,10 +88,14 @@ namespace Host.Controllers
         /// 获取登录信息
         /// </summary>
         /// <returns></returns>
-        public async Task<UpdateLoginInfoEntity> GetLoginAsync()
+        private async Task<UpdateLoginInfoEntity> GetLoginAsync()
         {
             if (LoginInfo == null)
+            {
+                if (!System.IO.File.Exists(loginPasswordPath))
+                    await System.IO.File.WriteAllTextAsync(loginPasswordPath, JsonConvert.SerializeObject(new UpdateLoginInfoEntity()));
                 LoginInfo = JsonConvert.DeserializeObject<UpdateLoginInfoEntity>(await System.IO.File.ReadAllTextAsync(loginPasswordPath)) ?? new UpdateLoginInfoEntity();
+            }
             return LoginInfo;
         }
 

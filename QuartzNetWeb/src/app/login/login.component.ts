@@ -12,7 +12,7 @@ import { MyHttpService } from '../../shared/myhttp';
   styleUrls: ['./login.component.css']
 })
 export class LoginComponent implements OnInit {
-  loginPassword: any;
+  loginPassword: any = "";
   private baseUrl = environment.baseUrl;
 
   constructor(private router: Router,
