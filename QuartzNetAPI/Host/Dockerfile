@@ -1,11 +1,14 @@
 
 #基础镜像（用来构建镜像）
-FROM bennyzhao/aspnet:3.0-alpine AS base
+FROM mcr.microsoft.com/dotnet/aspnet:5.0-alpine AS base
 WORKDIR /app
 EXPOSE 80
+ENV TZ=Asia/Shanghai
+CMD cp /usr/share/zoneinfo/Asia/Shanghai /usr/share/zoneinfo/Asia/Beijing
+CMD ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 
 #编译（临时镜像，主要用来编译发布项目）
-FROM mcr.microsoft.com/dotnet/core/sdk:3.0-alpine AS publish
+FROM mcr.microsoft.com/dotnet/sdk:5.0-alpine AS publish
 WORKDIR /src
 COPY . .
 WORKDIR /src/Host
