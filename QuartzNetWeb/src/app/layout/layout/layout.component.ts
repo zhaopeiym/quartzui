@@ -8,8 +8,11 @@ import { NzNotificationService, NzTreeModule, NzModalService } from 'ng-zorro-an
 import { environment } from '../../../environments/environment';
 import { Router } from '@angular/router';
 import { en_US, zh_CN, NzI18nService } from 'ng-zorro-antd/i18n';
+import { debounceTime } from 'rxjs/operators';
 
 import { TranslateService } from '@ngx-translate/core';
+import { fromEvent } from 'rxjs';
+import { Util } from '../../../shared/util';
 
 @Component({
   selector: 'app-layout',
@@ -25,10 +28,7 @@ export class LayoutComponent implements OnInit {
   isCron = true;
   modalTitle = "新增任务";
   title = 'app';
-  // logTitle = "任务调度平台";
-  private headers = new HttpHeaders({
-    'Content-Type': 'application/json'
-  });
+  // logTitle = "任务调度平台";  
   private baseUrl = environment.baseUrl;// "http://localhost:52725";   开发的时候可以先设置本地接口地址
   public resultData: any = [{}];
   dateFormat = 'yyyy/MM/dd';
@@ -38,6 +38,8 @@ export class LayoutComponent implements OnInit {
   TaskList: string;
   Seting: string;
   Explain: string;
+  currentUrl: string;
+  contentPaddingWidth: string = "0 40px";
   constructor(private http: HttpClient,
     private fb2: FormBuilder,
     private notification: NzNotificationService,
@@ -47,7 +49,7 @@ export class LayoutComponent implements OnInit {
     //https://segmentfault.com/a/1190000019852382
     private translate: TranslateService,
     private router: Router) {
-      this.translate.setDefaultLang("zh");
+    this.translate.setDefaultLang("zh");
   }
 
   ngOnInit(): void {
@@ -55,6 +57,31 @@ export class LayoutComponent implements OnInit {
       this.showEnglish();
     else
       this.showChinese();
+
+    if (location.href.indexOf("/seting") >= 0) {
+      this.currentUrl = "seting";
+    } else if (location.href.indexOf("/explain") >= 0) {
+      this.currentUrl = "explain";
+    }
+    else {
+      this.currentUrl = "home";
+    }
+
+    this.IsEnglish = JSON.parse(localStorage.getItem("IsEnglish"));
+    this.setSwitchLanguage();
+
+    this.initWindowAdapt();
+    fromEvent(window, 'resize').pipe(debounceTime(50)).subscribe(() => {
+      this.initWindowAdapt();
+    });
+  }
+  initWindowAdapt() {
+    var w = document.documentElement.offsetWidth || document.body.offsetWidth;
+    if (w < 1500)
+      this.contentPaddingWidth = "0 10px";
+    else
+      this.contentPaddingWidth = "0 40px";
+    console.log(w);
   }
 
   msgError(str): void {
@@ -85,8 +112,17 @@ export class LayoutComponent implements OnInit {
     this.router.navigate(['/explain']);
   }
 
+  clickGitHub() {
+    window.open("https://github.com/zhaopeiym/quartzui");
+  }
+
   // 切换语言
   switchLanguage() {
+    this.IsEnglish = !this.IsEnglish;
+    this.setSwitchLanguage();
+  }
+
+  setSwitchLanguage() {
     if (!this.IsEnglish) {
       this.Language = "中文";
       this.i18n.setLocale(en_US);
@@ -97,7 +133,8 @@ export class LayoutComponent implements OnInit {
       this.i18n.setLocale(zh_CN);
       this.showChinese();
     }
-    this.IsEnglish = !this.IsEnglish;
+
+    localStorage.setItem("IsEnglish", JSON.stringify(this.IsEnglish));
   }
 
   showEnglish() {
@@ -113,7 +150,12 @@ export class LayoutComponent implements OnInit {
     // this.logTitle = "任务调度平台";
     this.TaskList = "任务列表";
     this.Seting = "系统设置";
-    this.Explain = "使用说明"; 
+    this.Explain = "使用说明";
     this.translate.use("zh");
+  }
+
+  logout() {
+    Util.SetStorage("userInfo", {});
+    this.router.navigate(['/signin']);
   }
 }

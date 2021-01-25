@@ -106,5 +106,6 @@ namespace Host.Entity
         /// 请求API的地址
         /// </summary>
         public string RequestUrl { get; set; }
+        public string RequestType { get; set; }
     }
 }

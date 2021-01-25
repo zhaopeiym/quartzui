@@ -4,7 +4,8 @@
         "table.th": {
             "任务名称": "Task Name",
             "状态": "State",
-            "Url": "Url",
+            "请求方式":"Request way",
+            "Url": "Request Url",
             "异常信息": "Exception Info",
             "开始时间": "Start Time",
             "上次执行时间": "Last execution time",
@@ -22,7 +23,14 @@
                 "更多": "More"
             },
             "tag": {
-                "查看": "View"
+                "查看": "View",
+                "正常": "Normal",
+                "暂停": "Paused",
+                "完成": "Complete",
+                "异常": "Error",
+                "阻塞": "Blocked",
+                "不存在": "None",
+                "未知": "Unknown"
             }
         },
         "modal.label": {
@@ -51,10 +59,12 @@
         "任务列表": "Task list"
     },
     "system.setup": {
+        "注销":"logout",
         "breadcrumb": "system setup",
         "tabset.tab": {
             "邮箱设置": "Mailbox settings",
-            "刷新设置": "Refresh settings"
+            "刷新设置": "Refresh settings",
+            "登录设置": "Login settings"
         },
         "label": {
             "页面定时刷新时间": "Page refresh time",
@@ -62,7 +72,9 @@
             "发件邮箱": "MailFrom",
             "邮箱密码": "MailPassword",
             "收件邮箱": "MailTo",
-            "秒": "second"
+            "秒": "second",
+            "旧登录口令": "Old login password",
+            "新登录口令": "New login password"
         },
         "button": {
             "确定": "Ok",

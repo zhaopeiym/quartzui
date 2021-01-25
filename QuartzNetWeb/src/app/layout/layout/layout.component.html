@@ -1,27 +1,30 @@
-<nz-layout class="layout" style="height: 100%;">
+<nz-layout class="layout" style="height: 100%;min-width: 1500px;overflow: auto">
   <nz-header>
     <div class="logo">{{ 'logTitle' | translate }}</div>
     <ul nz-menu [nzTheme]="'dark'" [nzMode]="'horizontal'" style="line-height: 64px;">
-      <li nz-menu-item>
+      <li nz-menu-item nzSelected="{{currentUrl=='home'}}">
         <a (click)="jumpTaskList()">{{TaskList}}</a>
       </li>
-      <li nz-menu-item>
+      <li nz-menu-item nzSelected="{{currentUrl=='seting'}}">
         <a (click)="jumpSeting()">{{Seting}}</a>
       </li>
-      <li nz-menu-item>
+      <li nz-menu-item nzSelected="{{currentUrl=='explain'}}">
         <a (click)="jumpExplain()">{{Explain}}</a></li>
-      <li nz-menu-item>
-        <a target="_blank" href="https://github.com/zhaopeiym/quartzui">GitHub</a>
+      <li class="nomenu" (click)="clickGitHub()" style="padding: 0 20px">
+        <a>GitHub</a>
       </li>
-      <li nz-menu-item style="float: right">
-        <a (click)="switchLanguage()">{{Language}}</a>
+      <li class="nomenu" style="padding: 0 20px" (click)="switchLanguage()">
+        <a>{{Language}}</a>
+      </li>
+      <li class="nomenu" style="float: right;padding: 0 20px" (click)="logout()">
+        <a>{{ 'system.setup.注销' | translate }}</a>
       </li>
     </ul>
   </nz-header>
-  <nz-content style="padding:0 50px;">
+  <nz-content style.padding="{{contentPaddingWidth}}">
     <router-outlet></router-outlet>
   </nz-content>
-  <nz-footer style="text-align: center;"> ©2018 Implement By
+  <nz-footer style="text-align: center;"> ©2018-2021 Implement By
     <a href="https://github.com/zhaopeiym" target="_blank">农码一生</a>
   </nz-footer>
 </nz-layout>

@@ -12,12 +12,15 @@ import { AppRoutingModule } from './app-routing.module';
 
 import { TranslateModule, TranslateLoader } from '@ngx-translate/core';
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
+import { LoginComponent } from './login/login.component';
+import { MyHttpService } from '../shared/myhttp';
 export function HttpLoaderFactory(http: HttpClient) {
   return new TranslateHttpLoader(http);
 }
 @NgModule({
   declarations: [
-    AppComponent
+    AppComponent,
+    LoginComponent
   ],
   imports: [
     AppRoutingModule,
@@ -36,6 +39,7 @@ export function HttpLoaderFactory(http: HttpClient) {
     })
   ],
   providers: [
+    MyHttpService,
     { provide: NZ_I18N, useValue: zh_CN },// 这里设置当前全局使用的语言包
   ],
   bootstrap: [AppComponent]

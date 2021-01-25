@@ -69,7 +69,7 @@ namespace Host
                 stopwatch.Stop(); //  停止监视            
                 double seconds = stopwatch.Elapsed.TotalSeconds;  //总秒数                                
                 loginfo.EndTime = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
-                loginfo.Seconds = seconds;
+                loginfo.ExecuteTime = seconds + "秒";
                 loginfo.Result = $"<span class='result'>{result.MaxLeft(1000)}</span>";
                 if (!response.IsSuccessStatusCode)
                 {
@@ -104,12 +104,12 @@ namespace Host
                 double seconds = stopwatch.Elapsed.TotalSeconds;  //总秒数
                 loginfo.ErrorMsg = $"<span class='error'>{ex.Message} {ex.StackTrace}</span>";
                 context.JobDetail.JobDataMap[Constant.EXCEPTION] = JsonConvert.SerializeObject(loginfo);
-                loginfo.Seconds = seconds;
+                loginfo.ExecuteTime = seconds + "秒";
                 await ErrorAsync(loginfo.JobName, ex, JsonConvert.SerializeObject(loginfo), mailMessage);
             }
             finally
             {
-                logs.Add($"<p>{JsonConvert.SerializeObject(loginfo)}</p>");
+                logs.Add($"<p class='msgList'>{JsonConvert.SerializeObject(loginfo)}</p>");
                 context.JobDetail.JobDataMap[Constant.LOGLIST] = logs;
                 double seconds = stopwatch.Elapsed.TotalSeconds;  //总秒数
                 if (seconds >= warnTime)//如果请求超过20秒，记录警告日志    

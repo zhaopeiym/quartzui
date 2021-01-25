@@ -1,6 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Host.Filters;
+using Host.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -34,22 +36,29 @@ namespace Host
             {
                 options.AddPolicy("AllowSameDomain", policyBuilder =>
                 {
-                    policyBuilder.AllowAnyHeader()
+                    policyBuilder
                         .AllowAnyMethod()
-                        //.WithMethods("GET", "POST")
-                        .AllowCredentials();//指定处理cookie
+                        .AllowAnyHeader();
 
-                    var cfg = Configuration.GetSection("AllowedHosts").Get<List<string>>();
-                    if (cfg?.Contains("*") ?? false)
+                    var allowedHosts = Configuration.GetSection("AllowedHosts").Get<List<string>>();
+                    if (allowedHosts?.Any(t => t == "*") ?? false)
                         policyBuilder.AllowAnyOrigin(); //允许任何来源的主机访问
-                    else if (cfg?.Any() ?? false)
-                        policyBuilder.WithOrigins(cfg.ToArray()); //允许类似http://localhost:8080等主机访问
+                    else if (allowedHosts?.Any() ?? false)
+                        policyBuilder.AllowCredentials().WithOrigins(allowedHosts.ToArray()); //允许类似http://localhost:8080等主机访问
                 });
             });
+
+            //services.AddRouting(r => r.SuppressCheckForUnhandledSecurityMetadata = true);
             #endregion
 
             //services.AddMvc();
-            services.AddControllersWithViews().AddNewtonsoftJson();
+            services.AddControllersWithViews(
+                t =>
+                {
+                    t.Filters.Add<AuthorizationFilter>();
+                }).AddNewtonsoftJson();
+
+            services.AddHostedService<HostedService>();
 
             services.AddSwaggerGen(options =>
             {
@@ -95,10 +104,6 @@ namespace Host
 
             app.UseDefaultFiles();
             app.UseStaticFiles();
-
-            //https://docs.microsoft.com/en-us/aspnet/core/security/cors?view=aspnetcore-3.0
-            app.UseCors("AllowSameDomain");
-
             app.UseSwagger();
             app.UseSwaggerUI(c =>
             {
@@ -106,6 +111,8 @@ namespace Host
             });
 
             app.UseRouting();
+            //https://docs.microsoft.com/en-us/aspnet/core/security/cors?view=aspnetcore-3.0
+            app.UseCors("AllowSameDomain");
             app.UseAuthorization();
             app.UseEndpoints(endpoints =>
             {
@@ -181,18 +188,23 @@ namespace Host
             {
                 case "SQLite-Microsoft":
                 case "SQLite":
-                    driverDelegateType = typeof(SQLiteDelegate).AssemblyQualifiedName; break;
+                    driverDelegateType = typeof(SQLiteDelegate).AssemblyQualifiedName;
+                    break;
                 case "MySql":
-                    driverDelegateType = typeof(MySQLDelegate).AssemblyQualifiedName; break;
+                    driverDelegateType = typeof(MySQLDelegate).AssemblyQualifiedName;
+                    break;
                 case "OracleODPManaged":
                     driverDelegateType = typeof(OracleDelegate).AssemblyQualifiedName; break;
                 case "SqlServer":
                 case "SQLServerMOT":
-                    driverDelegateType = typeof(SqlServerDelegate).AssemblyQualifiedName; break;
+                    driverDelegateType = typeof(SqlServerDelegate).AssemblyQualifiedName;
+                    break;
                 case "Npgsql":
-                    driverDelegateType = typeof(PostgreSQLDelegate).AssemblyQualifiedName; break;
+                    driverDelegateType = typeof(PostgreSQLDelegate).AssemblyQualifiedName;
+                    break;
                 case "Firebird":
-                    driverDelegateType = typeof(FirebirdDelegate).AssemblyQualifiedName; break;
+                    driverDelegateType = typeof(FirebirdDelegate).AssemblyQualifiedName;
+                    break;
                 default:
                     throw new System.Exception("dbProviderName unreasonable");
             }

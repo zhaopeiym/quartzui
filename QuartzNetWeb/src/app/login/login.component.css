@@ -1,0 +1,33 @@
+.login-conent {
+  height: 100%;
+}
+
+.login {
+  top: 30%;
+  position: absolute;
+  margin: 0 auto;
+  left: 0;
+  width: 350px;
+  right: 0;
+  /* border: 1px solid #0094ff; */
+}
+
+.title {
+  font-size: 26px;
+  font-weight: bold;
+  color: #999;
+  text-align: center;
+}
+
+.title span {
+    font-size: 14px;
+    font-weight: 400;
+    color: #fff;
+    background: #ff7600a6;
+    border-radius: 6px;
+    padding: 1px 8px;
+}
+
+.login>* {
+  margin-bottom: 30px;
+}

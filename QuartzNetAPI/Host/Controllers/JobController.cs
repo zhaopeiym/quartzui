@@ -31,7 +31,7 @@ namespace Host.Controllers
         /// <param name="entity"></param>
         /// <returns></returns>
         [HttpPost]
-        public async Task<BaseResult> AddJob([FromBody]ScheduleEntity entity)
+        public async Task<BaseResult> AddJob([FromBody] ScheduleEntity entity)
         {
             return await scheduler.AddScheduleJobAsync(entity);
         }
@@ -41,7 +41,7 @@ namespace Host.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpPost]
-        public async Task<BaseResult> StopJob([FromBody]JobKey job)
+        public async Task<BaseResult> StopJob([FromBody] JobKey job)
         {
             return await scheduler.StopOrDelScheduleJobAsync(job.Group, job.Name);
         }
@@ -51,7 +51,7 @@ namespace Host.Controllers
         /// </summary> 
         /// <returns></returns>
         [HttpPost]
-        public async Task<BaseResult> RemoveJob([FromBody]JobKey job)
+        public async Task<BaseResult> RemoveJob([FromBody] JobKey job)
         {
             return await scheduler.StopOrDelScheduleJobAsync(job.Group, job.Name, true);
         }
@@ -61,7 +61,7 @@ namespace Host.Controllers
         /// </summary> 
         /// <returns></returns>
         [HttpPost]
-        public async Task<BaseResult> ResumeJob([FromBody]JobKey job)
+        public async Task<BaseResult> ResumeJob([FromBody] JobKey job)
         {
             return await scheduler.ResumeJobAsync(job.Group, job.Name);
         }
@@ -71,7 +71,7 @@ namespace Host.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpPost]
-        public async Task<ScheduleEntity> QueryJob([FromBody]JobKey job)
+        public async Task<ScheduleEntity> QueryJob([FromBody] JobKey job)
         {
             return await scheduler.QueryJobAsync(job.Group, job.Name);
         }
@@ -82,10 +82,10 @@ namespace Host.Controllers
         /// <param name="entity"></param>
         /// <returns></returns>
         [HttpPost]
-        public async Task<BaseResult> ModifyJob([FromBody]ScheduleEntity entity)
+        public async Task<BaseResult> ModifyJob([FromBody] ModifyJobInput entity)
         {
-            await scheduler.StopOrDelScheduleJobAsync(entity.JobGroup, entity.JobName, true);
-            await scheduler.AddScheduleJobAsync(entity);
+            await scheduler.StopOrDelScheduleJobAsync(entity.OldScheduleEntity.JobGroup, entity.OldScheduleEntity.JobName, true);
+            await scheduler.AddScheduleJobAsync(entity.NewScheduleEntity);
             return new BaseResult() { Msg = "修改计划任务成功！" };
         }
 
@@ -95,7 +95,7 @@ namespace Host.Controllers
         /// <param name="job"></param>
         /// <returns></returns>
         [HttpPost]
-        public async Task<bool> TriggerJob([FromBody]JobKey job)
+        public async Task<bool> TriggerJob([FromBody] JobKey job)
         {
             await scheduler.TriggerJobAsync(job);
             return true;
@@ -107,9 +107,11 @@ namespace Host.Controllers
         /// <param name="jobKey"></param>
         /// <returns></returns>
         [HttpPost]
-        public async Task<List<string>> GetJobLogs([FromBody]JobKey jobKey)
+        public async Task<List<string>> GetJobLogs([FromBody] JobKey jobKey)
         {
-            return await scheduler.GetJobLogsAsync(jobKey);
+            var logs = await scheduler.GetJobLogsAsync(jobKey);
+            logs.Reverse();
+            return logs;
         }
 
         /// <summary>
@@ -158,7 +160,7 @@ namespace Host.Controllers
         /// <param name="jobKey"></param>
         /// <returns></returns>
         [HttpPost]
-        public async Task<bool> RemoveErrLog([FromBody]JobKey jobKey)
+        public async Task<bool> RemoveErrLog([FromBody] JobKey jobKey)
         {
             return await scheduler.RemoveErrLog(jobKey.Group, jobKey.Name);
         }

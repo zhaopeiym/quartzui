@@ -99,7 +99,6 @@ namespace Host
                 DirectSchedulerFactory.Instance.CreateScheduler("benny" + "Scheduler", "AUTO", new DefaultThreadPool(), jobStore);
                 _scheduler = SchedulerRepository.Instance.Lookup("benny" + "Scheduler").Result;
 
-                _scheduler.Start();//默认开始调度器
                 return _scheduler;
             }
         }
@@ -331,7 +330,8 @@ namespace Host
                             BeginTime = triggers.StartTimeUtc.LocalDateTime,
                             Interval = interval,
                             EndTime = triggers.EndTimeUtc?.LocalDateTime,
-                            Description = jobDetail.Description
+                            Description = jobDetail.Description,
+                            RequestType = jobDetail.JobDataMap.GetString(Constant.REQUESTTYPE)
                         });
                         continue;
                     }
