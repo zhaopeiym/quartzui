@@ -7,8 +7,12 @@
 ## 说明文档 
 https://github.com/zhaopeiym/quartzui/wiki  
 
+## 演示地址
+https://scheduler.haojima.net  
+默认口令：admin  
+
 ## quartzui
-- 基于.NET 5.0和Quartz.NET 3.2.4的web管理界面。
+- 基于.NET5.0和Quartz.NET3.2.4的任务调度Web界面管理。
 - docker方式开箱即用
 - 内置SQLite持久化
 - 支持 RESTful风格接口
