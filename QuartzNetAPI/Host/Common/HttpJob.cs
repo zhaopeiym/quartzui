@@ -23,7 +23,7 @@ namespace Host
             var maxLogCount = 20;//最多保存日志数量
             var warnTime = 20;//接口请求超过多少秒记录警告日志         
             //获取相关参数
-            var requestUrl = context.JobDetail.JobDataMap.GetString(Constant.REQUESTURL);
+            var requestUrl = context.JobDetail.JobDataMap.GetString(Constant.REQUESTURL)?.Trim();
             requestUrl = requestUrl?.IndexOf("http") == 0 ? requestUrl : "http://" + requestUrl;
             var requestParameters = context.JobDetail.JobDataMap.GetString(Constant.REQUESTPARAMETERS);
             var headersString = context.JobDetail.JobDataMap.GetString(Constant.HEADERS);
