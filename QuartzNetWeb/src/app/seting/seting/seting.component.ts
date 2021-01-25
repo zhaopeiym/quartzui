@@ -112,7 +112,7 @@ export class SetingComponent implements OnInit {
         }, 700);
       }
       else
-        this.message.warning("保存失败");
+        this.message.warning("保存失败，旧密码不对。");
     }, (err) => {
 
     });

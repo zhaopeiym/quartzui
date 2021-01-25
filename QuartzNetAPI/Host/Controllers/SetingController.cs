@@ -7,6 +7,7 @@ using MimeKit;
 using Newtonsoft.Json;
 using System;
 using System.Threading.Tasks;
+using Talk.Extensions;
 
 namespace Host.Controllers
 {
@@ -66,6 +67,8 @@ namespace Host.Controllers
             return false;
         }
 
+        private static DateTime ErrLoginTime = DateTime.MinValue;
+        private static int LoginNumber = 0;
         /// <summary>
         /// 登录
         /// </summary>
@@ -75,11 +78,29 @@ namespace Host.Controllers
         public async Task<LoginInfoOutput> VerifyLoginInfo([FromBody] LoginInfoEntity input)
         {
             var output = new LoginInfoOutput();
+
+            //防止暴力破解,2分钟内只允许错误20次。
+            if (LoginNumber++ >= 20 || ErrLoginTime.AddMinutes(2) >= DateTime.Now)
+            {
+                ErrLoginTime = DateTime.Now;
+                LoginNumber = 0;
+                return output;
+            }
+
             LoginInfo = await GetLoginAsync();
-            byte[] base64 = System.Text.Encoding.Default.GetBytes(LoginInfo.NewPassword);
-            if (input.Password == Convert.ToBase64String(base64))
+            if (input.Password == LoginInfo.NewPassword.ToBase64())
             {
                 output.Token = $"{DateTime.Now}".DES3Encrypt();
+                LoginNumber = 0;
+            }
+            else
+            {
+                var defaultPassword = ConfigurationManager.GetTryConfig("DefaultPassword");
+                if (!string.IsNullOrWhiteSpace(defaultPassword) && input.Password == defaultPassword.ToBase64())
+                {
+                    output.Token = $"{DateTime.Now}".DES3Encrypt();
+                    LoginNumber = 0;
+                }
             }
             return output;
         }

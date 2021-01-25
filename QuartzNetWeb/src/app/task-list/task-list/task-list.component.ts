@@ -245,8 +245,13 @@ export class TaskListComponent implements OnInit {
       entity = this.jobInfoEntity;
     }
     this.http.post(url, entity, (result: any) => {
-      this.msgInfo("保存任务计划成功！");
-      this.loadJobInfo();
+      if (result.code == 200) {
+        this.msgInfo("保存任务计划成功！");
+        this.loadJobInfo();
+      }
+      else {
+        this.msgWarning(result.msg);
+      }
     }, (err) => {
       this.msgError("保存任务计划失败！");
     });

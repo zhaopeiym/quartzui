@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Quartz;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Talk.Extensions;
 
 namespace Host.Controllers
 {
@@ -33,6 +34,21 @@ namespace Host.Controllers
         [HttpPost]
         public async Task<BaseResult> AddJob([FromBody] ScheduleEntity entity)
         {
+            if (ConfigurationManager.GetTryConfig("EnvironmentalRestrictions", "false") == "true")
+            {
+                if (entity.Cron == "* * * * * ?")
+                    return new BaseResult()
+                    {
+                        Code = 403,
+                        Msg = "当前环境不允许过频繁执行任务！"
+                    };
+                if (entity.IntervalSecond.HasValue && entity.IntervalSecond <= 10)
+                    return new BaseResult()
+                    {
+                        Code = 403,
+                        Msg = "当前环境不允许低于10秒内循环执行任务！"
+                    };
+            }
             return await scheduler.AddScheduleJobAsync(entity);
         }
 
@@ -84,6 +100,21 @@ namespace Host.Controllers
         [HttpPost]
         public async Task<BaseResult> ModifyJob([FromBody] ModifyJobInput entity)
         {
+            if (ConfigurationManager.GetTryConfig("EnvironmentalRestrictions", "false") == "true")
+            {
+                if (entity.NewScheduleEntity.Cron == "* * * * * ?")
+                    return new BaseResult()
+                    {
+                        Code = 403,
+                        Msg = "当前环境不允许过频繁执行任务！"
+                    };
+                if (entity.NewScheduleEntity.IntervalSecond.HasValue && entity.NewScheduleEntity.IntervalSecond <= 10)
+                    return new BaseResult()
+                    {
+                        Code = 403,
+                        Msg = "当前环境不允许低于10秒内循环执行任务！"
+                    };
+            }
             await scheduler.StopOrDelScheduleJobAsync(entity.OldScheduleEntity.JobGroup, entity.OldScheduleEntity.JobName, true);
             await scheduler.AddScheduleJobAsync(entity.NewScheduleEntity);
             return new BaseResult() { Msg = "修改计划任务成功！" };
