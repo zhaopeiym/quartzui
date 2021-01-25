@@ -194,9 +194,8 @@ namespace Host
                     driverDelegateType = typeof(MySQLDelegate).AssemblyQualifiedName;
                     break;
                 case "OracleODPManaged":
-                    driverDelegateType = typeof(OracleDelegate).AssemblyQualifiedName;
-                    break;
-                case "SQLServer":
+                    driverDelegateType = typeof(OracleDelegate).AssemblyQualifiedName; break;
+                case "SqlServer":
                 case "SQLServerMOT":
                     driverDelegateType = typeof(SqlServerDelegate).AssemblyQualifiedName;
                     break;
