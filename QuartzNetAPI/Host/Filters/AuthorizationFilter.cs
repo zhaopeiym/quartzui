@@ -1,5 +1,7 @@
-﻿using Host.Common;
+﻿using Host.Attributes;
+using Host.Common;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Controllers;
 using Microsoft.AspNetCore.Mvc.Filters;
 using System;
 using System.Collections.Generic;
@@ -14,13 +16,24 @@ namespace Host.Filters
     {
         public Task OnAuthorizationAsync(AuthorizationFilterContext context)
         {
-            var token = context.HttpContext.Request.Headers["token"].ToString();
-
-            if (context.HttpContext.Request.Path.Value == "/api/Seting/VerifyLoginInfo")
+            if (context.ActionDescriptor is ControllerActionDescriptor controllerActionDescriptor)
             {
-                return Task.CompletedTask;
+                var noNeedLoginAttribute = controllerActionDescriptor.
+                                   ControllerTypeInfo.
+                                   GetCustomAttributes(true)
+                                   .Where(a => a.GetType().Equals(typeof(NoLoginAttribute)))
+                                   .ToList();
+                noNeedLoginAttribute.AddRange(controllerActionDescriptor.MethodInfo.GetCustomAttributes(inherit: true)
+                                 .Where(a => a.GetType().Equals(typeof(NoLoginAttribute))).ToList());
+
+                //如果标记了 NoLoginAttribute 则不验证其登录状态
+                if (noNeedLoginAttribute.Any())
+                {
+                    return Task.CompletedTask;
+                }
             }
 
+            var token = context.HttpContext.Request.Headers["token"].ToString();
             if (!token.IsNullOrWhiteSpace())
             {
                 var time = token.DES3Decrypt().ToDateTime();

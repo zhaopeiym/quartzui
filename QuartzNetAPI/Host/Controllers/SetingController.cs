@@ -1,4 +1,5 @@
-﻿using Host.Common;
+﻿using Host.Attributes;
+using Host.Common;
 using Host.Entity;
 using Host.Model;
 using Microsoft.AspNetCore.Cors;
@@ -75,6 +76,7 @@ namespace Host.Controllers
         /// <param name="input"></param>
         /// <returns></returns>
         [HttpPost]
+        [NoLogin]
         public async Task<LoginInfoOutput> VerifyLoginInfo([FromBody] LoginInfoEntity input)
         {
             var output = new LoginInfoOutput();
@@ -151,6 +153,7 @@ namespace Host.Controllers
         /// <param name="model"></param>
         /// <returns></returns>
         [HttpPost]
+        [NoLogin]
         public async Task<bool> SendMail([FromBody] SendMailModel model)
         {
             try
