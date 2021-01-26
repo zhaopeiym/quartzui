@@ -38,7 +38,7 @@ docker run -v /fileData/quartzuifile:/app/File  --restart=unless-stopped --privi
 - 方式3（可直接通过源码部署到windows或linux平台） 
 
 ## 效果图
-![1](https://user-images.githubusercontent.com/5820324/56856558-1c267400-6990-11e9-98a8-c1bf9bd0ba3c.png)
+![1](https://user-images.githubusercontent.com/5820324/105847993-574c5000-6019-11eb-8779-802fdd172a96.png)
 ![2](https://user-images.githubusercontent.com/5820324/56856559-1c267400-6990-11e9-8433-4705e0c4a984.png)
 ![3](https://user-images.githubusercontent.com/5820324/56856560-1cbf0a80-6990-11e9-835c-268efac70d50.png)
 ![4](https://user-images.githubusercontent.com/5820324/56856561-1cbf0a80-6990-11e9-8af6-a93ad0e09740.png)
