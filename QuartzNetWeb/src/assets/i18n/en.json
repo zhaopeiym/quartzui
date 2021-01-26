@@ -1,5 +1,10 @@
 {
     "logTitle": "Task scheduling platform",
+    "login":{
+        "任务调度平台":"Task scheduling platform",
+        "请输入登录口令":"Please enter your login password",
+        "提交":"Submit"
+    },
     "task.list": {
         "table.th": {
             "任务名称": "Task Name",
@@ -12,9 +17,11 @@
             "下次执行时间": "Next execution time",
             "执行计划": "Execution",
             "描述": "Description",
+            "请求次数":"Triggered",
             "button": {
                 "新增任务": "Add Task",
                 "恢复": "Restore",
+                "复制": "Copy",
                 "删除": "Delete",
                 "编辑": "Editor",
                 "暂停": "Pause",

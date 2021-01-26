@@ -32,10 +32,13 @@ export class TaskListComponent implements OnInit {
   public resultData: any = [{}];
   dateFormat = 'yyyy/MM/dd';
   jobInfoEntity: any = {};
-  refreshValue: any = 10;
+  refreshValue: any = 10 * 1000;
   showPass = false;
   showPassIocUrl: string = "/assets/images/yanjing1.png";
   editJobInfoEntity: any;
+  time_run_1: boolean;
+  get_1: any;
+  time_out_1;
 
   constructor(
     private fb2: FormBuilder,
@@ -45,12 +48,11 @@ export class TaskListComponent implements OnInit {
     private http: MyHttpService,
     private modalService: NzModalService) {
     this.loadJobInfo();
-    setInterval(() => {//定时刷新
-      this.renovateJobInfo();
-    }, 1000 * this.refreshValue);
+    this.renovateJobInfo();
   }
 
   ngOnInit(): void {
+    this.time_run_1 = true;
     this.getRefreshInterval();
     this.validateJobForm = this.fb2.group({
       jobName: [null, [Validators.required]],
@@ -69,6 +71,12 @@ export class TaskListComponent implements OnInit {
       mailMessage: ['0']
     });
   }
+
+  //页面销毁前执行
+  ngOnDestroy() {
+    this.time_run_1 = false;
+  }
+
   isShwoPass = false;
   searchData() {
     this.isShwoPass = !this.isShwoPass;
@@ -77,7 +85,7 @@ export class TaskListComponent implements OnInit {
   getRefreshInterval() {
     var url = this.baseUrl + "/api/Seting/GetRefreshInterval";
     this.http.post(url, {}, (result: any) => {
-      this.refreshValue = result.intervalTime;
+      this.refreshValue = result.intervalTime * 1000;
     }, (err) => {
 
     });
@@ -136,7 +144,8 @@ export class TaskListComponent implements OnInit {
   //刷新
   renovateJobInfo() {
     var url = this.baseUrl + "/api/Job/GetAllJobBriefInfo";
-    this.http.get(url, (result: any) => {
+    if (this.get_1) this.get_1.unsubscribe();//丢弃上次未完成的异步请求
+    this.get_1 = this.http.get(url, (result: any) => {
       this.resultData.forEach(element => {
         var jobs = result.find(t => t.groupName === element.groupName);
         element.jobInfoList && element.jobInfoList.forEach(eleJob => {
@@ -147,12 +156,23 @@ export class TaskListComponent implements OnInit {
           eleJob.nextFireTime = job.nextFireTime;
           eleJob.lastErrMsg = job.lastErrMsg;
           eleJob.displayState = job.displayState;
+          eleJob.runNumber = job.runNumber;
           this.setStateColor(eleJob);
         });
       });
+      this.time_renovateJobInfo();
     }, (err) => {
-
+      this.time_renovateJobInfo();
     });
+  }
+
+  //定时刷新
+  time_renovateJobInfo() {
+    if (this.time_out_1) clearTimeout(this.time_out_1);
+    this.time_out_1 = setTimeout(() => {
+      if (this.time_run_1)
+        this.renovateJobInfo()
+    }, this.refreshValue);
   }
 
   //设置状态颜色
@@ -265,6 +285,25 @@ export class TaskListComponent implements OnInit {
       this.modalTitle = "Editor Task";
     else
       this.modalTitle = "编辑任务";
+    var url = this.baseUrl + "/api/Job/QueryJob";
+    this.http.post(url, { name: name, group: group }, (result: any) => {
+      this.jobInfoEntity = result;
+      this.validateJobForm.controls["mailMessage"].setValue(result.mailMessage.toString());
+      this.jobInfoEntity.requestType = this.jobInfoEntity.requestType.toString();
+      this.jobInfoEntity.triggerType = this.jobInfoEntity.triggerType.toString();
+
+      this.editJobInfoEntity = JSON.parse(JSON.stringify(this.jobInfoEntity));
+      this.isJobVisible = true;
+    }, (err) => {
+
+    });
+  }
+
+  copyJob(name, group) {
+    if (this.translate.currentLang === "en")
+      this.modalTitle = "Add Task";
+    else
+      this.modalTitle = "新增任务";
     var url = this.baseUrl + "/api/Job/QueryJob";
     this.http.post(url, { name: name, group: group }, (result: any) => {
       this.jobInfoEntity = result;

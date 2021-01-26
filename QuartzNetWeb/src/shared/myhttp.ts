@@ -18,7 +18,7 @@ export class MyHttpService {
             'Content-Type': 'application/json',
             "token": Util.GetStorage("userInfo").token || ""
         });
-        this.http.post(url, body, { headers: headers })
+        return this.http.post(url, body, { headers: headers })
             .subscribe((result: any) => {
                 succeed && succeed(result);
             }, (err) => {
@@ -34,7 +34,7 @@ export class MyHttpService {
             'Content-Type': 'application/json',
             "token": Util.GetStorage("userInfo").token || ""
         });
-        this.http.get(url, { headers: headers })
+        return this.http.get(url, { headers: headers })
             .subscribe((result: any) => {
                 succeed && succeed(result);
             }, (err) => {

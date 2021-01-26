@@ -107,5 +107,9 @@ namespace Host.Entity
         /// </summary>
         public string RequestUrl { get; set; }
         public string RequestType { get; set; }
+        /// <summary>
+        /// 已经执行的次数
+        /// </summary>
+        public int? RunNumber { get;  set; }
     }
 }

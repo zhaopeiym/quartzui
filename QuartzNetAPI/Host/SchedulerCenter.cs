@@ -331,7 +331,8 @@ namespace Host
                             Interval = interval,
                             EndTime = triggers.EndTimeUtc?.LocalDateTime,
                             Description = jobDetail.Description,
-                            RequestType = jobDetail.JobDataMap.GetString(Constant.REQUESTTYPE)
+                            RequestType = jobDetail.JobDataMap.GetString(Constant.REQUESTTYPE),
+                            RunNumber = (triggers as SimpleTriggerImpl)?.TimesTriggered
                         });
                         continue;
                     }
@@ -393,7 +394,8 @@ namespace Host
                             TriggerState = await Scheduler.GetTriggerState(triggers.Key),
                             PreviousFireTime = triggers.GetPreviousFireTimeUtc()?.LocalDateTime,
                             NextFireTime = triggers.GetNextFireTimeUtc()?.LocalDateTime,
-                        });
+                            RunNumber = (triggers as SimpleTriggerImpl)?.TimesTriggered
+                    });
                         continue;
                     }
                 }

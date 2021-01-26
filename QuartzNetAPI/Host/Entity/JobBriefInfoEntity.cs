@@ -34,7 +34,7 @@ namespace Host.Entity
         /// <summary>
         /// 上次执行时间
         /// </summary>
-        public DateTime? PreviousFireTime { get; set; }      
+        public DateTime? PreviousFireTime { get; set; }
 
         /// <summary>
         /// 上次执行的异常信息
@@ -81,5 +81,10 @@ namespace Host.Entity
                 return state;
             }
         }
+
+        /// <summary>
+        /// 已经执行次数
+        /// </summary>
+        public int? RunNumber { get; set; }
     }
 }

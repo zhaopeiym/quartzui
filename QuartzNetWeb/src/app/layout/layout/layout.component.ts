@@ -123,15 +123,15 @@ export class LayoutComponent implements OnInit {
   }
 
   setSwitchLanguage() {
-    if (!this.IsEnglish) {
-      this.Language = "中文";
+    if (this.IsEnglish) {
       this.i18n.setLocale(en_US);
       this.showEnglish();
+      this.Language = "中文";
     }
     else {
-      this.Language = "English";
       this.i18n.setLocale(zh_CN);
       this.showChinese();
+      this.Language = "English";
     }
 
     localStorage.setItem("IsEnglish", JSON.stringify(this.IsEnglish));

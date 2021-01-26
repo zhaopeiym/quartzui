@@ -5,6 +5,8 @@ import { HttpHeaders, HttpClient } from '@angular/common/http';
 import { NzMessageService } from 'ng-zorro-antd';
 import { Util } from '../../shared/util';
 import { MyHttpService } from '../../shared/myhttp';
+import { en_US, zh_CN, NzI18nService } from 'ng-zorro-antd/i18n';
+import { TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-login',
@@ -14,10 +16,19 @@ import { MyHttpService } from '../../shared/myhttp';
 export class LoginComponent implements OnInit {
   loginPassword: any = "";
   private baseUrl = environment.baseUrl;
+  IsEnglish: any;
 
   constructor(private router: Router,
+    private i18n: NzI18nService,
+    private translate: TranslateService,
     private message: NzMessageService,
-    private http: MyHttpService, ) { }
+    private http: MyHttpService, ) {
+
+    if (JSON.parse(localStorage.getItem("IsEnglish")))
+      this.translate.setDefaultLang("en");//zh        
+    else
+      this.translate.setDefaultLang("zh");//en
+  }
 
   ngOnInit() {
   }

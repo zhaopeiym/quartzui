@@ -188,7 +188,7 @@
         <tr>
           <th style="width: 7%;">{{ 'task.list.table.th.任务名称' | translate }}</th>
           <th class="tb-center" style="width: 4%;">{{ 'task.list.table.th.状态' | translate }}</th>
-          <th class="tb-center" style="width: 5%;">{{ 'task.list.table.th.请求方式' | translate }} </th>
+          <th class="tb-center" style="width: 5%;">{{ 'task.list.table.th.请求次数' | translate }} </th>
           <th class="tb-center" style="width: 9%;" class="td-url">{{ 'task.list.table.th.Url' | translate }}</th>
           <th class="tb-center" style="width: 5%;">{{ 'task.list.table.th.异常信息' | translate }}</th>
           <th class="tb-center" style="width: 9%;">{{ 'task.list.table.th.上次执行时间' | translate }}</th>
@@ -209,10 +209,11 @@
             <nz-tag [nzColor]="jobInfo.stateColor">{{ jobInfo.stateTranslate | translate}}</nz-tag>
           </td>
           <td class="tb-center">
-            <nz-tag>{{ jobInfo.requestTypeDispaly}}</nz-tag>
+            <!-- <nz-tag>{{ jobInfo.requestTypeDispaly}}</nz-tag> -->
+            {{ jobInfo.runNumber}}
           </td>
           <td class="td-url" title="{{ jobInfo.requestUrl}}">
-            {{ jobInfo.requestUrl}}
+            {{ jobInfo.requestTypeDispaly}} - {{ jobInfo.requestUrl}}
           </td>
           <td class="tb-center">
             <nz-tag nzMode="closeable" *ngIf="jobInfo.lastErrMsg" [nzColor]="'red'"
@@ -256,6 +257,12 @@
                   <a>
                     <button [nzSize]="'small'" nz-button
                       (click)="editJob(jobInfo.name,panel.groupName)">{{ 'task.list.table.th.button.编辑' | translate }}</button>
+                  </a>
+                </li>
+                <li nz-menu-item>
+                  <a>
+                    <button [nzSize]="'small'" nz-button
+                      (click)="copyJob(jobInfo.name,panel.groupName)">{{ 'task.list.table.th.button.复制' | translate }}</button>
                   </a>
                 </li>
                 <li nz-menu-item>
