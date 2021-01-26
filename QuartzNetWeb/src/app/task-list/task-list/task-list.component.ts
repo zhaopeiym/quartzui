@@ -264,19 +264,19 @@ export class TaskListComponent implements OnInit {
       url = this.baseUrl + "/api/Job/AddJob";
       entity = this.jobInfoEntity;
     }
+
     this.http.post(url, entity, (result: any) => {
       if (result.code == 200) {
         this.msgInfo("保存任务计划成功！");
         this.loadJobInfo();
+        this.isJobVisible = false;
       }
       else {
         this.msgWarning(result.msg);
       }
     }, (err) => {
       this.msgError("保存任务计划失败！");
-    });
-
-    this.isJobVisible = false;
+    }); 
   }
 
   //编辑任务
