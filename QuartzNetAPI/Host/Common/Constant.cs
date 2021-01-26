@@ -35,5 +35,9 @@ namespace Host.Common
         /// 异常 Exception
         /// </summary>
         public static string EXCEPTION = "Exception";
+        /// <summary>
+        /// 执行次数
+        /// </summary>
+        public static string RUNNUMBER = "RunNumber";
     }
 }

@@ -85,6 +85,6 @@ namespace Host.Entity
         /// <summary>
         /// 已经执行次数
         /// </summary>
-        public int? RunNumber { get; set; }
+        public long RunNumber { get; set; }
     }
 }

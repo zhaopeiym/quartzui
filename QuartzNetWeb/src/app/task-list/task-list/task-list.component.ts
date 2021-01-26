@@ -124,10 +124,10 @@ export class TaskListComponent implements OnInit {
               case "2":
                 eleJob.requestTypeDispaly = "Post";
                 break;
-              case "3":
+              case "4":
                 eleJob.requestTypeDispaly = "Put";
                 break;
-              case "4":
+              case "8":
                 eleJob.requestTypeDispaly = "Delete";
                 break;
             }

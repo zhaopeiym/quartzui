@@ -28,6 +28,10 @@ namespace Host
                 return;
             }
 
+            //记录执行次数
+            var runNumber = context.JobDetail.JobDataMap.GetLong(Constant.RUNNUMBER);
+            context.JobDetail.JobDataMap[Constant.RUNNUMBER] = ++runNumber;
+
             var maxLogCount = 40;//最多保存日志数量
             var warnTime = 20;//接口请求超过多少秒记录警告日志         
             //获取相关参数

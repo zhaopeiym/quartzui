@@ -126,7 +126,7 @@ namespace Host
                 {
                     { "RequestUrl",entity.RequestUrl},
                     { "RequestParameters",entity.RequestParameters},
-                    { "RequestType", ((int)entity.RequestType).ToString()},
+                    { Constant.REQUESTTYPE, ((int)entity.RequestType).ToString()},
                     { "EndAt", entity.EndTime.ToString()},
                     { Constant.HEADERS, entity.Headers},
                     { Constant.MAILMESSAGE, ((int)entity.MailMessage).ToString()},
@@ -266,7 +266,7 @@ namespace Host
             entity.RequestUrl = jobDetail.JobDataMap.GetString(Constant.REQUESTURL);
             entity.BeginTime = triggers.StartTimeUtc.LocalDateTime;
             entity.EndTime = string.IsNullOrWhiteSpace(endTime) ? null : DateTime.Parse(endTime);
-            entity.IntervalSecond = intervalSeconds.HasValue ? Convert.ToInt32(intervalSeconds.Value) : 0;
+            entity.IntervalSecond = intervalSeconds.HasValue ? Convert.ToInt32(intervalSeconds.Value) : null;
             entity.JobGroup = jobGroup;
             entity.JobName = jobName;
             entity.Cron = (triggers as CronTriggerImpl)?.CronExpressionString;
@@ -345,7 +345,9 @@ namespace Host
                             EndTime = triggers.EndTimeUtc?.LocalDateTime,
                             Description = jobDetail.Description,
                             RequestType = jobDetail.JobDataMap.GetString(Constant.REQUESTTYPE),
-                            RunNumber = (triggers as SimpleTriggerImpl)?.TimesTriggered
+                            RunNumber = jobDetail.JobDataMap.GetLong(Constant.RUNNUMBER)
+                            //(triggers as SimpleTriggerImpl)?.TimesTriggered
+                            //CronTriggerImpl 中没有 TimesTriggered 所以自己RUNNUMBER记录
                         });
                         continue;
                     }
@@ -407,7 +409,7 @@ namespace Host
                             TriggerState = await Scheduler.GetTriggerState(triggers.Key),
                             PreviousFireTime = triggers.GetPreviousFireTimeUtc()?.LocalDateTime,
                             NextFireTime = triggers.GetNextFireTimeUtc()?.LocalDateTime,
-                            RunNumber = (triggers as SimpleTriggerImpl)?.TimesTriggered
+                            RunNumber = jobDetail.JobDataMap.GetLong(Constant.RUNNUMBER)                            
                         });
                         continue;
                     }
