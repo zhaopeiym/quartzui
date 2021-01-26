@@ -127,6 +127,7 @@ namespace Host
                     { "RequestUrl",entity.RequestUrl},
                     { "RequestParameters",entity.RequestParameters},
                     { "RequestType", ((int)entity.RequestType).ToString()},
+                    { "EndAt", entity.EndTime.ToString()},
                     { Constant.HEADERS, entity.Headers},
                     { Constant.MAILMESSAGE, ((int)entity.MailMessage).ToString()},
                 };
@@ -217,13 +218,24 @@ namespace Host
                 var jobKey = new JobKey(jobName, jobGroup);
                 if (await Scheduler.CheckExists(jobKey))
                 {
-                    //任务已经存在则暂停任务
-                    await Scheduler.ResumeJob(jobKey);
-                    result.Msg = "恢复任务计划成功！";
-                    Log.Information(string.Format("任务“{0}”恢复运行", jobName));
+                    var jobDetail = await Scheduler.GetJobDetail(jobKey);
+                    var endTime = jobDetail.JobDataMap.GetString("EndAt");
+                    if (!string.IsNullOrWhiteSpace(endTime) && DateTime.Parse(endTime) <= DateTime.Now)
+                    {
+                        result.Code = 500;
+                        result.Msg = "Job的结束时间已过期。";
+                    }
+                    else
+                    {
+                        //任务已经存在则暂停任务
+                        await Scheduler.ResumeJob(jobKey);
+                        result.Msg = "恢复任务计划成功！";
+                        Log.Information(string.Format("任务“{0}”恢复运行", jobName));
+                    }
                 }
                 else
                 {
+                    result.Code = 500;
                     result.Msg = "任务不存在";
                 }
             }
@@ -250,9 +262,10 @@ namespace Host
             var triggersList = await Scheduler.GetTriggersOfJob(jobKey);
             var triggers = triggersList.AsEnumerable().FirstOrDefault();
             var intervalSeconds = (triggers as SimpleTriggerImpl)?.RepeatInterval.TotalSeconds;
+            var endTime = jobDetail.JobDataMap.GetString("EndAt");
             entity.RequestUrl = jobDetail.JobDataMap.GetString(Constant.REQUESTURL);
             entity.BeginTime = triggers.StartTimeUtc.LocalDateTime;
-            entity.EndTime = triggers.EndTimeUtc?.LocalDateTime;
+            entity.EndTime = string.IsNullOrWhiteSpace(endTime) ? null : DateTime.Parse(endTime);
             entity.IntervalSecond = intervalSeconds.HasValue ? Convert.ToInt32(intervalSeconds.Value) : 0;
             entity.JobGroup = jobGroup;
             entity.JobName = jobName;
@@ -395,7 +408,7 @@ namespace Host
                             PreviousFireTime = triggers.GetPreviousFireTimeUtc()?.LocalDateTime,
                             NextFireTime = triggers.GetNextFireTimeUtc()?.LocalDateTime,
                             RunNumber = (triggers as SimpleTriggerImpl)?.TimesTriggered
-                    });
+                        });
                         continue;
                     }
                 }
@@ -446,7 +459,7 @@ namespace Host
                 return TriggerBuilder.Create()
                .WithIdentity(entity.JobName, entity.JobGroup)
                .StartAt(entity.BeginTime)//开始时间
-               .EndAt(entity.EndTime)//结束数据
+                                         //.EndAt(entity.EndTime)//结束数据
                .WithSimpleSchedule(x =>
                {
                    x.WithIntervalInSeconds(entity.IntervalSecond.Value)//执行时间间隔，单位秒
@@ -461,7 +474,7 @@ namespace Host
                 return TriggerBuilder.Create()
                .WithIdentity(entity.JobName, entity.JobGroup)
                .StartAt(entity.BeginTime)//开始时间
-               .EndAt(entity.EndTime)//结束数据
+                                         //.EndAt(entity.EndTime)//结束数据
                .WithSimpleSchedule(x =>
                {
                    x.WithIntervalInSeconds(entity.IntervalSecond.Value)//执行时间间隔，单位秒
@@ -486,7 +499,7 @@ namespace Host
 
                    .WithIdentity(entity.JobName, entity.JobGroup)
                    .StartAt(entity.BeginTime)//开始时间
-                   .EndAt(entity.EndTime)//结束时间
+                                             //.EndAt(entity.EndTime)//结束时间
                    .WithCronSchedule(entity.Cron, cronScheduleBuilder => cronScheduleBuilder.WithMisfireHandlingInstructionFireAndProceed())//指定cron表达式
                    .ForJob(entity.JobName, entity.JobGroup)//作业名称
                    .Build();

@@ -1,0 +1,91 @@
+{
+    "logTitle": "Task scheduling platform",
+    "login":{
+        "任务调度平台":"Task scheduling platform",
+        "请输入登录口令":"Please enter your login password",
+        "提交":"Submit"
+    },
+    "task.list": {
+        "table.th": {
+            "任务名称": "Task Name",
+            "状态": "State",
+            "请求方式":"Request way",
+            "Url": "Request Url",
+            "异常信息": "Exception Info",
+            "开始时间": "Start Time",
+            "上次执行时间": "Last execution time",
+            "下次执行时间": "Next execution time",
+            "执行计划": "Execution",
+            "描述": "Description",
+            "请求次数":"Triggered",
+            "button": {
+                "新增任务": "Add Task",
+                "恢复": "Restore",
+                "复制": "Copy",
+                "删除": "Delete",
+                "编辑": "Editor",
+                "暂停": "Pause",
+                "执行": "Execute",
+                "日志": "Log",
+                "更多": "More"
+            },
+            "tag": {
+                "查看": "View",
+                "正常": "Normal",
+                "暂停": "Paused",
+                "完成": "Complete",
+                "异常": "Error",
+                "阻塞": "Blocked",
+                "不存在": "None",
+                "未知": "Unknown"
+            }
+        },
+        "modal.label": {
+            "任务组名": "Group name",
+            "任务名称": "Task name",
+            "请求地址": "Request URL",
+            "开始时间": "Start time",
+            "结束时间": "End time",
+            "触发器类型": "Trigger type",
+            "Cron表达式": "Cron",
+            "间隔时间": "Interval time",
+            "请求类型": "Request type",
+            "请求头": "Request header",
+            "请求参数": "Request parameter",
+            "任务描述": "Task description",
+            "邮件通知": "Email notification",
+            "参考": "Consult",
+            "不通知": "Not notify",
+            "通知异常": "Notify exception",
+            "通知所有": "Notify all", 
+            "秒": "second",
+            "时": "hour",
+            "分": "minute",
+            "天": "day"
+        },
+        "任务列表": "Task list"
+    },
+    "system.setup": {
+        "注销":"logout",
+        "breadcrumb": "system setup",
+        "tabset.tab": {
+            "邮箱设置": "Mailbox settings",
+            "刷新设置": "Refresh settings",
+            "登录设置": "Login settings"
+        },
+        "label": {
+            "页面定时刷新时间": "Page refresh time",
+            "发件服务器": "MailHost",
+            "发件邮箱": "MailFrom",
+            "邮箱密码": "MailPassword",
+            "收件邮箱": "MailTo",
+            "秒": "second",
+            "旧登录口令": "Old login password",
+            "新登录口令": "New login password"
+        },
+        "button": {
+            "确定": "Ok",
+            "测试": "Test"
+        }
+    }
+}

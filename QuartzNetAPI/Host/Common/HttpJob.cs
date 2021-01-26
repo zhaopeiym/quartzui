@@ -20,7 +20,15 @@ namespace Host
     {
         public async Task Execute(IJobExecutionContext context)
         {
-            var maxLogCount = 20;//最多保存日志数量
+            //如果结束时间超过当前时间，则暂停当前任务。
+            var endTime = context.JobDetail.JobDataMap.GetString("EndAt");
+            if (!string.IsNullOrWhiteSpace(endTime) && DateTime.Parse(endTime) <= DateTime.Now)
+            {
+                await context.Scheduler.PauseJob(new JobKey(context.JobDetail.Key.Name, context.JobDetail.Key.Group));
+                return;
+            }
+
+            var maxLogCount = 40;//最多保存日志数量
             var warnTime = 20;//接口请求超过多少秒记录警告日志         
             //获取相关参数
             var requestUrl = context.JobDetail.JobDataMap.GetString(Constant.REQUESTURL)?.Trim();

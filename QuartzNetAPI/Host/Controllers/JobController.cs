@@ -141,7 +141,7 @@ namespace Host.Controllers
         public async Task<List<string>> GetJobLogs([FromBody] JobKey jobKey)
         {
             var logs = await scheduler.GetJobLogsAsync(jobKey);
-            logs.Reverse();
+            logs?.Reverse();
             return logs;
         }
 

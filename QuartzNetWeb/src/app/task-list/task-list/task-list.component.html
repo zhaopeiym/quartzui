@@ -3,8 +3,8 @@
 </nz-breadcrumb>
 <div style="background:#fff; padding: 24px; min-height: 280px;">
 
-  <nz-modal class="modalStyle" [(nzVisible)]="isJobVisible" [(nzTitle)]="modalTitle" (nzOnCancel)="handleJobCancel()"
-    (nzOnOk)="handleJobOk()">
+  <nz-modal class="modalStyle" [(nzVisible)]="isJobVisible" [(nzOkLoading)]="jobLoading" [(nzTitle)]="modalTitle"
+    (nzOnCancel)="handleJobCancel()" (nzOnOk)="handleJobOk()">
 
     <form nz-form [formGroup]="validateJobForm">
 
@@ -50,14 +50,14 @@
         </nz-form-control>
       </nz-form-item>
 
-      <!-- <nz-form-item>
+      <nz-form-item>
         <nz-form-label [nzSpan]="6" nzFor="endTime">{{ 'task.list.modal.label.结束时间' | translate }}</nz-form-label>
         <nz-form-control [nzSpan]="15">
           <nz-date-picker formControlName="endTime" [(ngModel)]="jobInfoEntity.endTime" nzShowTime></nz-date-picker>
           <nz-form-explain *ngIf="validateJobForm.get('endTime').dirty && validateJobForm.get('endTime').errors">
           </nz-form-explain>
         </nz-form-control>
-      </nz-form-item> -->
+      </nz-form-item>
 
       <nz-form-item>
         <nz-form-label [nzSpan]="6" nzRequired nzFor="triggerType">{{ 'task.list.modal.label.触发器类型' | translate }}
@@ -83,7 +83,8 @@
           </nz-form-explain>
         </nz-form-control>
         <nz-tag [nzColor]="'#2db7f5'">
-          <a href=" https://www.bejson.com/othertools/cron/ " target="_blank">{{ 'task.list.modal.label.参考' | translate }}</a>
+          <a href=" https://www.bejson.com/othertools/cron/ "
+            target="_blank">{{ 'task.list.modal.label.参考' | translate }}</a>
         </nz-tag>
       </nz-form-item>
 
@@ -235,10 +236,10 @@
           </td>
           <td>
             <button [nzSize]="'small'" *ngIf="jobInfo.displayState==='暂停'" nz-button
-              (click)="resumeJob(jobInfo.name,panel.groupName)"
+              [disabled]="jobInfo.bt_restore_loading" (click)="resumeJob(jobInfo,panel.groupName)"
               nzType="default">{{ 'task.list.table.th.button.恢复' | translate }}</button>
             <button [nzSize]="'small'" *ngIf="jobInfo.displayState!=='暂停'" nz-button
-              (click)="stopJob(jobInfo.name,panel.groupName)"
+              [disabled]="jobInfo.bt_suspended_loading" (click)="stopJob(jobInfo,panel.groupName)"
               nzType="default">{{ 'task.list.table.th.button.暂停' | translate }}</button>
             <nz-popconfirm [nzTitle]="'你确定删除这个任务？'" (nzOnConfirm)="removeJob(jobInfo.name,panel.groupName)"
               (nzOnCancel)="confirm()">

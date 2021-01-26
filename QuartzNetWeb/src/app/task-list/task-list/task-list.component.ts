@@ -4,7 +4,7 @@ import * as addDays from 'date-fns/add_days';
 import * as getISOWeek from 'date-fns/get_iso_week';
 import { AbstractControl, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { NgModule } from '@angular/core';
-import { NzNotificationService, NzTreeModule, NzModalService } from 'ng-zorro-antd';
+import { NzNotificationService, NzTreeModule, NzModalService, NzButtonModule } from 'ng-zorro-antd';
 import { environment } from '../../../environments/environment';
 import { ThrowStmt } from '@angular/compiler';
 import { TranslateService } from '@ngx-translate/core';
@@ -39,6 +39,7 @@ export class TaskListComponent implements OnInit {
   time_run_1: boolean;
   get_1: any;
   time_out_1;
+  jobLoading: boolean;
 
   constructor(
     private fb2: FormBuilder,
@@ -265,6 +266,7 @@ export class TaskListComponent implements OnInit {
       entity = this.jobInfoEntity;
     }
 
+    this.jobLoading = true;
     this.http.post(url, entity, (result: any) => {
       if (result.code == 200) {
         this.msgInfo("保存任务计划成功！");
@@ -274,9 +276,11 @@ export class TaskListComponent implements OnInit {
       else {
         this.msgWarning(result.msg);
       }
+      this.jobLoading = false;
     }, (err) => {
       this.msgError("保存任务计划失败！");
-    }); 
+      this.jobLoading = false;
+    });
   }
 
   //编辑任务
@@ -319,24 +323,33 @@ export class TaskListComponent implements OnInit {
   }
 
   //暂停
-  stopJob(name, group) {
+  stopJob(job, group) {
+    var name = job.name;
     var url = this.baseUrl + "/api/Job/StopJob";
+    job.bt_suspended_loading = true;
     this.http.post(url, { name: name, group: group }, (result: any) => {
       this.msgInfo(result.msg);
       this.renovateJobInfo();
+      job.bt_suspended_loading = false;
     }, (err) => {
-
+      job.bt_suspended_loading = false;
     });
   }
 
   //恢复
-  resumeJob(name, group) {
+  resumeJob(job, group) {
+    var name = job.name;
     var url = this.baseUrl + "/api/Job/ResumeJob";
+    job.bt_restore_loading = true;
     this.http.post(url, { name: name, group: group }, (result: any) => {
-      this.msgInfo(result.msg);
+      if (result.code == 200)
+        this.msgInfo(result.msg);
+      else
+        this.msgWarning(result.msg);
       this.renovateJobInfo();
+      job.bt_restore_loading = false;
     }, (err) => {
-
+      job.bt_restore_loading = false;
     });
   }
 
