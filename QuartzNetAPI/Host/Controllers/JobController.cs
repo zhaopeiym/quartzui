@@ -1,4 +1,5 @@
-﻿using Host.Entity;
+﻿using Host.Common;
+using Host.Entity;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 using Quartz;
@@ -102,18 +103,25 @@ namespace Host.Controllers
         {
             if (ConfigurationManager.GetTryConfig("EnvironmentalRestrictions", "false") == "true")
             {
-                if (entity.NewScheduleEntity.Cron == "* * * * * ?")
-                    return new BaseResult()
-                    {
-                        Code = 403,
-                        Msg = "当前环境不允许过频繁执行任务！"
-                    };
-                if (entity.NewScheduleEntity.IntervalSecond.HasValue && entity.NewScheduleEntity.IntervalSecond <= 10)
+
+                if (entity.NewScheduleEntity.TriggerType == TriggerTypeEnum.Simple &&
+                    entity.NewScheduleEntity.IntervalSecond.HasValue &&
+                    entity.NewScheduleEntity.IntervalSecond <= 10)
+                {
                     return new BaseResult()
                     {
                         Code = 403,
                         Msg = "当前环境不允许低于10秒内循环执行任务！"
                     };
+                }
+                else if (entity.NewScheduleEntity.TriggerType == TriggerTypeEnum.Cron && entity.NewScheduleEntity.Cron == "* * * * * ?")
+                {
+                    return new BaseResult()
+                    {
+                        Code = 403,
+                        Msg = "当前环境不允许过频繁执行任务！"
+                    };
+                }
             }
             await scheduler.StopOrDelScheduleJobAsync(entity.OldScheduleEntity.JobGroup, entity.OldScheduleEntity.JobName, true);
             await scheduler.AddScheduleJobAsync(entity.NewScheduleEntity);
