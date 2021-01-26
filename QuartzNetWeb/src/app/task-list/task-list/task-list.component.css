@@ -22,6 +22,14 @@
   background: #E6F7FF;
 }
 
+.jobTable tr:first-child {
+  background: #FBFBFB;
+}
+
+.jobTable tr:first-child:hover {
+  background: #FBFBFB;
+}
+
 .jobTable tr th {
   border-top: 0;
 }
