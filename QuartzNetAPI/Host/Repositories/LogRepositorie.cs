@@ -111,12 +111,12 @@ namespace Host.Repositories
                                     WHERE
 	                                    JOB_NAME = @jobName
                                     AND JOB_GROUP = @jobGroup";
-                    await connection.ExecuteAsync(modifySql, new { jobName, jobGroup, jobData = source.ToString() });
+                    await connection.ExecuteAsync(modifySql, new { jobName, jobGroup, jobData = Encoding.Default.GetBytes(source.ToString()) });
                 }
 
                 return true;
             }
-            catch
+            catch (Exception ex)
             {
                 return false;
             }
