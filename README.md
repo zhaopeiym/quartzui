@@ -42,21 +42,25 @@ docker run -v /fileData/quartzuifile:/app/File  --restart=unless-stopped --privi
 ```
 "dbProviderName":"OracleODPManaged",
 "connectionString": "Data Source=(DESCRIPTION=(ADDRESS_LIST=(ADDRESS=(PROTOCOL=TCP)(HOST=localhost)(PORT=1521)))(CONNECT_DATA=(SERVICE_NAME=xe)));User Id=system;Password=oracle;";
+
 "dbProviderName":"SqlServer",
 "connectionString": "Server=localhost;Database=quartznet;User Id={SqlServerUser};Password={SqlServerPassword};";
+
 "dbProviderName":"SQLServerMOT",
 "connectionString": "Server=localhost,1444;Database=quartznet;User Id={SqlServerUser};Password={SqlServerPassword};"
- // MySql 测试通过
-"dbProviderName":"MySql",
+
+"dbProviderName":"MySql", // MySql 测试通过
 "connectionString": "Server = localhost; Database = quartznet; Uid = quartznet; Pwd = quartznet";
-// Npgsql 测试通过
-"dbProviderName":"Npgsql",
+
+"dbProviderName":"Npgsql", // Npgsql 测试通过
 "connectionString": "Server=127.0.0.1;Port=5432;Userid=quartznet;Password=quartznet;Pooling=true;MinPoolSize=1;MaxPoolSize=20;Timeout=15;SslMode=Disable;Database=quartznet";
+
 "dbProviderName":"SQLite",
 "connectionString": "Data Source=test.db;Version=3;";
-// SQLite-Microsoft 测试通过
-"dbProviderName":"SQLite-Microsoft",
+
+"dbProviderName":"SQLite-Microsoft", // SQLite-Microsoft 测试通过
 "connectionString": "Data Source=test.db;";
+
 "dbProviderName":"Firebird",
 "connectionString": "User=SYSDBA;Password=masterkey;Database=/firebird/data/quartz.fdb;DataSource=localhost;Port=3050;Dialect=3;Charset=NONE;Role=;Connection lifetime=15;Pooling=true;MinPoolSize=0;MaxPoolSize=50;Packet Size=8192;ServerType=0;";
 ```
