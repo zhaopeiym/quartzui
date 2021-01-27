@@ -59,6 +59,7 @@ namespace Host
                 }).AddNewtonsoftJson();
 
             services.AddHostedService<HostedService>();
+            services.AddSingleton<SchedulerCenter>();
 
             services.AddSwaggerGen(options =>
             {
@@ -75,7 +76,7 @@ namespace Host
                 options.IncludeXmlComments(xmlPath);
             });
 
-            services.AddSingleton(GetScheduler());
+           
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -175,44 +176,6 @@ namespace Host
                                      }
                                  )
                                 .CreateLogger();
-        }
-
-        private SchedulerCenter GetScheduler()
-        {
-            string dbProviderName = Configuration.GetSection("Quartz")["dbProviderName"];
-            string connectionString = Configuration.GetSection("Quartz")["connectionString"];
-
-            string driverDelegateType = string.Empty;
-
-            switch (dbProviderName)
-            {
-                case "SQLite-Microsoft":
-                case "SQLite":
-                    driverDelegateType = typeof(SQLiteDelegate).AssemblyQualifiedName;
-                    break;
-                case "MySql":
-                    driverDelegateType = typeof(MySQLDelegate).AssemblyQualifiedName;
-                    break;
-                case "OracleODPManaged":
-                    driverDelegateType = typeof(OracleDelegate).AssemblyQualifiedName; break;
-                case "SqlServer":
-                case "SQLServerMOT":
-                    driverDelegateType = typeof(SqlServerDelegate).AssemblyQualifiedName;
-                    break;
-                case "Npgsql":
-                    driverDelegateType = typeof(PostgreSQLDelegate).AssemblyQualifiedName;
-                    break;
-                case "Firebird":
-                    driverDelegateType = typeof(FirebirdDelegate).AssemblyQualifiedName;
-                    break;
-                default:
-                    throw new System.Exception("dbProviderName unreasonable");
-            }
-
-            SchedulerCenter schedulerCenter = SchedulerCenter.Instance;
-            schedulerCenter.Setting(new DbProvider(dbProviderName, connectionString), driverDelegateType);
-
-            return schedulerCenter;
-        }
+        }       
     }
 }

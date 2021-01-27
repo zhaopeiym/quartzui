@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
-using Host.Common;
+﻿using Host.Common;
 using Host.Entity;
 using Host.Repositories;
 using Microsoft.Data.Sqlite;
@@ -17,72 +12,92 @@ using Quartz.Impl.Triggers;
 using Quartz.Simpl;
 using Quartz.Util;
 using Serilog;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace Host
 {
     /// <summary>
-    /// 调度中心
+    /// 调度中心 [单例模式]
     /// </summary>
     public class SchedulerCenter
     {
         /// <summary>
-        /// 任务调度对象
+        /// 数据连接
         /// </summary>
-        public static readonly SchedulerCenter Instance;
+        private IDbProvider dbProvider;
+        /// <summary>
+        /// ADO 数据类型
+        /// </summary>
+        private string driverDelegateType;
 
-        static SchedulerCenter()
+        public SchedulerCenter()
         {
-            Instance = new SchedulerCenter();
+            InitDriverDelegateType();
+            dbProvider = new DbProvider(AppConfig.DbProviderName, AppConfig.ConnectionString);
         }
 
-        IDbProvider dbProvider;
-        string driverDelegateType;
-
         /// <summary>
-        /// 配置Scheduler 仅初始化时生效
+        /// 初始化DriverDelegateType
         /// </summary>
-        /// <param name="dbProvider"></param>
-        /// <param name="driverDelegateType"></param>
-        public void Setting(IDbProvider dbProvider, string driverDelegateType)
+        private void InitDriverDelegateType()
         {
-            this.driverDelegateType = driverDelegateType;
-            this.dbProvider = dbProvider;
-        }
-
-        private IScheduler _scheduler;
-
-        /// <summary>
-        /// 返回任务计划（调度器）
-        /// </summary>
-        /// <returns></returns>
-        private IScheduler Scheduler
-        {
-            get
+            switch (AppConfig.DbProviderName)
             {
-                if (_scheduler != null)
-                {
-                    return _scheduler;
-                }
+                case "SQLite-Microsoft":
+                case "SQLite":
+                    driverDelegateType = typeof(SQLiteDelegate).AssemblyQualifiedName;
+                    break;
+                case "MySql":
+                    driverDelegateType = typeof(MySQLDelegate).AssemblyQualifiedName;
+                    break;
+                case "OracleODPManaged":
+                    driverDelegateType = typeof(OracleDelegate).AssemblyQualifiedName;
+                    break;
+                case "SqlServer":
+                case "SQLServerMOT":
+                    driverDelegateType = typeof(SqlServerDelegate).AssemblyQualifiedName;
+                    break;
+                case "Npgsql":
+                    driverDelegateType = typeof(PostgreSQLDelegate).AssemblyQualifiedName;
+                    break;
+                case "Firebird":
+                    driverDelegateType = typeof(FirebirdDelegate).AssemblyQualifiedName;
+                    break;
+                default:
+                    throw new Exception("dbProviderName unreasonable");
+            }
+        }
 
+        /// <summary>
+        /// 调度器
+        /// </summary>
+        private IScheduler scheduler;
+
+        /// <summary>
+        /// 初始化Scheduler
+        /// </summary>
+        public async Task InitSchedulerAsync()
+        {
+            if (scheduler == null)
+            {
                 //如果不存在sqlite数据库，则创建
-                if (driverDelegateType.Equals(typeof(SQLiteDelegate).AssemblyQualifiedName)
-                    && !File.Exists("File/sqliteScheduler.db"))
+                if (driverDelegateType.Equals(typeof(SQLiteDelegate).AssemblyQualifiedName) && !File.Exists("File/sqliteScheduler.db"))
                 {
                     if (!Directory.Exists("File")) Directory.CreateDirectory("File");
 
                     using (var connection = new SqliteConnection("Data Source=File/sqliteScheduler.db"))
                     {
-                        connection.OpenAsync().Wait();
-                        string sql = File.ReadAllTextAsync("Tables/tables_sqlite.sql").Result;
+                        //初始化 建表
+                        await connection.OpenAsync();
+                        string sql = await File.ReadAllTextAsync("Tables/tables_sqlite.sql");
                         var command = new SqliteCommand(sql, connection);
-                        command.ExecuteNonQuery();
-                        connection.Close();
+                        await command.ExecuteNonQueryAsync();
+                        await connection.CloseAsync();
                     }
-                }
-
-                if (dbProvider == null || string.IsNullOrEmpty(driverDelegateType))
-                {
-                    throw new Exception("dbProvider or driverDelegateType is null");
                 }
 
                 DBConnectionManager.Instance.AddConnectionProvider("default", dbProvider);
@@ -96,11 +111,24 @@ namespace Host
                     DriverDelegateType = driverDelegateType,
                     ObjectSerializer = serializer,
                 };
-                DirectSchedulerFactory.Instance.CreateScheduler("benny" + "Scheduler", "AUTO", new DefaultThreadPool(), jobStore);
-                _scheduler = SchedulerRepository.Instance.Lookup("benny" + "Scheduler").Result;
-
-                return _scheduler;
+                DirectSchedulerFactory.Instance.CreateScheduler("bennyScheduler", "AUTO", new DefaultThreadPool(), jobStore);
+                scheduler = await SchedulerRepository.Instance.Lookup("bennyScheduler");
             }
+        }
+
+        /// <summary>
+        /// 开启调度器
+        /// </summary>
+        /// <returns></returns>
+        public async Task<bool> StartScheduleAsync()
+        {
+            //开启调度器
+            if (scheduler.InStandbyMode)
+            {
+                await scheduler.Start();
+                Log.Information("任务调度启动！");
+            }
+            return scheduler.InStandbyMode;
         }
 
         /// <summary>
@@ -115,7 +143,7 @@ namespace Host
             {
                 //检查任务是否已存在
                 var jobKey = new JobKey(entity.JobName, entity.JobGroup);
-                if (await Scheduler.CheckExists(jobKey))
+                if (await scheduler.CheckExists(jobKey))
                 {
                     result.Code = 500;
                     result.Msg = "任务已存在";
@@ -150,7 +178,7 @@ namespace Host
                 }
 
                 // 告诉Quartz使用我们的触发器来安排作业
-                await Scheduler.ScheduleJob(job, trigger);
+                await scheduler.ScheduleJob(job, trigger);
                 result.Code = 200;
             }
             catch (Exception ex)
@@ -173,10 +201,10 @@ namespace Host
             BaseResult result;
             try
             {
-                await Scheduler.PauseJob(new JobKey(jobName, jobGroup));
+                await scheduler.PauseJob(new JobKey(jobName, jobGroup));
                 if (isDelete)
                 {
-                    await Scheduler.DeleteJob(new JobKey(jobName, jobGroup));
+                    await scheduler.DeleteJob(new JobKey(jobName, jobGroup));
                     result = new BaseResult
                     {
                         Code = 200,
@@ -216,9 +244,9 @@ namespace Host
             {
                 //检查任务是否存在
                 var jobKey = new JobKey(jobName, jobGroup);
-                if (await Scheduler.CheckExists(jobKey))
+                if (await scheduler.CheckExists(jobKey))
                 {
-                    var jobDetail = await Scheduler.GetJobDetail(jobKey);
+                    var jobDetail = await scheduler.GetJobDetail(jobKey);
                     var endTime = jobDetail.JobDataMap.GetString("EndAt");
                     if (!string.IsNullOrWhiteSpace(endTime) && DateTime.Parse(endTime) <= DateTime.Now)
                     {
@@ -228,7 +256,7 @@ namespace Host
                     else
                     {
                         //任务已经存在则暂停任务
-                        await Scheduler.ResumeJob(jobKey);
+                        await scheduler.ResumeJob(jobKey);
                         result.Msg = "恢复任务计划成功！";
                         Log.Information(string.Format("任务“{0}”恢复运行", jobName));
                     }
@@ -258,8 +286,8 @@ namespace Host
         {
             var entity = new ScheduleEntity();
             var jobKey = new JobKey(jobName, jobGroup);
-            var jobDetail = await Scheduler.GetJobDetail(jobKey);
-            var triggersList = await Scheduler.GetTriggersOfJob(jobKey);
+            var jobDetail = await scheduler.GetJobDetail(jobKey);
+            var triggersList = await scheduler.GetTriggersOfJob(jobKey);
             var triggers = triggersList.AsEnumerable().FirstOrDefault();
             var intervalSeconds = (triggers as SimpleTriggerImpl)?.RepeatInterval.TotalSeconds;
             var endTime = jobDetail.JobDataMap.GetString("EndAt");
@@ -287,7 +315,7 @@ namespace Host
         /// <returns></returns>
         public async Task<bool> TriggerJobAsync(JobKey jobKey)
         {
-            await Scheduler.TriggerJob(jobKey);
+            await scheduler.TriggerJob(jobKey);
             return true;
         }
 
@@ -298,7 +326,7 @@ namespace Host
         /// <returns></returns>
         public async Task<List<string>> GetJobLogsAsync(JobKey jobKey)
         {
-            var jobDetail = await Scheduler.GetJobDetail(jobKey);
+            var jobDetail = await scheduler.GetJobDetail(jobKey);
             return jobDetail.JobDataMap[Constant.LOGLIST] as List<string>;
         }
 
@@ -310,16 +338,16 @@ namespace Host
         {
             List<JobKey> jboKeyList = new List<JobKey>();
             List<JobInfoEntity> jobInfoList = new List<JobInfoEntity>();
-            var groupNames = await Scheduler.GetJobGroupNames();
+            var groupNames = await scheduler.GetJobGroupNames();
             foreach (var groupName in groupNames.OrderBy(t => t))
             {
-                jboKeyList.AddRange(await Scheduler.GetJobKeys(GroupMatcher<JobKey>.GroupEquals(groupName)));
+                jboKeyList.AddRange(await scheduler.GetJobKeys(GroupMatcher<JobKey>.GroupEquals(groupName)));
                 jobInfoList.Add(new JobInfoEntity() { GroupName = groupName });
             }
             foreach (var jobKey in jboKeyList.OrderBy(t => t.Name))
             {
-                var jobDetail = await Scheduler.GetJobDetail(jobKey);
-                var triggersList = await Scheduler.GetTriggersOfJob(jobKey);
+                var jobDetail = await scheduler.GetJobDetail(jobKey);
+                var triggersList = await scheduler.GetTriggersOfJob(jobKey);
                 var triggers = triggersList.AsEnumerable().FirstOrDefault();
 
                 var interval = string.Empty;
@@ -337,7 +365,7 @@ namespace Host
                             Name = jobKey.Name,
                             LastErrMsg = jobDetail.JobDataMap.GetString(Constant.EXCEPTION),
                             RequestUrl = jobDetail.JobDataMap.GetString(Constant.REQUESTURL),
-                            TriggerState = await Scheduler.GetTriggerState(triggers.Key),
+                            TriggerState = await scheduler.GetTriggerState(triggers.Key),
                             PreviousFireTime = triggers.GetPreviousFireTimeUtc()?.LocalDateTime,
                             NextFireTime = triggers.GetNextFireTimeUtc()?.LocalDateTime,
                             BeginTime = triggers.StartTimeUtc.LocalDateTime,
@@ -372,7 +400,7 @@ namespace Host
             await logRepositorie.RemoveErrLogAsync(jobGroup, jobName);
 
             var jobKey = new JobKey(jobName, jobGroup);
-            var jobDetail = await Scheduler.GetJobDetail(jobKey);
+            var jobDetail = await scheduler.GetJobDetail(jobKey);
             jobDetail.JobDataMap[Constant.EXCEPTION] = string.Empty;
 
             return true;
@@ -386,16 +414,16 @@ namespace Host
         {
             List<JobKey> jboKeyList = new List<JobKey>();
             List<JobBriefInfoEntity> jobInfoList = new List<JobBriefInfoEntity>();
-            var groupNames = await Scheduler.GetJobGroupNames();
+            var groupNames = await scheduler.GetJobGroupNames();
             foreach (var groupName in groupNames.OrderBy(t => t))
             {
-                jboKeyList.AddRange(await Scheduler.GetJobKeys(GroupMatcher<JobKey>.GroupEquals(groupName)));
+                jboKeyList.AddRange(await scheduler.GetJobKeys(GroupMatcher<JobKey>.GroupEquals(groupName)));
                 jobInfoList.Add(new JobBriefInfoEntity() { GroupName = groupName });
             }
             foreach (var jobKey in jboKeyList.OrderBy(t => t.Name))
             {
-                var jobDetail = await Scheduler.GetJobDetail(jobKey);
-                var triggersList = await Scheduler.GetTriggersOfJob(jobKey);
+                var jobDetail = await scheduler.GetJobDetail(jobKey);
+                var triggersList = await scheduler.GetTriggersOfJob(jobKey);
                 var triggers = triggersList.AsEnumerable().FirstOrDefault();
 
                 foreach (var jobInfo in jobInfoList)
@@ -406,10 +434,10 @@ namespace Host
                         {
                             Name = jobKey.Name,
                             LastErrMsg = jobDetail.JobDataMap.GetString(Constant.EXCEPTION),
-                            TriggerState = await Scheduler.GetTriggerState(triggers.Key),
+                            TriggerState = await scheduler.GetTriggerState(triggers.Key),
                             PreviousFireTime = triggers.GetPreviousFireTimeUtc()?.LocalDateTime,
                             NextFireTime = triggers.GetNextFireTimeUtc()?.LocalDateTime,
-                            RunNumber = jobDetail.JobDataMap.GetLong(Constant.RUNNUMBER)                            
+                            RunNumber = jobDetail.JobDataMap.GetLong(Constant.RUNNUMBER)
                         });
                         continue;
                     }
@@ -419,33 +447,18 @@ namespace Host
         }
 
         /// <summary>
-        /// 开启调度器
-        /// </summary>
-        /// <returns></returns>
-        public async Task<bool> StartScheduleAsync()
-        {
-            //开启调度器
-            if (Scheduler.InStandbyMode)
-            {
-                await Scheduler.Start();
-                Log.Information("任务调度启动！");
-            }
-            return Scheduler.InStandbyMode;
-        }
-
-        /// <summary>
         /// 停止任务调度
         /// </summary>
         public async Task<bool> StopScheduleAsync()
         {
             //判断调度是否已经关闭
-            if (!Scheduler.InStandbyMode)
+            if (!scheduler.InStandbyMode)
             {
                 //等待任务运行完成
-                await Scheduler.Standby(); //TODO  注意：Shutdown后Start会报错，所以这里使用暂停。
+                await scheduler.Standby(); //TODO  注意：Shutdown后Start会报错，所以这里使用暂停。
                 Log.Information("任务调度暂停！");
             }
-            return !Scheduler.InStandbyMode;
+            return !scheduler.InStandbyMode;
         }
 
         /// <summary>

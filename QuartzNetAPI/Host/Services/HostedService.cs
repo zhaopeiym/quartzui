@@ -17,8 +17,10 @@ namespace Host.Services
 
         public async Task StartAsync(CancellationToken cancellationToken)
         {
+            //初始化Scheduler
+            await schedulerCenter.InitSchedulerAsync();
             //开启调度器
-            await schedulerCenter.StartScheduleAsync();           
+            await schedulerCenter.StartScheduleAsync();
         }
 
         public Task StopAsync(CancellationToken cancellationToken)

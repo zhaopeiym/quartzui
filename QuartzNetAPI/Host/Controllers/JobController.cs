@@ -24,7 +24,7 @@ namespace Host.Controllers
         /// <param name="schedulerCenter"></param>
         public JobController(SchedulerCenter schedulerCenter)
         {
-            this.scheduler = schedulerCenter;
+            scheduler = schedulerCenter;
         }
 
         /// <summary>
