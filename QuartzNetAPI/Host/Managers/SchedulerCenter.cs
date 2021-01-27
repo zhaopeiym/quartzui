@@ -82,103 +82,14 @@ namespace Host
         private async Task InitDBTableAsync()
         {
             //如果不存在sqlite数据库，则创建
-            if (driverDelegateType.Equals(typeof(SQLiteDelegate).AssemblyQualifiedName))
-            {
-                if (!Directory.Exists("File")) Directory.CreateDirectory("File");
-
-                using (var connection = new SqliteConnection(AppConfig.ConnectionString))
-                {
-                    var check_sql = @$"SELECT
-	                                        count(1)
-                                        FROM
-	                                        sqlite_master
-                                        WHERE
-	                                        type = 'table'
-                                        AND name IN (
-	                                        'QRTZ_JOB_DETAILS',
-	                                        'QRTZ_TRIGGERS',
-	                                        'QRTZ_SIMPLE_TRIGGERS',
-	                                        'QRTZ_SIMPROP_TRIGGERS',
-	                                        'QRTZ_CRON_TRIGGERS',
-	                                        'QRTZ_BLOB_TRIGGERS',
-	                                        'QRTZ_CALENDARS',
-	                                        'QRTZ_PAUSED_TRIGGER_GRPS',
-	                                        'QRTZ_FIRED_TRIGGERS',
-	                                        'QRTZ_SCHEDULER_STATE',
-	                                        'QRTZ_LOCKS'
-                                        );";
-                    var count = await connection.QueryFirstOrDefaultAsync<int>(check_sql);
-                    //初始化 建表
-                    if (count == 0)
-                    {
-                        string init_sql = await File.ReadAllTextAsync("Tables/tables_sqlite.sql");
-                        await connection.ExecuteAsync(init_sql);
-                    }
-                }
-            }
-            else if (driverDelegateType.Equals(typeof(MySQLDelegate).AssemblyQualifiedName))
-            {
-                using (var connection = new MySqlConnection(AppConfig.ConnectionString))
-                {
-                    var check_sql = @"SELECT
-	                                        COUNT(1)
-                                        FROM
-	                                        information_schema. TABLES
-                                        WHERE
-	                                        table_name IN (
-		                                        'QRTZ_BLOB_TRIGGERS',
-		                                        'QRTZ_CALENDARS',
-		                                        'QRTZ_CRON_TRIGGERS',
-		                                        'QRTZ_FIRED_TRIGGERS',
-		                                        'QRTZ_JOB_DETAILS',
-		                                        'QRTZ_LOCKS',
-		                                        'QRTZ_PAUSED_TRIGGER_GRPS',
-		                                        'QRTZ_SCHEDULER_STATE',
-		                                        'QRTZ_SIMPLE_TRIGGERS',
-		                                        'QRTZ_SIMPROP_TRIGGERS',
-		                                        'QRTZ_TRIGGERS'
-	                                        );";
-                    var count = await connection.QueryFirstOrDefaultAsync<int>(check_sql);
-                    //初始化 建表
-                    if (count == 0)
-                    {
-                        string init_sql = await File.ReadAllTextAsync("Tables/tables_mysql_innodb.sql");
-                        await connection.ExecuteAsync(init_sql);
-                    }
-                }
-            }
-            else if (driverDelegateType.Equals(typeof(PostgreSQLDelegate).AssemblyQualifiedName))
-            {
-                using (var connection = new NpgsqlConnection(AppConfig.ConnectionString))
-                {
-                    var check_sql = @"SELECT
-	                                        COUNT (1)
-                                        FROM
-	                                        pg_class
-                                        WHERE
-	                                        relname IN (
-		                                        'qrtz_blob_triggers',
-		                                        'qrtz_calendars',
-		                                        'qrtz_cron_triggers',
-		                                        'qrtz_fired_triggers',
-		                                        'qrtz_job_details',
-		                                        'qrtz_locks',
-		                                        'qrtz_paused_trigger_grps',
-		                                        'qrtz_scheduler_state',
-		                                        'qrtz_simple_triggers',
-		                                        'qrtz_simprop_triggers',
-		                                        'qrtz_triggers'
-	                                        );";
-                    var count = await connection.QueryFirstOrDefaultAsync<int>(check_sql);
-                    //初始化 建表
-                    if (count == 0)
-                    {
-                        string init_sql = await File.ReadAllTextAsync("Tables/tables_postgres.sql");
-                        await connection.ExecuteAsync(init_sql);
-                    }
-                }
-            }
             //TODO 其他数据源...
+            if (driverDelegateType.Equals(typeof(SQLiteDelegate).AssemblyQualifiedName) ||
+                driverDelegateType.Equals(typeof(MySQLDelegate).AssemblyQualifiedName) ||
+                driverDelegateType.Equals(typeof(PostgreSQLDelegate).AssemblyQualifiedName))
+            {
+                IRepositorie repositorie = RepositorieFactory.CreateRepositorie(driverDelegateType, dbProvider);
+                await repositorie?.InitTable();
+            }
         }
 
         /// <summary>
@@ -490,7 +401,7 @@ namespace Host
         /// <returns></returns>          
         public async Task<bool> RemoveErrLog(string jobGroup, string jobName)
         {
-            ILogRepositorie logRepositorie = LogRepositorieFactory.CreateLogRepositorie(driverDelegateType, dbProvider);
+            IRepositorie logRepositorie = RepositorieFactory.CreateRepositorie(driverDelegateType, dbProvider);
 
             if (logRepositorie == null) return false;
 

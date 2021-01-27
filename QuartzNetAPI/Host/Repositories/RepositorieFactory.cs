@@ -3,26 +3,26 @@ using Quartz.Impl.AdoJobStore.Common;
 
 namespace Host.Repositories
 {
-    public class LogRepositorieFactory
+    public class RepositorieFactory
     {
-        public static ILogRepositorie CreateLogRepositorie(string driverDelegateType, IDbProvider dbProvider)
+        public static IRepositorie CreateRepositorie(string driverDelegateType, IDbProvider dbProvider)
         {
 
             if (driverDelegateType == typeof(SQLiteDelegate).AssemblyQualifiedName)
             {
-                return new LogRepositorieSQLite();
+                return new RepositorieSQLite(dbProvider);
             }
             else if (driverDelegateType == typeof(MySQLDelegate).AssemblyQualifiedName)
             {
-                return new LogRepositorieMySql();
+                return new RepositorieMySql(dbProvider);
             }
             else if (driverDelegateType == typeof(PostgreSQLDelegate).AssemblyQualifiedName)
             {
-                return new LogRepositoriePostgreSQL();
+                return new RepositoriePostgreSQL(dbProvider);
             }
             else if (driverDelegateType == typeof(OracleDelegate).AssemblyQualifiedName)
             {
-                return new LogRepositorieOracle(dbProvider);
+                return new RepositorieOracle(dbProvider);
             }
             else
             {
