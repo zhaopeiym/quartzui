@@ -38,7 +38,8 @@ docker run -v /fileData/quartzuifile:/app/File  --restart=unless-stopped --privi
 - 方式3（可直接通过源码部署到windows或linux平台） 
 
 ## 更换数据源  
-默认使用的是SQLite-Microsoft，如果需要使用其他数据源请自行在appsettings.json配置，如：  
+默认使用的是SQLite-Microsoft  
+如果需要使用其他数据源请自行在appsettings.json配置，并且根据Tables文件夹里对应sql文件进行表结构初始化。如：  
 ```
 "dbProviderName":"OracleODPManaged",
 "connectionString": "Data Source=(DESCRIPTION=(ADDRESS_LIST=(ADDRESS=(PROTOCOL=TCP)(HOST=localhost)(PORT=1521)))(CONNECT_DATA=(SERVICE_NAME=xe)));User Id=system;Password=oracle;";

@@ -85,7 +85,26 @@ namespace Host
         public async Task InitSchedulerAsync()
         {
             if (scheduler == null)
-            {
+            {               
+                if (driverDelegateType.Equals(typeof(SQLiteDelegate).AssemblyQualifiedName))
+                {
+                    //如果不存在sqlite数据库，则创建
+                    if (!File.Exists(AppConfig.ConnectionString.Split('=')[1].Trim()))
+                    {
+                        if (!Directory.Exists("File")) Directory.CreateDirectory("File");
+
+                        using (var connection = new SqliteConnection(AppConfig.ConnectionString))
+                        {
+                            //初始化 建表
+                            await connection.OpenAsync();
+                            string sql = await File.ReadAllTextAsync("Tables/tables_sqlite.sql");
+                            var command = new SqliteCommand(sql, connection);
+                            await command.ExecuteNonQueryAsync();
+                            await connection.CloseAsync();
+                        }
+                    } 
+                }
+
                 DBConnectionManager.Instance.AddConnectionProvider("default", dbProvider);
                 var serializer = new JsonObjectSerializer();
                 serializer.Initialize();
@@ -111,21 +130,22 @@ namespace Host
             //开启调度器
             if (scheduler.InStandbyMode)
             {
-                try
-                {
-                    await scheduler.Start();
-                }
-                catch (Exception ex)
-                {
-                    //TODO 根据异常信息来判断是否已经初始DB表，不可取。
-                    if (ex.InnerException?.Message == "Couldn't recover jobs: 42P01: relation \"qrtz_triggers\" does not exist" ||
-                        ex.InnerException?.Message == "Couldn't recover jobs: Table 'quartz.QRTZ_TRIGGERS' doesn't exist" ||
-                        ex.InnerException?.Message == "Failure obtaining db row lock: SQLite Error 1: 'no such table: QRTZ_LOCKS'.")
-                    {
-                        await InitDBTableAsync();
-                    }
-                    await scheduler.Start();
-                }
+                //try
+                //{
+                //    await scheduler.Start();
+                //}
+                //catch (Exception ex)
+                //{
+                //    //TODO 根据异常信息来判断是否已经初始DB表，不可取。
+                //    if (ex.InnerException?.Message == "Couldn't recover jobs: 42P01: relation \"qrtz_triggers\" does not exist" ||
+                //        ex.InnerException?.Message == "Couldn't recover jobs: Table 'quartz.QRTZ_TRIGGERS' doesn't exist" ||
+                //        ex.InnerException?.Message == "Failure obtaining db row lock: SQLite Error 1: 'no such table: QRTZ_LOCKS'.")
+                //    {
+                //        await InitDBTableAsync();
+                //    }
+                //    await scheduler.Start();
+                //}
+                await scheduler.Start();
                 Log.Information("任务调度启动！");
             }
             return scheduler.InStandbyMode;
