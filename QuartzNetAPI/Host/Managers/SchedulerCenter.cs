@@ -1,4 +1,5 @@
-﻿using Host.Common;
+﻿using Dapper;
+using Host.Common;
 using Host.Entity;
 using Host.Repositories;
 using Microsoft.Data.Sqlite;
@@ -75,6 +76,112 @@ namespace Host
         }
 
         /// <summary>
+        /// 初始化数据库表
+        /// </summary>
+        /// <returns></returns>
+        private async Task InitDBTableAsync()
+        {
+            //如果不存在sqlite数据库，则创建
+            if (driverDelegateType.Equals(typeof(SQLiteDelegate).AssemblyQualifiedName))
+            {
+                if (!Directory.Exists("File")) Directory.CreateDirectory("File");
+
+                using (var connection = new SqliteConnection(AppConfig.ConnectionString))
+                {
+                    var check_sql = @$"SELECT
+	                                        count(1)
+                                        FROM
+	                                        sqlite_master
+                                        WHERE
+	                                        type = 'table'
+                                        AND name IN (
+	                                        'QRTZ_JOB_DETAILS',
+	                                        'QRTZ_TRIGGERS',
+	                                        'QRTZ_SIMPLE_TRIGGERS',
+	                                        'QRTZ_SIMPROP_TRIGGERS',
+	                                        'QRTZ_CRON_TRIGGERS',
+	                                        'QRTZ_BLOB_TRIGGERS',
+	                                        'QRTZ_CALENDARS',
+	                                        'QRTZ_PAUSED_TRIGGER_GRPS',
+	                                        'QRTZ_FIRED_TRIGGERS',
+	                                        'QRTZ_SCHEDULER_STATE',
+	                                        'QRTZ_LOCKS'
+                                        );";
+                    var count = await connection.QueryFirstOrDefaultAsync<int>(check_sql);
+                    //初始化 建表
+                    if (count == 0)
+                    {
+                        string init_sql = await File.ReadAllTextAsync("Tables/tables_sqlite.sql");
+                        await connection.ExecuteAsync(init_sql);
+                    }
+                }
+            }
+            if (driverDelegateType.Equals(typeof(MySQLDelegate).AssemblyQualifiedName))
+            {
+                using (var connection = new MySqlConnection(AppConfig.ConnectionString))
+                {
+                    var check_sql = @"SELECT
+	                                        COUNT(1)
+                                        FROM
+	                                        information_schema. TABLES
+                                        WHERE
+	                                        table_name IN (
+		                                        'QRTZ_BLOB_TRIGGERS',
+		                                        'QRTZ_CALENDARS',
+		                                        'QRTZ_CRON_TRIGGERS',
+		                                        'QRTZ_FIRED_TRIGGERS',
+		                                        'QRTZ_JOB_DETAILS',
+		                                        'QRTZ_LOCKS',
+		                                        'QRTZ_PAUSED_TRIGGER_GRPS',
+		                                        'QRTZ_SCHEDULER_STATE',
+		                                        'QRTZ_SIMPLE_TRIGGERS',
+		                                        'QRTZ_SIMPROP_TRIGGERS',
+		                                        'QRTZ_TRIGGERS'
+	                                        );";
+                    var count = await connection.QueryFirstOrDefaultAsync<int>(check_sql);
+                    //初始化 建表
+                    if (count == 0)
+                    {
+                        string init_sql = await File.ReadAllTextAsync("Tables/tables_mysql_innodb.sql");
+                        await connection.ExecuteAsync(init_sql);
+                    }
+                }
+            }
+            else if (driverDelegateType.Equals(typeof(PostgreSQLDelegate).AssemblyQualifiedName))
+            {
+                using (var connection = new NpgsqlConnection(AppConfig.ConnectionString))
+                {
+                    var check_sql = @"SELECT
+	                                        COUNT (1)
+                                        FROM
+	                                        pg_class
+                                        WHERE
+	                                        relname IN (
+		                                        'qrtz_blob_triggers',
+		                                        'qrtz_calendars',
+		                                        'qrtz_cron_triggers',
+		                                        'qrtz_fired_triggers',
+		                                        'qrtz_job_details',
+		                                        'qrtz_locks',
+		                                        'qrtz_paused_trigger_grps',
+		                                        'qrtz_scheduler_state',
+		                                        'qrtz_simple_triggers',
+		                                        'qrtz_simprop_triggers',
+		                                        'qrtz_triggers'
+	                                        );";
+                    var count = await connection.QueryFirstOrDefaultAsync<int>(check_sql);
+                    //初始化 建表
+                    if (count == 0)
+                    {
+                        string init_sql = await File.ReadAllTextAsync("Tables/tables_postgres.sql");
+                        await connection.ExecuteAsync(init_sql);
+                    }
+                }
+            }
+            //TODO 其他数据源...
+        }
+
+        /// <summary>
         /// 调度器
         /// </summary>
         private IScheduler scheduler;
@@ -82,29 +189,10 @@ namespace Host
         /// <summary>
         /// 初始化Scheduler
         /// </summary>
-        public async Task InitSchedulerAsync()
+        private async Task InitSchedulerAsync()
         {
             if (scheduler == null)
-            {               
-                if (driverDelegateType.Equals(typeof(SQLiteDelegate).AssemblyQualifiedName))
-                {
-                    //如果不存在sqlite数据库，则创建
-                    if (!File.Exists(AppConfig.ConnectionString.Split('=')[1].Trim()))
-                    {
-                        if (!Directory.Exists("File")) Directory.CreateDirectory("File");
-
-                        using (var connection = new SqliteConnection(AppConfig.ConnectionString))
-                        {
-                            //初始化 建表
-                            await connection.OpenAsync();
-                            string sql = await File.ReadAllTextAsync("Tables/tables_sqlite.sql");
-                            var command = new SqliteCommand(sql, connection);
-                            await command.ExecuteNonQueryAsync();
-                            await connection.CloseAsync();
-                        }
-                    } 
-                }
-
+            {
                 DBConnectionManager.Instance.AddConnectionProvider("default", dbProvider);
                 var serializer = new JsonObjectSerializer();
                 serializer.Initialize();
@@ -127,76 +215,17 @@ namespace Host
         /// <returns></returns>
         public async Task<bool> StartScheduleAsync()
         {
+            //初始化数据库表结构
+            await InitDBTableAsync();
+            //初始化Scheduler
+            await InitSchedulerAsync();
             //开启调度器
             if (scheduler.InStandbyMode)
             {
-                //try
-                //{
-                //    await scheduler.Start();
-                //}
-                //catch (Exception ex)
-                //{
-                //    //TODO 根据异常信息来判断是否已经初始DB表，不可取。
-                //    if (ex.InnerException?.Message == "Couldn't recover jobs: 42P01: relation \"qrtz_triggers\" does not exist" ||
-                //        ex.InnerException?.Message == "Couldn't recover jobs: Table 'quartz.QRTZ_TRIGGERS' doesn't exist" ||
-                //        ex.InnerException?.Message == "Failure obtaining db row lock: SQLite Error 1: 'no such table: QRTZ_LOCKS'.")
-                //    {
-                //        await InitDBTableAsync();
-                //    }
-                //    await scheduler.Start();
-                //}
                 await scheduler.Start();
                 Log.Information("任务调度启动！");
             }
             return scheduler.InStandbyMode;
-        }
-
-        /// <summary>
-        /// 初始化数据库表
-        /// </summary>
-        /// <returns></returns>
-        private async Task InitDBTableAsync()
-        {
-            //如果不存在sqlite数据库，则创建
-            if (driverDelegateType.Equals(typeof(SQLiteDelegate).AssemblyQualifiedName))
-            {
-                if (!Directory.Exists("File")) Directory.CreateDirectory("File");
-
-                using (var connection = new SqliteConnection(AppConfig.ConnectionString))
-                {
-                    //初始化 建表
-                    await connection.OpenAsync();
-                    string sql = await File.ReadAllTextAsync("Tables/tables_sqlite.sql");
-                    var command = new SqliteCommand(sql, connection);
-                    await command.ExecuteNonQueryAsync();
-                    await connection.CloseAsync();
-                }
-            }
-            if (driverDelegateType.Equals(typeof(MySQLDelegate).AssemblyQualifiedName))
-            {
-                using (var connection = new MySqlConnection(AppConfig.ConnectionString))
-                {
-                    //初始化 建表
-                    await connection.OpenAsync();
-                    string sql = await File.ReadAllTextAsync("Tables/tables_mysql_innodb.sql");
-                    var command = new MySqlCommand(sql, connection);
-                    await command.ExecuteNonQueryAsync();
-                    await connection.CloseAsync();
-                }
-            }
-            else if (driverDelegateType.Equals(typeof(PostgreSQLDelegate).AssemblyQualifiedName))
-            {
-                using (var connection = new NpgsqlConnection(AppConfig.ConnectionString))
-                {
-                    //初始化 建表
-                    await connection.OpenAsync();
-                    string sql = await File.ReadAllTextAsync("Tables/tables_postgres.sql");
-                    var command = new NpgsqlCommand(sql, connection);
-                    await command.ExecuteNonQueryAsync();
-                    await connection.CloseAsync();
-                }
-            }
-            //TODO 其他数据源...
         }
 
         /// <summary>
@@ -228,7 +257,7 @@ namespace Host
                     { Constant.MAILMESSAGE, ((int)entity.MailMessage).ToString()},
                 };
                 // 定义这个工作，并将其绑定到我们的IJob实现类                
-                IJobDetail job = JobBuilder.CreateForAsync<HttpJob>()
+                IJobDetail job = JobBuilder.Create<HttpJob>()
                     .SetJobData(new JobDataMap(httpDir))
                     .WithDescription(entity.Description)
                     .WithIdentity(entity.JobName, entity.JobGroup)

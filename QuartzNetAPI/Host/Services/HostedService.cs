@@ -1,7 +1,4 @@
 ﻿using Microsoft.Extensions.Hosting;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -16,9 +13,7 @@ namespace Host.Services
         }
 
         public async Task StartAsync(CancellationToken cancellationToken)
-        {
-            //初始化Scheduler
-            await schedulerCenter.InitSchedulerAsync();
+        {           
             //开启调度器
             await schedulerCenter.StartScheduleAsync();
         }
