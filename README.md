@@ -37,6 +37,30 @@ docker run -v /fileData/quartzuifile:/app/File  --restart=unless-stopped --privi
 ```
 - 方式3（可直接通过源码部署到windows或linux平台） 
 
+## 更换数据源  
+默认使用的是SQLite-Microsoft，如果需要使用其他数据源请自行在appsettings.json配置，如：  
+```
+"dbProviderName":"OracleODPManaged",
+"connectionString": "Data Source=(DESCRIPTION=(ADDRESS_LIST=(ADDRESS=(PROTOCOL=TCP)(HOST=localhost)(PORT=1521)))(CONNECT_DATA=(SERVICE_NAME=xe)));User Id=system;Password=oracle;";
+"dbProviderName":"SqlServer",
+"connectionString": "Server=localhost;Database=quartznet;User Id={SqlServerUser};Password={SqlServerPassword};";
+"dbProviderName":"SQLServerMOT",
+"connectionString": "Server=localhost,1444;Database=quartznet;User Id={SqlServerUser};Password={SqlServerPassword};"
+ // MySql 测试通过
+"dbProviderName":"MySql",
+"connectionString": "Server = localhost; Database = quartznet; Uid = quartznet; Pwd = quartznet";
+// Npgsql 测试通过
+"dbProviderName":"Npgsql",
+"connectionString": "Server=127.0.0.1;Port=5432;Userid=quartznet;Password=quartznet;Pooling=true;MinPoolSize=1;MaxPoolSize=20;Timeout=15;SslMode=Disable;Database=quartznet";
+"dbProviderName":"SQLite",
+"connectionString": "Data Source=test.db;Version=3;";
+// SQLite-Microsoft 测试通过
+"dbProviderName":"SQLite-Microsoft",
+"connectionString": "Data Source=test.db;";
+"dbProviderName":"Firebird",
+"connectionString": "User=SYSDBA;Password=masterkey;Database=/firebird/data/quartz.fdb;DataSource=localhost;Port=3050;Dialect=3;Charset=NONE;Role=;Connection lifetime=15;Pooling=true;MinPoolSize=0;MaxPoolSize=50;Packet Size=8192;ServerType=0;";
+```
+
 ## 效果图
 ![1](https://user-images.githubusercontent.com/5820324/56856558-1c267400-6990-11e9-98a8-c1bf9bd0ba3c.png)
 ![2](https://user-images.githubusercontent.com/5820324/56856559-1c267400-6990-11e9-8433-4705e0c4a984.png)

@@ -1,15 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Dapper;
+﻿using Dapper;
+using Host.Common;
 using Microsoft.Data.Sqlite;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json.Linq;
 using Oracle.ManagedDataAccess.Client;
 using Quartz.Impl.AdoJobStore.Common;
+using System;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace Host.Repositories
 {
@@ -19,7 +16,7 @@ namespace Host.Repositories
         {
             try
             {
-                using (var connection = new SqliteConnection("Data Source=File/sqliteScheduler.db"))
+                using (var connection = new SqliteConnection(AppConfig.ConnectionString))
                 {
                     string sql = $@"SELECT
 	                                JOB_DATA
