@@ -116,7 +116,7 @@ namespace Host
                     }
                 }
             }
-            if (driverDelegateType.Equals(typeof(MySQLDelegate).AssemblyQualifiedName))
+            else if (driverDelegateType.Equals(typeof(MySQLDelegate).AssemblyQualifiedName))
             {
                 using (var connection = new MySqlConnection(AppConfig.ConnectionString))
                 {

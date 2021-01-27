@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.Extensions.Configuration;
-using Quartz.Impl.AdoJobStore;
+﻿using Quartz.Impl.AdoJobStore;
 using Quartz.Impl.AdoJobStore.Common;
 
 namespace Host.Repositories
@@ -16,6 +11,14 @@ namespace Host.Repositories
             if (driverDelegateType == typeof(SQLiteDelegate).AssemblyQualifiedName)
             {
                 return new LogRepositorieSQLite();
+            }
+            else if (driverDelegateType == typeof(MySQLDelegate).AssemblyQualifiedName)
+            {
+                return new LogRepositorieMySql();
+            }
+            else if (driverDelegateType == typeof(PostgreSQLDelegate).AssemblyQualifiedName)
+            {
+                return new LogRepositoriePostgreSQL();
             }
             else if (driverDelegateType == typeof(OracleDelegate).AssemblyQualifiedName)
             {
