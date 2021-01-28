@@ -1,6 +1,8 @@
 ﻿using Dapper;
 using Host.Common;
+using Host.Common.Enums;
 using Host.Entity;
+using Host.IJobs;
 using Host.Repositories;
 using Microsoft.Data.Sqlite;
 using Microsoft.Extensions.Configuration;
@@ -160,15 +162,29 @@ namespace Host
                 //http请求配置
                 var httpDir = new Dictionary<string, string>()
                 {
-                    { "RequestUrl",entity.RequestUrl},
-                    { "RequestParameters",entity.RequestParameters},
-                    { Constant.REQUESTTYPE, ((int)entity.RequestType).ToString()},
-                    { "EndAt", entity.EndTime.ToString()},
-                    { Constant.HEADERS, entity.Headers},
+                    { Constant.EndAt, entity.EndTime.ToString()},
+                    { Constant.JobTypeEnum, ((int)entity.JobType).ToString()},
                     { Constant.MAILMESSAGE, ((int)entity.MailMessage).ToString()},
                 };
+
+                IJobConfigurator jobConfigurator = null;
+                if (entity.JobType == JobTypeEnum.Url)
+                {
+                    jobConfigurator = JobBuilder.Create<HttpJob>();
+                    httpDir.Add(Constant.REQUESTURL, entity.RequestUrl);
+                    httpDir.Add(Constant.HEADERS, entity.Headers);
+                    httpDir.Add(Constant.REQUESTPARAMETERS, entity.RequestParameters);
+                    httpDir.Add(Constant.REQUESTTYPE, ((int)entity.RequestType).ToString());
+                }
+                else if (entity.JobType == JobTypeEnum.Emial)
+                {
+                    jobConfigurator = JobBuilder.Create<MailJob>();
+                    httpDir.Add(Constant.MailTitle, entity.MailTitle);
+                    httpDir.Add(Constant.MailContent, entity.MailContent);
+                    httpDir.Add(Constant.MailTo, entity.MailTo);
+                }
                 // 定义这个工作，并将其绑定到我们的IJob实现类                
-                IJobDetail job = JobBuilder.Create<HttpJob>()
+                IJobDetail job = jobConfigurator
                     .SetJobData(new JobDataMap(httpDir))
                     .WithDescription(entity.Description)
                     .WithIdentity(entity.JobName, entity.JobGroup)
@@ -299,7 +315,6 @@ namespace Host
             var triggers = triggersList.AsEnumerable().FirstOrDefault();
             var intervalSeconds = (triggers as SimpleTriggerImpl)?.RepeatInterval.TotalSeconds;
             var endTime = jobDetail.JobDataMap.GetString("EndAt");
-            entity.RequestUrl = jobDetail.JobDataMap.GetString(Constant.REQUESTURL);
             entity.BeginTime = triggers.StartTimeUtc.LocalDateTime;
             entity.EndTime = string.IsNullOrWhiteSpace(endTime) ? null : DateTime.Parse(endTime);
             entity.IntervalSecond = intervalSeconds.HasValue ? Convert.ToInt32(intervalSeconds.Value) : null;
@@ -308,11 +323,35 @@ namespace Host
             entity.Cron = (triggers as CronTriggerImpl)?.CronExpressionString;
             entity.RunTimes = (triggers as SimpleTriggerImpl)?.RepeatCount;
             entity.TriggerType = triggers is SimpleTriggerImpl ? TriggerTypeEnum.Simple : TriggerTypeEnum.Cron;
-            entity.RequestType = (RequestTypeEnum)int.Parse(jobDetail.JobDataMap.GetString(Constant.REQUESTTYPE));
-            entity.RequestParameters = jobDetail.JobDataMap.GetString(Constant.REQUESTPARAMETERS);
-            entity.Headers = jobDetail.JobDataMap.GetString(Constant.HEADERS);
             entity.MailMessage = (MailMessageEnum)int.Parse(jobDetail.JobDataMap.GetString(Constant.MAILMESSAGE) ?? "0");
             entity.Description = jobDetail.Description;
+            //旧代码没有保存JobTypeEnum，所以None可以默认为Url。
+            entity.JobType = (JobTypeEnum)int.Parse(jobDetail.JobDataMap.GetString(Constant.JobTypeEnum) ?? "1");
+
+            switch (entity.JobType)
+            {
+                case JobTypeEnum.None:
+                    break;
+                case JobTypeEnum.Url:
+                    entity.RequestUrl = jobDetail.JobDataMap.GetString(Constant.REQUESTURL);
+                    entity.RequestType = (RequestTypeEnum)int.Parse(jobDetail.JobDataMap.GetString(Constant.REQUESTTYPE));
+                    entity.RequestParameters = jobDetail.JobDataMap.GetString(Constant.REQUESTPARAMETERS);
+                    entity.Headers = jobDetail.JobDataMap.GetString(Constant.HEADERS);
+                    break;
+                case JobTypeEnum.Emial:
+                    entity.MailTitle = jobDetail.JobDataMap.GetString(Constant.MailTitle);
+                    entity.MailContent = jobDetail.JobDataMap.GetString(Constant.MailContent);
+                    entity.MailTo = jobDetail.JobDataMap.GetString(Constant.MailTo);
+                    break;
+                case JobTypeEnum.Mqtt:
+                    break;
+                case JobTypeEnum.RabbitMQ:
+                    break;
+                case JobTypeEnum.Hotreload:
+                    break;
+                default:
+                    break;
+            }
             return entity;
         }
 

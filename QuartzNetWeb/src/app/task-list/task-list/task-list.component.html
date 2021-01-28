@@ -12,9 +12,9 @@
         <nz-form-label [nzSpan]="6" nzRequired nzFor="jobName">{{ 'task.list.modal.label.任务组名' | translate }}
         </nz-form-label>
         <nz-form-control [nzSpan]="15">
-          <input nz-input placeholder="请输入任务组名字" formControlName="jobGroup" [(ngModel)]="jobInfoEntity.jobGroup">
+          <input nz-input placeholder="请输入任务组名" formControlName="jobGroup" [(ngModel)]="jobInfoEntity.jobGroup">
           <nz-form-explain *ngIf="validateJobForm.get('jobGroup').dirty && validateJobForm.get('jobGroup').errors">
-            任务组名字必填</nz-form-explain>
+            任务组名必填</nz-form-explain>
         </nz-form-control>
       </nz-form-item>
 
@@ -22,20 +22,83 @@
         <nz-form-label [nzSpan]="6" nzRequired nzFor="jobName">{{ 'task.list.modal.label.任务名称' | translate }}
         </nz-form-label>
         <nz-form-control [nzSpan]="15">
-          <input nz-input placeholder="请输入任务名字" formControlName="jobName" [(ngModel)]="jobInfoEntity.jobName">
-          <nz-form-explain *ngIf="validateJobForm.get('jobName').dirty && validateJobForm.get('jobName').errors">任务名字必填
+          <input nz-input placeholder="请输入任务名称" formControlName="jobName" [(ngModel)]="jobInfoEntity.jobName">
+          <nz-form-explain *ngIf="validateJobForm.get('jobName').dirty && validateJobForm.get('jobName').errors">任务名称必填
           </nz-form-explain>
         </nz-form-control>
       </nz-form-item>
 
       <nz-form-item>
+        <nz-form-label [nzSpan]="6" nzRequired nzFor="jobName">{{ 'task.list.modal.label.任务类型' | translate }}
+        </nz-form-label>
+        <nz-form-control [nzSpan]="15">
+          <nz-select formControlName="jobType" [(ngModel)]="jobInfoEntity.jobType"
+            (ngModelChange)="changeJobType($event)">
+            <nz-option nzValue="1" nzLabel="Url"></nz-option>
+            <nz-option nzValue="2" nzLabel="{{ 'task.list.modal.label.邮件' | translate }}"></nz-option>
+            <nz-option nzValue="3" nzLabel="MQTT"></nz-option>
+            <nz-option nzValue="4" [nzDisabled]="'disabled'" nzLabel="RabbitMQ"></nz-option>
+            <nz-option nzValue="5" [nzDisabled]="'disabled'" nzLabel="{{ 'task.list.modal.label.热加载' | translate }}">
+            </nz-option>
+          </nz-select>
+          <nz-form-explain *ngIf="validateJobForm.get('jobType').dirty && validateJobForm.get('jobType').errors">任务类型必填
+          </nz-form-explain>
+        </nz-form-control>
+      </nz-form-item>
+
+      <nz-form-item *ngIf="validateJobForm.get('jobType').value == 1">
         <nz-form-label [nzSpan]="6" nzRequired nzFor="requestUrl">{{ 'task.list.modal.label.请求地址' | translate }}
         </nz-form-label>
         <nz-form-control [nzSpan]="15">
           <input nz-input formControlName="requestUrl" placeholder="请输入请求地址" [(ngModel)]="jobInfoEntity.requestUrl">
           <nz-form-explain *ngIf="validateJobForm.get('requestUrl').dirty && validateJobForm.get('requestUrl').errors">
             请求地址必填</nz-form-explain>
+        </nz-form-control>
+      </nz-form-item>
 
+      <nz-form-item *ngIf="validateJobForm.get('jobType').value == 1">
+        <nz-form-label [nzSpan]="6" nzRequired nzFor="requestType">{{ 'task.list.modal.label.请求类型' | translate }}
+        </nz-form-label>
+        <nz-form-control [nzSpan]="15">
+          <nz-radio-group formControlName="requestType" [(ngModel)]="jobInfoEntity.requestType">
+            <label nz-radio nzValue="1">Get</label>
+            <label nz-radio nzValue="2">Post</label>
+            <label nz-radio nzValue="4">Put</label>
+            <label nz-radio nzValue="8">Delete</label>
+          </nz-radio-group>
+          <nz-form-explain
+            *ngIf="validateJobForm.get('requestType').dirty && validateJobForm.get('requestType').errors">请求类型必填
+          </nz-form-explain>
+        </nz-form-control>
+      </nz-form-item>
+
+      <nz-form-item *ngIf="validateJobForm.get('jobType').value == 2">
+        <nz-form-label [nzSpan]="6" nzRequired nzFor="mailTitle">{{ 'task.list.modal.label.邮件标题' | translate }}
+        </nz-form-label>
+        <nz-form-control [nzSpan]="15">
+          <input nz-input formControlName="mailTitle" placeholder="请输入邮件标题" [(ngModel)]="jobInfoEntity.mailTitle">
+          <nz-form-explain *ngIf="validateJobForm.get('mailTitle').dirty && validateJobForm.get('mailTitle').errors">
+            邮件标题必填</nz-form-explain>
+        </nz-form-control>
+      </nz-form-item>
+
+      <nz-form-item *ngIf="validateJobForm.get('jobType').value == 2">
+        <nz-form-label [nzSpan]="6" nzFor="mailContent">{{ 'task.list.modal.label.邮件内容' | translate }}
+        </nz-form-label>
+        <nz-form-control [nzSpan]="15">          
+          <textarea row="4" formControlName="mailContent" placeholder="请输入邮件内容" nz-input
+            [(ngModel)]="jobInfoEntity.mailContent"></textarea>
+        </nz-form-control>
+      </nz-form-item>
+
+      <nz-form-item *ngIf="validateJobForm.get('jobType').value == 2">
+        <nz-form-label [nzSpan]="6" nzRequired nzFor="mailTo">{{ 'task.list.modal.label.收件邮箱' | translate }}
+        </nz-form-label>
+        <nz-form-control [nzSpan]="15">
+          <input nz-input formControlName="mailTo" placeholder="请输入收件邮箱，多个邮箱用','分割。"
+            [(ngModel)]="jobInfoEntity.mailTo">
+          <nz-form-explain *ngIf="validateJobForm.get('mailTo').dirty && validateJobForm.get('mailTo').errors">
+            收件邮箱必填</nz-form-explain>
         </nz-form-control>
       </nz-form-item>
 
@@ -93,8 +156,6 @@
         </nz-form-label>
         <nz-form-control [nzSpan]="15">
           <nz-input-group nzCompact>
-            <!-- <input type="text" nz-input [ngModel]="'0571'" style="width: 20%;" />
-                <input type="text" nz-input [ngModel]="'26888888'" style="width:30%;" /> -->
             <input style="width: 70%;" nz-input formControlName="intervalSecond" placeholder="请输入间隔时间"
               [(ngModel)]="jobInfoEntity.intervalSecond">
             <nz-select style="width: 30%; " formControlName="intervalUnit">
@@ -110,27 +171,9 @@
         </nz-form-control>
       </nz-form-item>
 
-      <nz-form-item>
-        <nz-form-label [nzSpan]="6" nzRequired nzFor="requestType">{{ 'task.list.modal.label.请求类型' | translate }}
-        </nz-form-label>
-        <nz-form-control [nzSpan]="15">
-          <nz-radio-group formControlName="requestType" [(ngModel)]="jobInfoEntity.requestType">
-            <label nz-radio nzValue="1">Get</label>
-            <label nz-radio nzValue="2">Post</label>
-            <label nz-radio nzValue="4">Put</label>
-            <label nz-radio nzValue="8">Delete</label>
-          </nz-radio-group>
-          <nz-form-explain
-            *ngIf="validateJobForm.get('requestType').dirty && validateJobForm.get('requestType').errors">请求类型必填
-          </nz-form-explain>
-        </nz-form-control>
-      </nz-form-item>
-
-      <nz-form-item>
+      <nz-form-item *ngIf="validateJobForm.get('jobType').value == 1">
         <nz-form-label [nzSpan]="6" nzFor="headers">{{ 'task.list.modal.label.请求头' | translate }}</nz-form-label>
         <nz-form-control [nzSpan]="15">
-          <!-- <textarea formControlName="headers" title='格式：{"key":"value","key2":"value2"}'
-            placeholder="请输入Headers信息，如：Cookies、授权认证等" nz-input [(ngModel)]="jobInfoEntity.headers"></textarea> -->
           <input nz-input formControlName="headers" type="{{showPass?'text':'password'}}"
             title='格式：{"key":"value","key2":"value2"}' placeholder="请输入Headers信息，如：Cookies、授权认证等"
             [(ngModel)]="jobInfoEntity.headers">
@@ -138,7 +181,7 @@
         <img class="yanjing" (click)="switchPass()" src="{{showPassIocUrl}}" />
       </nz-form-item>
 
-      <nz-form-item>
+      <nz-form-item *ngIf="validateJobForm.get('jobType').value == 1">
         <nz-form-label [nzSpan]="6" nzFor="requestParameters">{{ 'task.list.modal.label.请求参数' | translate }}
         </nz-form-label>
         <nz-form-control [nzSpan]="15">

@@ -1,5 +1,6 @@
 ﻿using Host.Common;
 using Host.Controllers;
+using Host.IJobs;
 using Host.Model;
 using Newtonsoft.Json;
 using Quartz;
@@ -14,26 +15,12 @@ using Talk.Extensions;
 
 namespace Host
 {
-    [DisallowConcurrentExecution]
-    [PersistJobDataAfterExecution]
-    public class HttpJob : IJob
+    public class HttpJob : BaseJob
     {
-        public async Task Execute(IJobExecutionContext context)
+        public readonly int warnTime = 20;//接口请求超过多少秒记录警告日志 
+
+        public override async Task NextExecute(IJobExecutionContext context)
         {
-            //如果结束时间超过当前时间，则暂停当前任务。
-            var endTime = context.JobDetail.JobDataMap.GetString("EndAt");
-            if (!string.IsNullOrWhiteSpace(endTime) && DateTime.Parse(endTime) <= DateTime.Now)
-            {
-                await context.Scheduler.PauseJob(new JobKey(context.JobDetail.Key.Name, context.JobDetail.Key.Group));
-                return;
-            }
-
-            //记录执行次数
-            var runNumber = context.JobDetail.JobDataMap.GetLong(Constant.RUNNUMBER);
-            context.JobDetail.JobDataMap[Constant.RUNNUMBER] = ++runNumber;
-
-            var maxLogCount = 20;//最多保存日志数量
-            var warnTime = 20;//接口请求超过多少秒记录警告日志         
             //获取相关参数
             var requestUrl = context.JobDetail.JobDataMap.GetString(Constant.REQUESTURL)?.Trim();
             requestUrl = requestUrl?.IndexOf("http") == 0 ? requestUrl : "http://" + requestUrl;
@@ -129,45 +116,6 @@ namespace Host
                     await WarningAsync(loginfo.JobName, "耗时过长 - " + JsonConvert.SerializeObject(loginfo), mailMessage);
                 }
             }
-        }
-
-        public async Task WarningAsync(string title, string msg, MailMessageEnum mailMessage)
-        {
-            Log.Logger.Warning(msg);
-            if (mailMessage == MailMessageEnum.All)
-            {
-                await new SetingController().SendMail(new Model.SendMailModel()
-                {
-                    Title = $"任务调度-{title}【警告】消息",
-                    Content = msg
-                });
-            }
-        }
-
-        public async Task InformationAsync(string title, string msg, MailMessageEnum mailMessage)
-        {
-            Log.Logger.Information(msg);
-            if (mailMessage == MailMessageEnum.All)
-            {
-                await new SetingController().SendMail(new Model.SendMailModel()
-                {
-                    Title = $"任务调度-{title}消息",
-                    Content = msg
-                });
-            }
-        }
-
-        public async Task ErrorAsync(string title, Exception ex, string msg, MailMessageEnum mailMessage)
-        {
-            Log.Logger.Error(ex, msg);
-            if (mailMessage == MailMessageEnum.Err || mailMessage == MailMessageEnum.All)
-            {
-                await new SetingController().SendMail(new Model.SendMailModel()
-                {
-                    Title = $"任务调度-{title}【异常】消息",
-                    Content = msg
-                });
-            }
-        }
+        } 
     }
 }

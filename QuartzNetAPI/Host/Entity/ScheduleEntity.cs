@@ -1,6 +1,6 @@
 ﻿using Host.Common;
+using Host.Common.Enums;
 using System;
-using System.Collections.Generic;
 
 namespace Host
 {
@@ -14,6 +14,10 @@ namespace Host
         /// 任务分组
         /// </summary>
         public string JobGroup { get; set; }
+        /// <summary>
+        /// 任务类型
+        /// </summary>
+        public JobTypeEnum JobType { get; set; } = JobTypeEnum.Url;
         /// <summary>
         /// 开始时间
         /// </summary>
@@ -39,6 +43,14 @@ namespace Host
         /// </summary>
         public TriggerTypeEnum TriggerType { get; set; }
         /// <summary>
+        /// 描述
+        /// </summary>
+        public string Description { get; set; }
+
+        public MailMessageEnum MailMessage { get; set; }
+
+        #region Url
+        /// <summary>
         /// 请求url
         /// </summary>
         public string RequestUrl { get; set; }
@@ -55,12 +67,12 @@ namespace Host
         /// 请求类型
         /// </summary>
         public RequestTypeEnum RequestType { get; set; } = RequestTypeEnum.Post;
+        #endregion
 
-        /// <summary>
-        /// 描述
-        /// </summary>
-        public string Description { get; set; }
-
-        public MailMessageEnum MailMessage { get; set; }
+        #region Emial
+        public string MailTitle { get; set; }
+        public string MailContent { get; set; }
+        public string MailTo { get; set; } 
+        #endregion
     }
 }

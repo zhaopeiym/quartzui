@@ -57,6 +57,7 @@ export class TaskListComponent implements OnInit {
     this.getRefreshInterval();
     this.validateJobForm = this.fb2.group({
       jobName: [null, [Validators.required]],
+      jobType: ['1', [Validators.required]],
       beginTime: [null, [Validators.required]],
       endTime: [],
       cron: [null, [Validators.required]],
@@ -69,7 +70,10 @@ export class TaskListComponent implements OnInit {
       intervalSecond: [],
       intervalUnit: ['1'],
       headers: [],
-      mailMessage: ['0']
+      mailMessage: ['0'],
+      mailTitle: [null, [Validators.required]],
+      mailContent: [],
+      mailTo: [null, [Validators.required]],
     });
   }
 
@@ -108,7 +112,7 @@ export class TaskListComponent implements OnInit {
     //alert("afterClose");
   }
   //加载
-  loadJobInfo(isReset?) {
+  loadJobInfo() {
     var url = this.baseUrl + "/api/Job/GetAllJob";
     this.http.get(url,
       (result: any) => {
@@ -136,8 +140,8 @@ export class TaskListComponent implements OnInit {
         });
         this.resultData = result;
 
-        if (isReset !== false)
-          this.formReset();
+        // if (isReset !== false)
+        //   this.formReset();
       }, (err) => {
       });
   }
@@ -207,6 +211,7 @@ export class TaskListComponent implements OnInit {
 
     if (this.modalTitle === "新增任务") {
       this.jobInfoEntity.beginTime = new Date();
+      this.validateJobForm.controls["jobType"].setValue("1");
     }
     if (this.translate.currentLang === "en") {
       if (this.modalTitle === "新增任务")
@@ -236,6 +241,7 @@ export class TaskListComponent implements OnInit {
     this.validateJobForm.reset();
     this.validateJobForm.controls["triggerType"].setValue("1");
     this.validateJobForm.controls["intervalUnit"].setValue("1");
+    this.validateJobForm.controls["jobType"].setValue("1");
     this.validateJobForm.controls["mailMessage"].setValue("0");
   }
 
@@ -271,6 +277,7 @@ export class TaskListComponent implements OnInit {
       if (result.code == 200) {
         this.msgInfo("保存任务计划成功！");
         this.loadJobInfo();
+        this.formReset();
         this.isJobVisible = false;
       }
       else {
@@ -295,6 +302,7 @@ export class TaskListComponent implements OnInit {
       this.validateJobForm.controls["mailMessage"].setValue(result.mailMessage.toString());
       this.jobInfoEntity.requestType = this.jobInfoEntity.requestType.toString();
       this.jobInfoEntity.triggerType = this.jobInfoEntity.triggerType.toString();
+      this.jobInfoEntity.jobType = this.jobInfoEntity.jobType.toString();
 
       this.editJobInfoEntity = JSON.parse(JSON.stringify(this.jobInfoEntity));
       this.isJobVisible = true;
@@ -314,6 +322,7 @@ export class TaskListComponent implements OnInit {
       this.validateJobForm.controls["mailMessage"].setValue(result.mailMessage.toString());
       this.jobInfoEntity.requestType = this.jobInfoEntity.requestType.toString();
       this.jobInfoEntity.triggerType = this.jobInfoEntity.triggerType.toString();
+      this.jobInfoEntity.jobType = this.jobInfoEntity.jobType.toString();
 
       this.editJobInfoEntity = JSON.parse(JSON.stringify(this.jobInfoEntity));
       this.isJobVisible = true;
@@ -376,6 +385,29 @@ export class TaskListComponent implements OnInit {
       this.isCron = false;
       this.validateJobForm.controls["cron"].setValidators(null);
       this.validateJobForm.controls["intervalSecond"].setValidators(Validators.required);
+    }
+  }
+
+  changeJobType(jobType) {
+    switch (jobType) {
+      case "1":
+        this.validateJobForm.controls["mailTitle"].setValidators(null);
+        this.validateJobForm.controls["mailTo"].setValidators(null);
+        this.validateJobForm.controls["requestType"].setValidators(Validators.required);
+        this.validateJobForm.controls["requestUrl"].setValidators(Validators.required);
+        break;
+      case "2":
+        this.validateJobForm.controls["mailTitle"].setValidators(Validators.required);
+        this.validateJobForm.controls["mailTo"].setValidators(Validators.required);
+        this.validateJobForm.controls["requestType"].setValidators(null);
+        this.validateJobForm.controls["requestUrl"].setValidators(null);
+        break;
+      case "3":
+        break;
+      case "4":
+        break;
+      case "5":
+        break;
     }
   }
 

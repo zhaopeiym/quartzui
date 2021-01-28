@@ -153,3 +153,43 @@ form nz-tag {
   border-left: 3px solid #b4daf5;
   padding-left: 20px;
 }
+
+::ng-deep .ant-modal-body {
+  max-height: 680px;
+  overflow-y: auto;
+}
+
+/*笔记本 (小于1400px时应用的样式)*/
+@media screen and (max-width: 1400px) {
+  ::ng-deep .ant-modal-body {
+    max-height: 480px;
+    overflow-y: auto;
+  }
+}
+
+::ng-deep div::-webkit-scrollbar {
+  width: 10px;
+  /*滚动条宽度*/
+  height: 10px;
+  /*滚动条高度*/
+}
+
+/*  滚动条效果，鼠标悬浮才显示 
+::ng-deep div.ant-table-body.ng-star-inserted:hover::-webkit-scrollbar-thumb,
+::ng-deep div.ant-modal-body:hover::-webkit-scrollbar-thum
+*/
+::ng-deep div.ant-modal-body::-webkit-scrollbar-track {
+  background-color: #fff;
+}
+
+::ng-deep div.ant-modal-body::-webkit-scrollbar-thumb {
+  border-radius: 10px;
+  -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0);
+  background-color: rgb(241, 241, 241, 0);
+}
+
+::ng-deep div.ant-modal-body:hover::-webkit-scrollbar-thumb {
+  border-radius: 10px;
+  -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, .3);
+  background-color: rgb(241, 241, 241);
+}
