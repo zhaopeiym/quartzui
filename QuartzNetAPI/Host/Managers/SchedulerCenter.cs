@@ -1,13 +1,9 @@
-﻿using Dapper;
-using Host.Common;
+﻿using Host.Common;
 using Host.Common.Enums;
 using Host.Entity;
 using Host.IJobs;
 using Host.Repositories;
-using Microsoft.Data.Sqlite;
 using Microsoft.Extensions.Configuration;
-using MySql.Data.MySqlClient;
-using Npgsql;
 using Quartz;
 using Quartz.Impl;
 using Quartz.Impl.AdoJobStore;
@@ -19,7 +15,6 @@ using Quartz.Util;
 using Serilog;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 

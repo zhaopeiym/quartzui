@@ -19,11 +19,9 @@ namespace Host.Controllers
     [EnableCors("AllowSameDomain")] //允许跨域 
     public class SetingController : Controller
     {
-        private static string filePath = "File/Mail.txt";
         private static string refreshIntervalPath = "File/RefreshInterval.json";
         private static string loginPasswordPath = "File/LoginPassword.json";
 
-        private static MailEntity mailData = null;
         private static UpdateLoginInfoEntity LoginInfo = null;
         /// <summary>
         /// 保存Mail信息
@@ -33,9 +31,7 @@ namespace Host.Controllers
         [HttpPost]
         public async Task<bool> SaveMailInfo([FromBody] MailEntity mailEntity)
         {
-            mailData = mailEntity;
-            await System.IO.File.WriteAllTextAsync(filePath, JsonConvert.SerializeObject(mailEntity));
-            return true;
+            return await FileConfig.SaveMailInfo(mailEntity);
         }
 
         /// <summary>
@@ -139,12 +135,7 @@ namespace Host.Controllers
         [HttpPost]
         public async Task<MailEntity> GetMailInfo()
         {
-            if (mailData == null)
-            {
-                var mail = await System.IO.File.ReadAllTextAsync(filePath);
-                mailData = JsonConvert.DeserializeObject<MailEntity>(mail);
-            }
-            return mailData;
+            return await FileConfig.GetMailInfo();
         }
 
         /// <summary>
@@ -156,34 +147,7 @@ namespace Host.Controllers
         [NoLogin]
         public async Task<bool> SendMail([FromBody] SendMailModel model)
         {
-            try
-            {
-                if (model.MailInfo == null)
-                    model.MailInfo = await GetMailInfo();
-                var message = new MimeMessage();
-                message.From.Add(new MailboxAddress(model.MailInfo.MailFrom, model.MailInfo.MailFrom));
-                foreach (var mailTo in model.MailInfo.MailTo.Replace("；", ";").Replace("，", ";").Replace(",", ";").Split(';'))
-                {
-                    message.To.Add(new MailboxAddress(mailTo, mailTo));
-                }
-                message.Subject = string.Format(model.Title);
-                message.Body = new TextPart("html")
-                {
-                    Text = model.Content
-                };
-                using (var client = new MailKit.Net.Smtp.SmtpClient())
-                {
-                    client.Connect(model.MailInfo.MailHost, 465, true);
-                    client.Authenticate(model.MailInfo.MailFrom, model.MailInfo.MailPwd);
-                    client.Send(message);
-                    client.Disconnect(true);
-                }
-                return true;
-            }
-            catch (System.Exception)
-            {
-                return false;
-            }
+            return await MailHelper.SendMail(model.Title, model.Content, model.MailInfo);
         }
     }
 }

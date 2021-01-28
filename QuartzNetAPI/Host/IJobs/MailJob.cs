@@ -1,27 +1,28 @@
 ﻿using Host.Common;
-using Host.Controllers;
+using Host.IJobs.Model;
 using Quartz;
 using System.Threading.Tasks;
 
 namespace Host.IJobs
 {
-    public class MailJob : BaseJob
+    public class MailJob : BaseJob<LogMailModel>, IJob
     {
+        public MailJob()
+            : base(new LogMailModel())
+        { }
+
         public override async Task NextExecute(IJobExecutionContext context)
         {
-            var mailTitle = context.JobDetail.JobDataMap.GetString(Constant.MailTitle);
-            var mailContent = context.JobDetail.JobDataMap.GetString(Constant.MailContent);
+            var title = context.JobDetail.JobDataMap.GetString(Constant.MailTitle);
+            var content = context.JobDetail.JobDataMap.GetString(Constant.MailContent);
             var mailTo = context.JobDetail.JobDataMap.GetString(Constant.MailTo);
 
-            //TODO 此处待优化
-            var info = await new SetingController().GetMailInfo();
-            info.MailTo = mailTo;
-            await new SetingController().SendMail(new Model.SendMailModel()
-            {
-                Title = mailTitle,
-                Content = mailContent,
-                MailInfo = info
-            });
+            LogInfo.Title = title;
+            LogInfo.Content = content;
+            LogInfo.MailTo = mailTo;
+
+            await MailHelper.SendMail(title, content, mailTo);
+
         }
     }
 }

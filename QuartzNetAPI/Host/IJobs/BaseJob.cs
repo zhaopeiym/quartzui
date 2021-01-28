@@ -1,19 +1,30 @@
 ﻿using Host.Common;
 using Host.Controllers;
+using Host.IJobs.Model;
+using Host.Model;
+using Newtonsoft.Json;
 using Quartz;
 using Serilog;
 using System;
 using System.Collections.Generic;
-using System.Linq;
+using System.Diagnostics;
 using System.Threading.Tasks;
 
 namespace Host.IJobs
 {
     [DisallowConcurrentExecution]
     [PersistJobDataAfterExecution]
-    public abstract class BaseJob : IJob
+    public abstract class BaseJob<T> where T : LogModel, new()
     {
-        public readonly int maxLogCount = 20;//最多保存日志数量        
+        public readonly int maxLogCount = 20;//最多保存日志数量  
+        public readonly int warnTime = 20;//接口请求超过多少秒记录警告日志 
+        public Stopwatch stopwatch = new Stopwatch();
+        public T LogInfo { get; set; }
+
+        public BaseJob(T info)
+        {
+            LogInfo = info;
+        }
 
         public async Task Execute(IJobExecutionContext context)
         {
@@ -29,15 +40,43 @@ namespace Host.IJobs
             var runNumber = context.JobDetail.JobDataMap.GetLong(Constant.RUNNUMBER);
             context.JobDetail.JobDataMap[Constant.RUNNUMBER] = ++runNumber;
 
+            var mailMessage = (MailMessageEnum)int.Parse(context.JobDetail.JobDataMap.GetString(Constant.MAILMESSAGE) ?? "0");
+            var logs = context.JobDetail.JobDataMap[Constant.LOGLIST] as List<string> ?? new List<string>();
+            if (logs.Count >= maxLogCount)
+                logs.RemoveRange(0, logs.Count - maxLogCount);
+
+            stopwatch.Restart(); //  开始监视代码运行时间
             try
             {
+                LogInfo.BeginTime = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
+                LogInfo.JobName = $"{context.JobDetail.Key.Group}.{context.JobDetail.Key.Name}";
+
                 await NextExecute(context);
+
+                stopwatch.Stop(); //  停止监视            
+                double seconds = stopwatch.Elapsed.TotalSeconds;  //总秒数             
+                LogInfo.EndTime = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
+                LogInfo.ExecuteTime = seconds + "秒";
             }
             catch (Exception ex)
             {
-
+                stopwatch.Stop(); //  停止监视            
+                double seconds = stopwatch.Elapsed.TotalSeconds;  //总秒数
+                LogInfo.ErrorMsg = $"<span class='error'>{ex.Message} {ex.StackTrace}</span>";
+                context.JobDetail.JobDataMap[Constant.EXCEPTION] = JsonConvert.SerializeObject(LogInfo);
+                LogInfo.ExecuteTime = seconds + "秒";
+                await ErrorAsync(LogInfo.JobName, ex, JsonConvert.SerializeObject(LogInfo), mailMessage);
             }
-            finally { }
+            finally
+            {
+                logs.Add($"<p class='msgList'>{JsonConvert.SerializeObject(LogInfo)}</p>");
+                context.JobDetail.JobDataMap[Constant.LOGLIST] = logs;
+                double seconds = stopwatch.Elapsed.TotalSeconds;  //总秒数
+                if (seconds >= warnTime)//如果请求超过20秒，记录警告日志    
+                {
+                    await WarningAsync(LogInfo.JobName, "耗时过长 - " + JsonConvert.SerializeObject(LogInfo), mailMessage);
+                }
+            }
         }
 
         public abstract Task NextExecute(IJobExecutionContext context);
@@ -47,7 +86,7 @@ namespace Host.IJobs
             Log.Logger.Warning(msg);
             if (mailMessage == MailMessageEnum.All)
             {
-                await new SetingController().SendMail(new Model.SendMailModel()
+                await new SetingController().SendMail(new SendMailModel()
                 {
                     Title = $"任务调度-{title}【警告】消息",
                     Content = msg
@@ -60,7 +99,7 @@ namespace Host.IJobs
             Log.Logger.Information(msg);
             if (mailMessage == MailMessageEnum.All)
             {
-                await new SetingController().SendMail(new Model.SendMailModel()
+                await new SetingController().SendMail(new SendMailModel()
                 {
                     Title = $"任务调度-{title}消息",
                     Content = msg
@@ -73,7 +112,7 @@ namespace Host.IJobs
             Log.Logger.Error(ex, msg);
             if (mailMessage == MailMessageEnum.Err || mailMessage == MailMessageEnum.All)
             {
-                await new SetingController().SendMail(new Model.SendMailModel()
+                await new SetingController().SendMail(new SendMailModel()
                 {
                     Title = $"任务调度-{title}【异常】消息",
                     Content = msg
