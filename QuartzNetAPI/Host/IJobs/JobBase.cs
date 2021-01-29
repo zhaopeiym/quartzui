@@ -14,16 +14,17 @@ namespace Host.IJobs
 {
     [DisallowConcurrentExecution]
     [PersistJobDataAfterExecution]
-    public abstract class BaseJob<T> where T : LogModel, new()
+    public abstract class JobBase<T> where T : LogModel, new()
     {
-        public readonly int maxLogCount = 20;//最多保存日志数量  
-        public readonly int warnTime = 20;//接口请求超过多少秒记录警告日志 
-        public Stopwatch stopwatch = new Stopwatch();
-        public T LogInfo { get; set; }
+        protected readonly int maxLogCount = 20;//最多保存日志数量  
+        protected readonly int warnTime = 20;//接口请求超过多少秒记录警告日志 
+        protected Stopwatch stopwatch = new Stopwatch();
+        protected T LogInfo { get; private set; }
+        protected MailMessageEnum MailLevel = MailMessageEnum.None;
 
-        public BaseJob(T info)
+        public JobBase(T logInfo)
         {
-            LogInfo = info;
+            LogInfo = logInfo;
         }
 
         public async Task Execute(IJobExecutionContext context)
@@ -36,11 +37,11 @@ namespace Host.IJobs
                 return;
             }
 
+            MailLevel = (MailMessageEnum)int.Parse(context.JobDetail.JobDataMap.GetString(Constant.MAILMESSAGE) ?? "0");
             //记录执行次数
             var runNumber = context.JobDetail.JobDataMap.GetLong(Constant.RUNNUMBER);
             context.JobDetail.JobDataMap[Constant.RUNNUMBER] = ++runNumber;
 
-            var mailMessage = (MailMessageEnum)int.Parse(context.JobDetail.JobDataMap.GetString(Constant.MAILMESSAGE) ?? "0");
             var logs = context.JobDetail.JobDataMap[Constant.LOGLIST] as List<string> ?? new List<string>();
             if (logs.Count >= maxLogCount)
                 logs.RemoveRange(0, logs.Count - maxLogCount);
@@ -62,19 +63,20 @@ namespace Host.IJobs
             {
                 stopwatch.Stop(); //  停止监视            
                 double seconds = stopwatch.Elapsed.TotalSeconds;  //总秒数
+                LogInfo.EndTime = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
                 LogInfo.ErrorMsg = $"<span class='error'>{ex.Message} {ex.StackTrace}</span>";
                 context.JobDetail.JobDataMap[Constant.EXCEPTION] = JsonConvert.SerializeObject(LogInfo);
                 LogInfo.ExecuteTime = seconds + "秒";
-                await ErrorAsync(LogInfo.JobName, ex, JsonConvert.SerializeObject(LogInfo), mailMessage);
+                await ErrorAsync(LogInfo.JobName, ex, JsonConvert.SerializeObject(LogInfo), MailLevel);
             }
             finally
             {
-                logs.Add($"<p class='msgList'>{JsonConvert.SerializeObject(LogInfo)}</p>");
+                logs.Add($"<p class='msgList'>{LogInfo.BeginTime} 至 {LogInfo.EndTime}  【耗时】{LogInfo.ExecuteTime}\r\n{JsonConvert.SerializeObject(LogInfo)}</p>");
                 context.JobDetail.JobDataMap[Constant.LOGLIST] = logs;
                 double seconds = stopwatch.Elapsed.TotalSeconds;  //总秒数
                 if (seconds >= warnTime)//如果请求超过20秒，记录警告日志    
                 {
-                    await WarningAsync(LogInfo.JobName, "耗时过长 - " + JsonConvert.SerializeObject(LogInfo), mailMessage);
+                    await WarningAsync(LogInfo.JobName, "耗时过长 - " + JsonConvert.SerializeObject(LogInfo), MailLevel);
                 }
             }
         }

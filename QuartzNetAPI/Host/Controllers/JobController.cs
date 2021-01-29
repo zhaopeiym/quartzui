@@ -123,8 +123,11 @@ namespace Host.Controllers
                     };
                 }
             }
+
+            var jobKey = new JobKey(entity.OldScheduleEntity.JobName, entity.OldScheduleEntity.JobGroup);
+            var runNumber = await scheduler.GetRunNumberAsync(jobKey);
             await scheduler.StopOrDelScheduleJobAsync(entity.OldScheduleEntity.JobGroup, entity.OldScheduleEntity.JobName, true);
-            await scheduler.AddScheduleJobAsync(entity.NewScheduleEntity);
+            await scheduler.AddScheduleJobAsync(entity.NewScheduleEntity, runNumber);
             return new BaseResult() { Msg = "修改计划任务成功！" };
         }
 

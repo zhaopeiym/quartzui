@@ -13,7 +13,7 @@ using Talk.Extensions;
 
 namespace Host
 {
-    public class HttpJob : BaseJob<LogUrlModel>, IJob
+    public class HttpJob : JobBase<LogUrlModel>, IJob
     {
         public HttpJob()
             : base(new LogUrlModel())
@@ -26,7 +26,6 @@ namespace Host
             requestUrl = requestUrl?.IndexOf("http") == 0 ? requestUrl : "http://" + requestUrl;
             var requestParameters = context.JobDetail.JobDataMap.GetString(Constant.REQUESTPARAMETERS);
             var headersString = context.JobDetail.JobDataMap.GetString(Constant.HEADERS);
-            var mailMessage = (MailMessageEnum)int.Parse(context.JobDetail.JobDataMap.GetString(Constant.MAILMESSAGE) ?? "0");
             var headers = headersString != null ? JsonConvert.DeserializeObject<Dictionary<string, string>>(headersString?.Trim()) : null;
             var requestType = (RequestTypeEnum)int.Parse(context.JobDetail.JobDataMap.GetString(Constant.REQUESTTYPE));
 
@@ -57,7 +56,7 @@ namespace Host
             if (!response.IsSuccessStatusCode)
             {
                 LogInfo.ErrorMsg = $"<span class='error'>{result.MaxLeft(3000)}</span>";
-                await ErrorAsync(LogInfo.JobName, new Exception(result.MaxLeft(3000)), JsonConvert.SerializeObject(LogInfo), mailMessage);
+                await ErrorAsync(LogInfo.JobName, new Exception(result.MaxLeft(3000)), JsonConvert.SerializeObject(LogInfo), MailLevel);
                 context.JobDetail.JobDataMap[Constant.EXCEPTION] = JsonConvert.SerializeObject(LogInfo);
             }
             else
@@ -69,15 +68,15 @@ namespace Host
                     if (!httpResult.IsSuccess)
                     {
                         LogInfo.ErrorMsg = $"<span class='error'>{httpResult.ErrorMsg}</span>";
-                        await ErrorAsync(LogInfo.JobName, new Exception(httpResult.ErrorMsg), JsonConvert.SerializeObject(LogInfo), mailMessage);
+                        await ErrorAsync(LogInfo.JobName, new Exception(httpResult.ErrorMsg), JsonConvert.SerializeObject(LogInfo), MailLevel);
                         context.JobDetail.JobDataMap[Constant.EXCEPTION] = JsonConvert.SerializeObject(LogInfo);
                     }
                     else
-                        await InformationAsync(LogInfo.JobName, JsonConvert.SerializeObject(LogInfo), mailMessage);
+                        await InformationAsync(LogInfo.JobName, JsonConvert.SerializeObject(LogInfo), MailLevel);
                 }
                 catch (Exception)
                 {
-                    await InformationAsync(LogInfo.JobName, JsonConvert.SerializeObject(LogInfo), mailMessage);
+                    await InformationAsync(LogInfo.JobName, JsonConvert.SerializeObject(LogInfo), MailLevel);
                 }
             }
         }

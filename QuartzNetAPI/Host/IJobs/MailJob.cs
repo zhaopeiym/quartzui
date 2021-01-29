@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace Host.IJobs
 {
-    public class MailJob : BaseJob<LogMailModel>, IJob
+    public class MailJob : JobBase<LogMailModel>, IJob
     {
         public MailJob()
             : base(new LogMailModel())
@@ -23,6 +23,7 @@ namespace Host.IJobs
 
             await MailHelper.SendMail(title, content, mailTo);
 
+            LogInfo.Result = "发送成功！";
         }
     }
 }

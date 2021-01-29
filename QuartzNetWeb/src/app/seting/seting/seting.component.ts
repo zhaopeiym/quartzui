@@ -22,6 +22,7 @@ export class SetingComponent implements OnInit {
   private baseUrl = environment.baseUrl;
   oldPassword: any;
   newPassword: any;
+  sendMailLoading: boolean;
 
   constructor(private fb: FormBuilder,
     private router: Router,
@@ -70,11 +71,17 @@ export class SetingComponent implements OnInit {
   }
 
   testMail() {
+    this.sendMailLoading = true;
     var url = this.baseUrl + "/api/Seting/SendMail";
     this.http.post(url, { Title: "任务调度测试邮件", Content: "任务调度测试邮件发送成功！", MailInfo: this.validateForm.value }, (result: any) => {
-      this.message.success("发送成功，请在邮箱查收！");
+      if (result)
+        this.message.success("发送成功，请在邮箱查收！");
+      else
+        this.message.warning("发送失败！");
+      this.sendMailLoading = false;
     }, (err) => {
       this.message.error("发送失败！");
+      this.sendMailLoading = false;
     });
   }
 

@@ -4,6 +4,7 @@ using Host.Entity;
 using Host.IJobs;
 using Host.Repositories;
 using Microsoft.Extensions.Configuration;
+using Newtonsoft.Json;
 using Quartz;
 using Quartz.Impl;
 using Quartz.Impl.AdoJobStore;
@@ -17,6 +18,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Talk.Extensions;
 
 namespace Host
 {
@@ -140,8 +142,9 @@ namespace Host
         /// 添加一个工作调度
         /// </summary>
         /// <param name="entity"></param>
+        /// <param name="runNumber"></param>
         /// <returns></returns>
-        public async Task<BaseResult> AddScheduleJobAsync(ScheduleEntity entity)
+        public async Task<BaseResult> AddScheduleJobAsync(ScheduleEntity entity, long? runNumber = null)
         {
             var result = new BaseResult();
             try
@@ -161,6 +164,8 @@ namespace Host
                     { Constant.JobTypeEnum, ((int)entity.JobType).ToString()},
                     { Constant.MAILMESSAGE, ((int)entity.MailMessage).ToString()},
                 };
+                if (runNumber.HasValue)
+                    httpDir.Add(Constant.RUNNUMBER, runNumber.ToString());
 
                 IJobConfigurator jobConfigurator = null;
                 if (entity.JobType == JobTypeEnum.Url)
@@ -370,6 +375,17 @@ namespace Host
         {
             var jobDetail = await scheduler.GetJobDetail(jobKey);
             return jobDetail.JobDataMap[Constant.LOGLIST] as List<string>;
+        }
+
+        /// <summary>
+        /// 获取运行次数
+        /// </summary>
+        /// <param name="jobKey"></param>
+        /// <returns></returns>
+        public async Task<long> GetRunNumberAsync(JobKey jobKey)
+        {
+            var jobDetail = await scheduler.GetJobDetail(jobKey);
+            return jobDetail.JobDataMap.GetLong(Constant.RUNNUMBER);
         }
 
         /// <summary>

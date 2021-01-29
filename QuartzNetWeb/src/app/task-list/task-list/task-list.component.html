@@ -36,7 +36,7 @@
             (ngModelChange)="changeJobType($event)">
             <nz-option nzValue="1" nzLabel="Url"></nz-option>
             <nz-option nzValue="2" nzLabel="{{ 'task.list.modal.label.邮件' | translate }}"></nz-option>
-            <nz-option nzValue="3" nzLabel="MQTT"></nz-option>
+            <nz-option nzValue="3" [nzDisabled]="'disabled'" nzLabel="MQTT"></nz-option>
             <nz-option nzValue="4" [nzDisabled]="'disabled'" nzLabel="RabbitMQ"></nz-option>
             <nz-option nzValue="5" [nzDisabled]="'disabled'" nzLabel="{{ 'task.list.modal.label.热加载' | translate }}">
             </nz-option>
