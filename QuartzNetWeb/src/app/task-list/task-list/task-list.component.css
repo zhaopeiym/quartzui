@@ -154,6 +154,11 @@ form nz-tag {
   padding-left: 20px;
 }
 
+::ng-deep p.msgList span.time {
+  color: #40a9ff;
+  font-weight: 600;
+}
+
 ::ng-deep .ant-modal-body {
   max-height: 680px;
   overflow-y: auto;
