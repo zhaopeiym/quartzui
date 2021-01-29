@@ -12,6 +12,7 @@ namespace Host.Common
         {
             if (mailData == null)
             {
+                if (!System.IO.File.Exists(filePath)) return new MailEntity();
                 var mail = await System.IO.File.ReadAllTextAsync(filePath);
                 mailData = JsonConvert.DeserializeObject<MailEntity>(mail);
             }

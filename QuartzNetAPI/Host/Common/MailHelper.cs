@@ -2,6 +2,7 @@
 using MimeKit;
 using System;
 using System.Threading.Tasks;
+using Talk.Extensions;
 
 namespace Host.Common
 {
@@ -9,38 +10,43 @@ namespace Host.Common
     {
         public static async Task<bool> SendMail(string title, string content, MailEntity mailInfo = null)
         {
-            try
+            if (mailInfo == null)
             {
-                if (mailInfo == null) mailInfo = await FileConfig.GetMailInfo();
-                var message = new MimeMessage();
-                message.From.Add(new MailboxAddress(mailInfo.MailFrom, mailInfo.MailFrom));
-                foreach (var mailTo in mailInfo.MailTo.Replace("；", ";").Replace("，", ";").Replace(",", ";").Split(';'))
+                mailInfo = await FileConfig.GetMailInfo();
+                if (mailInfo.MailPwd.IsNullOrWhiteSpace() ||
+                    mailInfo.MailFrom.IsNullOrWhiteSpace() ||
+                    mailInfo.MailHost.IsNullOrWhiteSpace())
                 {
-                    message.To.Add(new MailboxAddress(mailTo, mailTo));
+                    throw new Exception("请先在/seting页面配置邮箱设置。");
                 }
-                message.Subject = string.Format(title);
-                message.Body = new TextPart("html")
-                {
-                    Text = content
-                };
-                using (var client = new MailKit.Net.Smtp.SmtpClient())
-                {
-                    client.Connect(mailInfo.MailHost, 465, true);
-                    client.Authenticate(mailInfo.MailFrom, mailInfo.MailPwd);
-                    client.Send(message);
-                    client.Disconnect(true);
-                }
-                return true;
             }
-            catch (Exception ex)
+
+            var message = new MimeMessage();
+            message.From.Add(new MailboxAddress(mailInfo.MailFrom, mailInfo.MailFrom));
+            foreach (var mailTo in mailInfo.MailTo.Replace("；", ";").Replace("，", ";").Replace(",", ";").Split(';'))
             {
-                return false;
+                message.To.Add(new MailboxAddress(mailTo, mailTo));
             }
+            message.Subject = string.Format(title);
+            message.Body = new TextPart("html")
+            {
+                Text = content
+            };
+            using (var client = new MailKit.Net.Smtp.SmtpClient())
+            {
+                client.Connect(mailInfo.MailHost, 465, true);
+                client.Authenticate(mailInfo.MailFrom, mailInfo.MailPwd);
+                client.Send(message);
+                client.Disconnect(true);
+            }
+            return true;
         }
 
         public static async Task<bool> SendMail(string title, string content, string mailTo)
         {
             var info = await FileConfig.GetMailInfo();
+            if (info.MailPwd.IsNullOrWhiteSpace() || info.MailFrom.IsNullOrWhiteSpace() || info.MailHost.IsNullOrWhiteSpace())
+                throw new Exception("请先在/seting页面配置邮箱设置。");
             info.MailTo = mailTo;
             return await SendMail(title, content, info);
         }
