@@ -155,8 +155,12 @@ form nz-tag {
 }
 
 ::ng-deep p.msgList span.time {
-  color: #40a9ff;
+  color: #fff;
   font-weight: 600;
+  border: 1px solid;
+  padding: 0 10px;
+  border-radius: 4px;
+  background: #40a9ffad;
 }
 
 ::ng-deep .ant-modal-body {
