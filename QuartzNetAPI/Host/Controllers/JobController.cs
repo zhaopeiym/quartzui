@@ -37,18 +37,26 @@ namespace Host.Controllers
         {
             if (ConfigurationManager.GetTryConfig("EnvironmentalRestrictions", "false") == "true")
             {
-                if (entity.Cron == "* * * * * ?")
-                    return new BaseResult()
-                    {
-                        Code = 403,
-                        Msg = "当前环境不允许过频繁执行任务！"
-                    };
-                if (entity.IntervalSecond.HasValue && entity.IntervalSecond <= 10)
+                if (entity.TriggerType == TriggerTypeEnum.Simple &&
+                    entity.IntervalSecond.HasValue &&
+                    entity.IntervalSecond <= 10)
+                {
                     return new BaseResult()
                     {
                         Code = 403,
                         Msg = "当前环境不允许低于10秒内循环执行任务！"
                     };
+                }
+                else if (entity.TriggerType == TriggerTypeEnum.Cron &&
+                         entity.Cron == "* * * * * ?")
+                {
+                    return new BaseResult()
+                    {
+                        Code = 403,
+                        Msg = "当前环境不允许过频繁执行任务！"
+                    };
+                }
+
             }
             return await scheduler.AddScheduleJobAsync(entity);
         }
@@ -114,7 +122,8 @@ namespace Host.Controllers
                         Msg = "当前环境不允许低于10秒内循环执行任务！"
                     };
                 }
-                else if (entity.NewScheduleEntity.TriggerType == TriggerTypeEnum.Cron && entity.NewScheduleEntity.Cron == "* * * * * ?")
+                else if (entity.NewScheduleEntity.TriggerType == TriggerTypeEnum.Cron &&
+                    entity.NewScheduleEntity.Cron == "* * * * * ?")
                 {
                     return new BaseResult()
                     {
