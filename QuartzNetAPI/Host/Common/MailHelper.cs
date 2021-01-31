@@ -12,7 +12,7 @@ namespace Host.Common
         {
             if (mailInfo == null)
             {
-                mailInfo = await FileConfig.GetMailInfo();
+                mailInfo = await FileConfig.GetMailInfoAsync();
                 if (mailInfo.MailPwd.IsNullOrWhiteSpace() ||
                     mailInfo.MailFrom.IsNullOrWhiteSpace() ||
                     mailInfo.MailHost.IsNullOrWhiteSpace())
@@ -44,7 +44,7 @@ namespace Host.Common
 
         public static async Task<bool> SendMail(string title, string content, string mailTo)
         {
-            var info = await FileConfig.GetMailInfo();
+            var info = await FileConfig.GetMailInfoAsync();
             if (info.MailPwd.IsNullOrWhiteSpace() || info.MailFrom.IsNullOrWhiteSpace() || info.MailHost.IsNullOrWhiteSpace())
                 throw new Exception("请先在 [/seting] 页面配置邮箱设置。");
             info.MailTo = mailTo;

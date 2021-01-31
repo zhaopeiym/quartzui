@@ -10,7 +10,7 @@ namespace Host.Common
 
         private static string mqttFilePath = "File/Mail.txt";
         private static MailEntity mailData = null;
-        public static async Task<MailEntity> GetMailInfo()
+        public static async Task<MailEntity> GetMailInfoAsync()
         {
             if (mailData == null)
             {
@@ -22,7 +22,7 @@ namespace Host.Common
             return JsonConvert.DeserializeObject<MailEntity>(JsonConvert.SerializeObject(mailData));
         }
 
-        public static async Task<bool> SaveMailInfo(MailEntity mailEntity)
+        public static async Task<bool> SaveMailInfoAsync(MailEntity mailEntity)
         {
             mailData = mailEntity;
             await System.IO.File.WriteAllTextAsync(filePath, JsonConvert.SerializeObject(mailEntity));

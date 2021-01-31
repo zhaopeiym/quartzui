@@ -23,7 +23,10 @@ namespace Host.IJobs
             LogInfo.Topic = topic;
             LogInfo.Payload = payload;
 
-            if (!mqttManager.MqttClient.IsConnected)
+            var mqttSet = await FileConfig.GetMqttSetAsync();
+            if (string.IsNullOrWhiteSpace(mqttSet.Host) || string.IsNullOrWhiteSpace(mqttSet.Port))
+                LogInfo.ErrorMsg = $"<span class='error'>请先在 [/seting] 页面配置MQTT设置。</span>";
+            else if (!mqttManager.MqttClient.IsConnected)
                 LogInfo.ErrorMsg = $"<span class='error'>Mqtt服务连接失败</span>";
             else if (!mqttManager.MqttClient.IsStarted)
                 LogInfo.ErrorMsg = $"<span class='error'>Mqtt服务启动失败</span>";

@@ -436,6 +436,9 @@ namespace Host
                             triggerAddress = jobDetail.JobDataMap.GetString(Constant.REQUESTURL);
                         else if (jobType == JobTypeEnum.Emial)
                             triggerAddress = jobDetail.JobDataMap.GetString(Constant.MailTo);
+                        else if (jobType == JobTypeEnum.Mqtt)
+                            triggerAddress = jobDetail.JobDataMap.GetString(Constant.Topic);
+
                         //Constant.MailTo
                         jobInfo.JobInfoList.Add(new JobInfo()
                         {

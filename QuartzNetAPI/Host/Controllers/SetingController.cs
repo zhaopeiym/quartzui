@@ -32,7 +32,7 @@ namespace Host.Controllers
         [HttpPost]
         public async Task<bool> SaveMailInfo([FromBody] MailEntity mailEntity)
         {
-            return await FileConfig.SaveMailInfo(mailEntity);
+            return await FileConfig.SaveMailInfoAsync(mailEntity);
         }
 
         /// <summary>
@@ -158,7 +158,7 @@ namespace Host.Controllers
         [HttpPost]
         public async Task<MailEntity> GetMailInfo()
         {
-            return await FileConfig.GetMailInfo();
+            return await FileConfig.GetMailInfoAsync();
         }
 
         /// <summary>
