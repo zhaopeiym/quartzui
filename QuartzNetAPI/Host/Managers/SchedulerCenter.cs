@@ -418,10 +418,12 @@ namespace Host
                 {
                     if (jobInfo.GroupName == jobKey.Group)
                     {
-                        var triggerAddress = string.Empty;
-                        var jobType = (JobTypeEnum)jobDetail.JobDataMap.GetLong(Constant.JobTypeEnum);
                         //旧代码没有保存JobTypeEnum，所以None可以默认为Url。
-                        if (jobType == JobTypeEnum.Url || jobType == JobTypeEnum.None)
+                        var jobType = (JobTypeEnum)jobDetail.JobDataMap.GetLong(Constant.JobTypeEnum);
+                        jobType = jobType == JobTypeEnum.None ? JobTypeEnum.Url : jobType;
+
+                        var triggerAddress = string.Empty;
+                        if (jobType == JobTypeEnum.Url)
                             triggerAddress = jobDetail.JobDataMap.GetString(Constant.REQUESTURL);
                         else if (jobType == JobTypeEnum.Emial)
                             triggerAddress = jobDetail.JobDataMap.GetString(Constant.MailTo);
