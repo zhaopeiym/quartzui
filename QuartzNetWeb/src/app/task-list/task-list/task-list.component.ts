@@ -138,6 +138,7 @@ export class TaskListComponent implements OnInit {
                 break;
             }
             this.setStateColor(eleJob);
+            this.setJobTypeColor(eleJob);
           });
         });
         this.resultData = result;
@@ -205,6 +206,26 @@ export class TaskListComponent implements OnInit {
         break;
     }
     eleJob.stateTranslate = 'task.list.table.th.tag.' + eleJob.displayState;
+  }
+
+  setJobTypeColor(eleJob) {
+    switch (eleJob.jobType.toString()) {
+      case "1":
+        eleJob.jobTypeColor = "#6ACEFA";
+        break;
+      case "2":
+        eleJob.jobTypeColor = "#DBC1EA";
+        break;
+      case "3":
+        eleJob.jobTypeColor = "#87d068";
+        break;
+      case "4":
+        eleJob.jobTypeColor = "#2db7f5";
+        break;
+      case "5":
+        eleJob.jobTypeColor = "#FF955F";
+        break;
+    }
   }
 
   showJobModal(groupName) {

@@ -287,7 +287,8 @@
             {{ jobInfo.runNumber}}
           </td>
           <td class="tb-center">
-            <nz-tag class="tag-jobtype">{{'task.list.table.th.jobType.'+jobInfo.jobType | translate}}</nz-tag>
+            <nz-tag [nzColor]="jobInfo.jobTypeColor" class="tag-jobtype">
+              {{'task.list.table.th.jobType.'+jobInfo.jobType | translate}}</nz-tag>
           </td>
           <td class="td-url" title="{{ jobInfo.requestUrl}}">
             {{ jobInfo.requestTypeDispaly && jobInfo.requestTypeDispaly+' - '}}{{ jobInfo.triggerAddress}}
