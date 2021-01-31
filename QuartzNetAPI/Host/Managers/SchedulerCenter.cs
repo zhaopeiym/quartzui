@@ -420,7 +420,8 @@ namespace Host
                     {
                         var triggerAddress = string.Empty;
                         var jobType = (JobTypeEnum)jobDetail.JobDataMap.GetLong(Constant.JobTypeEnum);
-                        if (jobType == JobTypeEnum.Url)
+                        //旧代码没有保存JobTypeEnum，所以None可以默认为Url。
+                        if (jobType == JobTypeEnum.Url || jobType == JobTypeEnum.None)
                             triggerAddress = jobDetail.JobDataMap.GetString(Constant.REQUESTURL);
                         else if (jobType == JobTypeEnum.Emial)
                             triggerAddress = jobDetail.JobDataMap.GetString(Constant.MailTo);
