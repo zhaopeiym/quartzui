@@ -17,7 +17,7 @@ namespace Host.Common
                     mailInfo.MailFrom.IsNullOrWhiteSpace() ||
                     mailInfo.MailHost.IsNullOrWhiteSpace())
                 {
-                    throw new Exception("请先在/seting页面配置邮箱设置。");
+                    throw new Exception("请先在 [/seting] 页面配置邮箱设置。");
                 }
             }
 
@@ -46,7 +46,7 @@ namespace Host.Common
         {
             var info = await FileConfig.GetMailInfo();
             if (info.MailPwd.IsNullOrWhiteSpace() || info.MailFrom.IsNullOrWhiteSpace() || info.MailHost.IsNullOrWhiteSpace())
-                throw new Exception("请先在/seting页面配置邮箱设置。");
+                throw new Exception("请先在 [/seting] 页面配置邮箱设置。");
             info.MailTo = mailTo;
             return await SendMail(title, content, info);
         }

@@ -442,7 +442,7 @@ namespace Host
                             Description = jobDetail.Description,
                             RequestType = jobDetail.JobDataMap.GetString(Constant.REQUESTTYPE),
                             RunNumber = jobDetail.JobDataMap.GetLong(Constant.RUNNUMBER),
-                            JobType = jobDetail.JobDataMap.GetLong(Constant.JobTypeEnum)
+                            JobType = (long)jobType
                             //(triggers as SimpleTriggerImpl)?.TimesTriggered
                             //CronTriggerImpl 中没有 TimesTriggered 所以自己RUNNUMBER记录
                         });
