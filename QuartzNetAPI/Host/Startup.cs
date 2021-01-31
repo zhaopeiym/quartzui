@@ -1,7 +1,5 @@
-﻿using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using Host.Filters;
+﻿using Host.Filters;
+using Host.Managers;
 using Host.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -9,10 +7,11 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.PlatformAbstractions;
 using Microsoft.OpenApi.Models;
-using Quartz.Impl.AdoJobStore;
-using Quartz.Impl.AdoJobStore.Common;
 using Serilog;
 using Serilog.Events;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 
 namespace Host
 {
@@ -76,7 +75,7 @@ namespace Host
                 options.IncludeXmlComments(xmlPath);
             });
 
-           
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -176,6 +175,6 @@ namespace Host
                                      }
                                  )
                                 .CreateLogger();
-        }       
+        }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using Host.Attributes;
 using Host.Common;
 using Host.Entity;
+using Host.Managers;
 using Host.Model;
 using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
@@ -32,6 +33,28 @@ namespace Host.Controllers
         public async Task<bool> SaveMailInfo([FromBody] MailEntity mailEntity)
         {
             return await FileConfig.SaveMailInfo(mailEntity);
+        }
+
+        /// <summary>
+        /// 保存Mqtt的配置
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost]
+        public async Task<bool> SaveMqttSet([FromBody] MqttOptionsEntity input)
+        {
+            await FileConfig.SaveMqttSetAsync(input);
+            await MqttManager.Instance.RestartAsync();
+            return true;
+        }
+
+        /// <summary>
+        /// 获取Mqtt的配置
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost]
+        public async Task<MqttOptionsEntity> GetMqttSet()
+        {
+            return await FileConfig.GetMqttSetAsync();
         }
 
         /// <summary>

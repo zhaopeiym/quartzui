@@ -7,8 +7,7 @@ namespace Host.IJobs
 {
     public class MailJob : JobBase<LogMailModel>, IJob
     {
-        public MailJob()
-            : base(new LogMailModel())
+        public MailJob() : base(new LogMailModel())
         { }
 
         public override async Task NextExecute(IJobExecutionContext context)

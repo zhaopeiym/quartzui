@@ -72,7 +72,17 @@ namespace Host
         #region Emial
         public string MailTitle { get; set; }
         public string MailContent { get; set; }
-        public string MailTo { get; set; } 
+        public string MailTo { get; set; }
+        #endregion
+
+        #region MQTT
+        /// Topic 主题
+        /// </summary>
+        public string Topic { get; set; }
+        /// <summary>
+        /// Payload
+        /// </summary>
+        public string Payload { get; set; }        
         #endregion
     }
 }

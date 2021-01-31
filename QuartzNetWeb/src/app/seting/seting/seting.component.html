@@ -3,7 +3,7 @@
 </nz-breadcrumb>
 <div style="background:#fff; padding: 24px; min-height: 280px;">
   <nz-tabset nzTabPosition="left" [nzSelectedIndex]="0">
-    <nz-tab nzTitle="{{'system.setup.tabset.tab.邮箱设置' | translate}}" title="用来发送失败任务消息">
+    <nz-tab nzTitle="{{'system.setup.tabset.tab.邮箱设置' | translate}}" title="用来发送Email消息">
       <form nz-form [formGroup]="validateForm">
         <nz-form-item>
           <nz-form-label [nzSm]="5" [nzXs]="24" nzFor="mailHost">{{'system.setup.label.发件服务器' | translate}}
@@ -50,6 +50,80 @@
         </nz-form-item>
       </form>
     </nz-tab>
+
+    <nz-tab nzTitle="{{'system.setup.tabset.tab.MQTT配置' | translate}}" title="用来发送MQTT消息">
+      <form nz-form [formGroup]="mqttValidateForm">
+
+        <nz-form-item>
+          <nz-form-label [nzSm]="5" [nzXs]="24" nzFor="host">{{'system.setup.label.连接方式' | translate}}
+          </nz-form-label>
+          <nz-form-control [nzSm]="15" [nzXs]="24">
+            <nz-radio-group formControlName="connectionMethod" [nzButtonStyle]="'solid'">
+              <label nz-radio-button nzDisabled nzValue="1">TCP</label>
+              <label nz-radio-button nzDisabled nzValue="2">TCP SSL</label>
+              <label nz-radio-button nzValue="3">WebSocket</label>
+              <label nz-radio-button nzValue="4">WebSocket SSL</label>
+            </nz-radio-group>
+          </nz-form-control>
+        </nz-form-item>
+
+        <nz-form-item>
+          <nz-form-label [nzSm]="5" [nzXs]="24" nzFor="host">{{'system.setup.label.主机地址' | translate}}
+          </nz-form-label>
+          <nz-form-control [nzSm]="15" [nzXs]="24">
+            <input nz-input formControlName="host" placeholder="如：test.mqtt.com">
+            <nz-form-explain *ngIf="mqttValidateForm.get('host').dirty && mqttValidateForm.get('host').errors">
+              请填写主机地址
+            </nz-form-explain>
+          </nz-form-control>
+        </nz-form-item>
+        <nz-form-item>
+          <nz-form-label [nzSm]="5" [nzXs]="24" nzFor="port">{{'system.setup.label.端口' | translate}}
+          </nz-form-label>
+          <nz-form-control [nzSm]="15" [nzXs]="24">
+            <input nz-input formControlName="port" placeholder="如：443">
+            <nz-form-explain *ngIf="mqttValidateForm.get('port').dirty && mqttValidateForm.get('port').errors">请填写端口
+            </nz-form-explain>
+          </nz-form-control>
+        </nz-form-item>
+        <nz-form-item>
+          <nz-form-label [nzSm]="5" [nzXs]="24" nzFor="clientId">{{'system.setup.label.客户端ID' | translate}}
+          </nz-form-label>
+          <nz-form-control [nzSm]="15" [nzXs]="24">
+            <input nz-input formControlName="clientId" placeholder="如：mqtt_645abb6809">
+            <nz-form-explain *ngIf="mqttValidateForm.get('clientId').dirty && mqttValidateForm.get('clientId').errors">
+              请填写客户端ID
+            </nz-form-explain>
+          </nz-form-control>
+        </nz-form-item>
+        <nz-form-item>
+          <nz-form-label [nzSm]="5" [nzXs]="24" nzFor="userName">{{'system.setup.label.用户名' | translate}}
+          </nz-form-label>
+          <nz-form-control [nzSm]="15" [nzXs]="24">
+            <input nz-input formControlName="userName" placeholder="如：username">
+            <!-- <nz-form-explain *ngIf="validateForm.get('mailPwd').dirty && validateForm.get('mailPwd').errors">请填写用户名
+            </nz-form-explain> -->
+          </nz-form-control>
+        </nz-form-item>
+        <nz-form-item>
+          <nz-form-label [nzSm]="5" [nzXs]="24" nzFor="password">{{'system.setup.label.密码' | translate}}
+          </nz-form-label>
+          <nz-form-control [nzSm]="15" [nzXs]="24">
+            <input nz-input type="password" formControlName="password" placeholder="如：123456">
+            <!-- <nz-form-explain *ngIf="validateForm.get('mailPwd').dirty && validateForm.get('mailPwd').errors">请填写密码
+            </nz-form-explain> -->
+          </nz-form-control>
+        </nz-form-item>
+        <nz-form-item>
+          <div class="but-con mqtt-but">
+            <!-- <button nz-button nzType="dashed" [nzLoading]="sendMailLoading" (click)="testMail()"
+              title="测试邮件是否配置成功">{{'system.setup.button.测试' | translate}}</button> -->
+            <button nz-button nzType="primary" (click)="saveMqttSet()">{{'system.setup.button.确定' | translate}}</button>
+          </div>
+        </nz-form-item>
+      </form>
+    </nz-tab>
+
     <nz-tab nzTitle="{{'system.setup.tabset.tab.刷新设置' | translate}}">
       <form nz-form>
         <nz-form-item>

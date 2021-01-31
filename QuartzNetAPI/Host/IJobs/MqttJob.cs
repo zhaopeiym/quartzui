@@ -1,0 +1,41 @@
+﻿using Host.Common;
+using Host.IJobs.Model;
+using Host.Managers;
+using MQTTnet.Client.Publishing;
+using Newtonsoft.Json;
+using Quartz;
+using System.Threading.Tasks;
+
+namespace Host.IJobs
+{
+    public class MqttJob : JobBase<LogMqttlModel>, IJob
+    {
+        private MqttManager mqttManager;
+        public MqttJob() : base(new LogMqttlModel())
+        {
+            mqttManager = MqttManager.Instance;
+        }
+
+        public override async Task NextExecute(IJobExecutionContext context)
+        {
+            var topic = context.JobDetail.JobDataMap.GetString(Constant.Topic);
+            var payload = context.JobDetail.JobDataMap.GetString(Constant.Payload);
+            LogInfo.Topic = topic;
+            LogInfo.Payload = payload;
+
+            if (!mqttManager.MqttClient.IsConnected)
+                LogInfo.ErrorMsg = $"<span class='error'>Mqtt服务连接失败</span>";
+            else if (!mqttManager.MqttClient.IsStarted)
+                LogInfo.ErrorMsg = $"<span class='error'>Mqtt服务启动失败</span>";
+            else
+            {
+                var detectionrResult = await mqttManager.PublishAsync(topic, payload);
+                if (detectionrResult.ReasonCode != MqttClientPublishReasonCode.Success)
+                    LogInfo.ErrorMsg = $"<span class='error'>topic:{topic} reason:{detectionrResult.ReasonString} {detectionrResult.ReasonCode}</span>";
+            }
+
+            if (!string.IsNullOrWhiteSpace(LogInfo.ErrorMsg))
+                context.JobDetail.JobDataMap[Constant.EXCEPTION] = $"<div class='err-time'>{LogInfo.BeginTime}</div>{JsonConvert.SerializeObject(LogInfo)}";
+        }
+    }
+}

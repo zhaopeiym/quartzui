@@ -23,6 +23,7 @@ export class SetingComponent implements OnInit {
   oldPassword: any;
   newPassword: any;
   sendMailLoading: boolean;
+  mqttValidateForm: FormGroup;
 
   constructor(private fb: FormBuilder,
     private router: Router,
@@ -38,6 +39,20 @@ export class SetingComponent implements OnInit {
       mailTo: [null, [Validators.required]],
     });
 
+    this.mqttValidateForm = this.fb.group({
+      host: [null, [Validators.required]],
+      port: [null, [Validators.required]],
+      clientId: [null, [Validators.required]],
+      userName: [null],
+      password: [null],
+      connectionMethod: ['4']
+    });
+    this.getMailInfo();
+    this.getMqttSet();
+  }
+
+  //获取邮箱信息
+  getMailInfo() {
     var url = this.baseUrl + "/api/Seting/GetMailInfo";
     this.http.post(url, {}, (result: any) => {
       this.validateForm.controls.mailFrom.setValue(result.mailFrom);
@@ -67,6 +82,35 @@ export class SetingComponent implements OnInit {
       this.message.success("保存成功！");
     }, (err) => {
       this.message.warning("保存失败！");
+    });
+  }
+
+  saveMqttSet() {
+    for (const i in this.mqttValidateForm.controls) {
+      this.mqttValidateForm.controls[i].markAsDirty();
+      this.mqttValidateForm.controls[i].updateValueAndValidity();
+    }
+    if (!this.mqttValidateForm.valid)
+      return;
+    var url = this.baseUrl + "/api/Seting/SaveMqttSet";
+    this.http.post(url, this.mqttValidateForm.value, (result: any) => {
+      this.message.success("保存成功！");
+    }, (err) => {
+      this.message.warning("保存失败！");
+    });
+  }
+
+  getMqttSet() {
+    var url = this.baseUrl + "/api/Seting/GetMqttSet";
+    this.http.post(url, {}, (result: any) => {
+      this.mqttValidateForm.controls.host.setValue(result.host);
+      this.mqttValidateForm.controls.port.setValue(result.port);
+      this.mqttValidateForm.controls.clientId.setValue(result.clientId);
+      this.mqttValidateForm.controls.userName.setValue(result.userName);
+      this.mqttValidateForm.controls.password.setValue(result.password);
+      this.mqttValidateForm.controls.connectionMethod.setValue(result.connectionMethod.toString());
+    }, (err) => {
+
     });
   }
 

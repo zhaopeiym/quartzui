@@ -40,7 +40,9 @@
     <PackageReference Include="MailKit" Version="2.10.1" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="5.0.2" />    
     <PackageReference Include="Microsoft.Data.SQLite" Version="5.0.2" />    
-    <PackageReference Include="Microsoft.Extensions.PlatformAbstractions" Version="1.1.0" />
+    <PackageReference Include="Microsoft.Extensions.PlatformAbstractions" Version="1.1.0" />    
+    <PackageReference Include="MQTTnet" Version="3.0.13" />    
+    <PackageReference Include="MQTTnet.Extensions.ManagedClient" Version="3.0.13" />
     <PackageReference Include="MySql.Data" Version="8.0.23" />
     <PackageReference Include="Npgsql" Version="5.0.3" />
     <PackageReference Include="Oracle.ManagedDataAccess.Core" Version="2.19.101" />

@@ -36,7 +36,7 @@
             (ngModelChange)="changeJobType($event)">
             <nz-option nzValue="1" nzLabel="Url"></nz-option>
             <nz-option nzValue="2" nzLabel="{{ 'task.list.modal.label.邮件' | translate }}"></nz-option>
-            <nz-option nzValue="3" [nzDisabled]="'disabled'" nzLabel="MQTT"></nz-option>
+            <nz-option nzValue="3" nzLabel="MQTT"></nz-option>
             <nz-option nzValue="4" [nzDisabled]="'disabled'" nzLabel="RabbitMQ"></nz-option>
             <nz-option nzValue="5" [nzDisabled]="'disabled'" nzLabel="{{ 'task.list.modal.label.热加载' | translate }}">
             </nz-option>
@@ -98,6 +98,36 @@
           <input nz-input formControlName="mailTo" placeholder="请输入收件邮箱，多个邮箱用','分割。" [(ngModel)]="jobInfoEntity.mailTo">
           <nz-form-explain *ngIf="validateJobForm.get('mailTo').dirty && validateJobForm.get('mailTo').errors">
             收件邮箱必填</nz-form-explain>
+        </nz-form-control>
+      </nz-form-item>
+
+      <nz-form-item *ngIf="validateJobForm.get('jobType').value == 2">
+        <nz-form-label [nzSpan]="6" nzRequired nzFor="mailTo">{{ 'task.list.modal.label.收件邮箱' | translate }}
+        </nz-form-label>
+        <nz-form-control [nzSpan]="15">
+          <input nz-input formControlName="mailTo" placeholder="请输入收件邮箱，多个邮箱用','分割。" [(ngModel)]="jobInfoEntity.mailTo">
+          <nz-form-explain *ngIf="validateJobForm.get('mailTo').dirty && validateJobForm.get('mailTo').errors">
+            收件邮箱必填</nz-form-explain>
+        </nz-form-control>
+      </nz-form-item>
+
+      <nz-form-item *ngIf="validateJobForm.get('jobType').value == 3">
+        <nz-form-label [nzSpan]="6" nzRequired nzFor="topic">{{ 'task.list.modal.label.主题' | translate }}
+        </nz-form-label>
+        <nz-form-control [nzSpan]="15">
+          <input nz-input formControlName="topic" placeholder="请输入Topic主题" [(ngModel)]="jobInfoEntity.topic">
+          <nz-form-explain *ngIf="validateJobForm.get('topic').dirty && validateJobForm.get('topic').errors">
+            Topic主题必填</nz-form-explain>
+        </nz-form-control>
+      </nz-form-item>
+
+      <nz-form-item *ngIf="validateJobForm.get('jobType').value == 3">
+        <nz-form-label [nzSpan]="6" nzRequired nzFor="payload">{{ 'task.list.modal.label.消息' | translate }}
+        </nz-form-label>
+        <nz-form-control [nzSpan]="15">
+          <input nz-input formControlName="payload" placeholder="请输入Payload消息" [(ngModel)]="jobInfoEntity.payload">
+          <nz-form-explain *ngIf="validateJobForm.get('payload').dirty && validateJobForm.get('payload').errors">
+            Payload消息必填</nz-form-explain>
         </nz-form-control>
       </nz-form-item>
 

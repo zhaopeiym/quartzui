@@ -15,8 +15,7 @@ namespace Host
 {
     public class HttpJob : JobBase<LogUrlModel>, IJob
     {
-        public HttpJob()
-            : base(new LogUrlModel())
+        public HttpJob() : base(new LogUrlModel())
         { }
 
         public override async Task NextExecute(IJobExecutionContext context)

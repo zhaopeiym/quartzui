@@ -47,5 +47,14 @@ namespace Host.Common
         public const string JobTypeEnum = "JobTypeEnum";
 
         public const string EndAt = "EndAt";
+
+        public const string ClientID = "ClientID";
+        public const string Host = "Host";
+        public const string Password = "Password";
+        public const string Port = "Port";
+        public const string UserName = "UserName";
+
+        public static string Topic = "Topic";
+        public static string Payload = "Payload";
     }
 }

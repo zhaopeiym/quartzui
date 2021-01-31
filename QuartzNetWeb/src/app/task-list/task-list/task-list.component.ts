@@ -74,6 +74,8 @@ export class TaskListComponent implements OnInit {
       mailTitle: [null, [Validators.required]],
       mailContent: [],
       mailTo: [null, [Validators.required]],
+      topic: [null, [Validators.required]],
+      payload: [null, [Validators.required]],
     });
   }
 
@@ -401,6 +403,8 @@ export class TaskListComponent implements OnInit {
       case "1":
         this.validateJobForm.controls["mailTitle"].setValidators(null);
         this.validateJobForm.controls["mailTo"].setValidators(null);
+        this.validateJobForm.controls["topic"].setValidators(null);
+        this.validateJobForm.controls["payload"].setValidators(null);
         this.validateJobForm.controls["requestType"].setValidators(Validators.required);
         this.validateJobForm.controls["requestUrl"].setValidators(Validators.required);
         break;
@@ -409,8 +413,16 @@ export class TaskListComponent implements OnInit {
         this.validateJobForm.controls["mailTo"].setValidators(Validators.required);
         this.validateJobForm.controls["requestType"].setValidators(null);
         this.validateJobForm.controls["requestUrl"].setValidators(null);
+        this.validateJobForm.controls["topic"].setValidators(null);
+        this.validateJobForm.controls["payload"].setValidators(null);
         break;
       case "3":
+        this.validateJobForm.controls["mailTitle"].setValidators(null);
+        this.validateJobForm.controls["mailTo"].setValidators(null);
+        this.validateJobForm.controls["requestType"].setValidators(null);
+        this.validateJobForm.controls["requestUrl"].setValidators(null);
+        this.validateJobForm.controls["topic"].setValidators(Validators.required);
+        this.validateJobForm.controls["payload"].setValidators(Validators.required);
         break;
       case "4":
         break;

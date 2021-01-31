@@ -23,7 +23,7 @@ using Talk.Extensions;
 namespace Host
 {
     /// <summary>
-    /// 调度中心 [单例模式]
+    /// 调度中心 [单例]
     /// </summary>
     public class SchedulerCenter
     {
@@ -183,6 +183,13 @@ namespace Host
                     httpDir.Add(Constant.MailContent, entity.MailContent);
                     httpDir.Add(Constant.MailTo, entity.MailTo);
                 }
+                else if (entity.JobType == JobTypeEnum.Mqtt)
+                {
+                    jobConfigurator = JobBuilder.Create<MqttJob>();
+                    httpDir.Add(Constant.Topic, entity.Topic);
+                    httpDir.Add(Constant.Payload, entity.Payload);
+                }
+
                 // 定义这个工作，并将其绑定到我们的IJob实现类                
                 IJobDetail job = jobConfigurator
                     .SetJobData(new JobDataMap(httpDir))
@@ -344,6 +351,8 @@ namespace Host
                     entity.MailTo = jobDetail.JobDataMap.GetString(Constant.MailTo);
                     break;
                 case JobTypeEnum.Mqtt:
+                    entity.Payload = jobDetail.JobDataMap.GetString(Constant.Payload);
+                    entity.Topic = jobDetail.JobDataMap.GetString(Constant.Topic);
                     break;
                 case JobTypeEnum.RabbitMQ:
                     break;

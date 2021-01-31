@@ -20,3 +20,7 @@ nz-form-item {
 .but-con button:nth-child(2) {
   margin-right: 110px;
 }
+
+.but-con.mqtt-but button {
+  margin-right: 110px;
+}
