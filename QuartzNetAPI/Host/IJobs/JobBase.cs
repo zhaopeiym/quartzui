@@ -65,7 +65,7 @@ namespace Host.IJobs
                 double seconds = stopwatch.Elapsed.TotalSeconds;  //总秒数
                 LogInfo.EndTime = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
                 LogInfo.ErrorMsg = $"<span class='error'>{ex.Message}</span>";
-                context.JobDetail.JobDataMap[Constant.EXCEPTION] = JsonConvert.SerializeObject(LogInfo);
+                context.JobDetail.JobDataMap[Constant.EXCEPTION] = $"<div class='err-time'>{LogInfo.BeginTime}</div>{JsonConvert.SerializeObject(LogInfo)}";
                 LogInfo.ExecuteTime = seconds + "秒";
                 await ErrorAsync(LogInfo.JobName, ex, JsonConvert.SerializeObject(LogInfo), MailLevel);
             }

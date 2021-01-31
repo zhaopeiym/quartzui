@@ -85,7 +85,7 @@
       <nz-form-item *ngIf="validateJobForm.get('jobType').value == 2">
         <nz-form-label [nzSpan]="6" nzFor="mailContent">{{ 'task.list.modal.label.邮件内容' | translate }}
         </nz-form-label>
-        <nz-form-control [nzSpan]="15">          
+        <nz-form-control [nzSpan]="15">
           <textarea row="4" formControlName="mailContent" placeholder="请输入邮件内容" nz-input
             [(ngModel)]="jobInfoEntity.mailContent"></textarea>
         </nz-form-control>
@@ -95,8 +95,7 @@
         <nz-form-label [nzSpan]="6" nzRequired nzFor="mailTo">{{ 'task.list.modal.label.收件邮箱' | translate }}
         </nz-form-label>
         <nz-form-control [nzSpan]="15">
-          <input nz-input formControlName="mailTo" placeholder="请输入收件邮箱，多个邮箱用','分割。"
-            [(ngModel)]="jobInfoEntity.mailTo">
+          <input nz-input formControlName="mailTo" placeholder="请输入收件邮箱，多个邮箱用','分割。" [(ngModel)]="jobInfoEntity.mailTo">
           <nz-form-explain *ngIf="validateJobForm.get('mailTo').dirty && validateJobForm.get('mailTo').errors">
             收件邮箱必填</nz-form-explain>
         </nz-form-control>
@@ -233,6 +232,7 @@
           <th style="width: 7%;">{{ 'task.list.table.th.任务名称' | translate }}</th>
           <th class="tb-center" style="width: 4%;">{{ 'task.list.table.th.状态' | translate }}</th>
           <th class="tb-center" style="width: 5%;">{{ 'task.list.table.th.请求次数' | translate }} </th>
+          <th class="tb-center" style="width: 5%;">{{ 'task.list.table.th.任务类型' | translate }} </th>
           <th class="tb-center" style="width: 9%;" class="td-url">{{ 'task.list.table.th.Url' | translate }}</th>
           <th class="tb-center" style="width: 5%;">{{ 'task.list.table.th.异常信息' | translate }}</th>
           <th class="tb-center" style="width: 9%;">{{ 'task.list.table.th.上次执行时间' | translate }}</th>
@@ -256,8 +256,11 @@
             <!-- <nz-tag>{{ jobInfo.requestTypeDispaly}}</nz-tag> -->
             {{ jobInfo.runNumber}}
           </td>
+          <td class="tb-center">
+            <nz-tag class="tag-jobtype">{{'task.list.table.th.jobType.'+jobInfo.jobType | translate}}</nz-tag>
+          </td>
           <td class="td-url" title="{{ jobInfo.requestUrl}}">
-            {{ jobInfo.requestTypeDispaly}} - {{ jobInfo.requestUrl}}
+            {{ jobInfo.requestTypeDispaly && jobInfo.requestTypeDispaly+' - '}}{{ jobInfo.triggerAddress}}
           </td>
           <td class="tb-center">
             <nz-tag nzMode="closeable" *ngIf="jobInfo.lastErrMsg" [nzColor]="'red'"

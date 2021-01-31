@@ -156,7 +156,7 @@ form nz-tag {
 
 ::ng-deep p.msgList span.time {
   color: #fff;
-  font-weight: 600;  
+  font-weight: 600;
   padding: 0 10px;
   border-radius: 4px;
   background: #40a9ffad;
@@ -200,4 +200,8 @@ form nz-tag {
   border-radius: 10px;
   -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, .3);
   background-color: rgb(241, 241, 241);
+}
+
+.tag-jobtype {
+  min-width: 40px;
 }

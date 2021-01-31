@@ -103,13 +103,14 @@ namespace Host.Entity
         public string Interval { get; set; }
 
         /// <summary>
-        /// 请求API的地址
+        /// 触发地址
         /// </summary>
-        public string RequestUrl { get; set; }
+        public string TriggerAddress { get; set; }
         public string RequestType { get; set; }
         /// <summary>
         /// 已经执行的次数
         /// </summary>
-        public long RunNumber { get;  set; }
+        public long RunNumber { get; set; }
+        public long JobType { get; set; }
     }
 }

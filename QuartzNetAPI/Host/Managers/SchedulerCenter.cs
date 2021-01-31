@@ -418,11 +418,18 @@ namespace Host
                 {
                     if (jobInfo.GroupName == jobKey.Group)
                     {
+                        var triggerAddress = string.Empty;
+                        var jobType = (JobTypeEnum)jobDetail.JobDataMap.GetLong(Constant.JobTypeEnum);
+                        if (jobType == JobTypeEnum.Url)
+                            triggerAddress = jobDetail.JobDataMap.GetString(Constant.REQUESTURL);
+                        else if (jobType == JobTypeEnum.Emial)
+                            triggerAddress = jobDetail.JobDataMap.GetString(Constant.MailTo);
+                        //Constant.MailTo
                         jobInfo.JobInfoList.Add(new JobInfo()
                         {
                             Name = jobKey.Name,
                             LastErrMsg = jobDetail.JobDataMap.GetString(Constant.EXCEPTION),
-                            RequestUrl = jobDetail.JobDataMap.GetString(Constant.REQUESTURL),
+                            TriggerAddress = triggerAddress,
                             TriggerState = await scheduler.GetTriggerState(triggers.Key),
                             PreviousFireTime = triggers.GetPreviousFireTimeUtc()?.LocalDateTime,
                             NextFireTime = triggers.GetNextFireTimeUtc()?.LocalDateTime,
@@ -431,7 +438,8 @@ namespace Host
                             EndTime = triggers.EndTimeUtc?.LocalDateTime,
                             Description = jobDetail.Description,
                             RequestType = jobDetail.JobDataMap.GetString(Constant.REQUESTTYPE),
-                            RunNumber = jobDetail.JobDataMap.GetLong(Constant.RUNNUMBER)
+                            RunNumber = jobDetail.JobDataMap.GetLong(Constant.RUNNUMBER),
+                            JobType = jobDetail.JobDataMap.GetLong(Constant.JobTypeEnum)
                             //(triggers as SimpleTriggerImpl)?.TimesTriggered
                             //CronTriggerImpl 中没有 TimesTriggered 所以自己RUNNUMBER记录
                         });
