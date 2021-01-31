@@ -291,13 +291,16 @@ export class TaskListComponent implements OnInit {
   }
 
   //编辑任务
-  editJob(name, group) {
+  editJob(job, group) {
+    var name = job.name;
     if (this.translate.currentLang === "en")
       this.modalTitle = "Editor Task";
     else
       this.modalTitle = "编辑任务";
     var url = this.baseUrl + "/api/Job/QueryJob";
+    job.bt_edit_loading = true;
     this.http.post(url, { name: name, group: group }, (result: any) => {
+      job.bt_edit_loading = false;
       this.jobInfoEntity = result;
       this.validateJobForm.controls["mailMessage"].setValue(result.mailMessage.toString());
       this.jobInfoEntity.requestType = this.jobInfoEntity.requestType.toString();
@@ -307,17 +310,20 @@ export class TaskListComponent implements OnInit {
       this.editJobInfoEntity = JSON.parse(JSON.stringify(this.jobInfoEntity));
       this.isJobVisible = true;
     }, (err) => {
-
+      job.bt_edit_loading = false;
     });
   }
 
-  copyJob(name, group) {
+  copyJob(job, group) {
+    var name = job.name;
     if (this.translate.currentLang === "en")
       this.modalTitle = "Add Task";
     else
       this.modalTitle = "新增任务";
     var url = this.baseUrl + "/api/Job/QueryJob";
+    job.bt_copy_loading = true;
     this.http.post(url, { name: name, group: group }, (result: any) => {
+      job.bt_copy_loading = false;
       this.jobInfoEntity = result;
       this.validateJobForm.controls["mailMessage"].setValue(result.mailMessage.toString());
       this.jobInfoEntity.requestType = this.jobInfoEntity.requestType.toString();
@@ -327,7 +333,7 @@ export class TaskListComponent implements OnInit {
       this.editJobInfoEntity = JSON.parse(JSON.stringify(this.jobInfoEntity));
       this.isJobVisible = true;
     }, (err) => {
-
+      job.bt_copy_loading = false;
     });
   }
 
@@ -363,14 +369,16 @@ export class TaskListComponent implements OnInit {
   }
 
   //删除
-  removeJob(name, group) {
-
+  removeJob(job, group) {
+    var name = job.name;
     var url = this.baseUrl + "/api/Job/RemoveJob";
+    job.bt_del_loading = true;
     this.http.post(url, { name: name, group: group }, (result: any) => {
       this.msgInfo(result.msg);
       this.loadJobInfo();
+      job.bt_del_loading = false;
     }, (err) => {
-
+      job.bt_del_loading = false;
     });
   }
 
@@ -412,20 +420,27 @@ export class TaskListComponent implements OnInit {
   }
 
   //立即执行
-  triggerJob(name, group) {
+  triggerJob(job, group) {
+    var name = job.name;
     var url = this.baseUrl + "/api/Job/TriggerJob";
+    job.bt_trigger_loading = true;
     this.http.post(url, { name: name, group: group }, (result: any) => {
+      job.bt_trigger_loading = false;
       this.msgInfo("执行成功！");
       this.renovateJobInfo();
     }, (err) => {
+      job.bt_trigger_loading = false;
       this.msgError("执行失败！");
     });
   }
 
   //查看日志
-  getJobLogs(name, group) {
+  getJobLogs(job, group) {
+    var name = job.name;
     var url = this.baseUrl + "/api/Job/GetJobLogs";
+    job.bt_log_loading = true;
     this.http.post(url, { name: name, group: group }, (result: any) => {
+      job.bt_log_loading = false;
       if (result === null) {
         this.msgWarning("暂无日志！");
         return;
@@ -447,6 +462,7 @@ export class TaskListComponent implements OnInit {
           });
         });
     }, (err) => {
+      job.bt_log_loading = false;
       this.msgError("查询失败！");
     });
   }

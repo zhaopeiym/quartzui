@@ -154,12 +154,16 @@ form nz-tag {
   padding-left: 20px;
 }
 
+::ng-deep p.msgList.error {
+  border-left: 3px solid #ff9f9f;
+}
+
 ::ng-deep p.msgList span.time {
-  color: #fff;
   font-weight: 600;
+  /* color: #fff;
   padding: 0 10px;
   border-radius: 4px;
-  background: #40a9ffad;
+  background: #40a9ffad; */
 }
 
 ::ng-deep .ant-modal-body {

@@ -71,7 +71,8 @@ namespace Host.IJobs
             }
             finally
             {
-                logs.Add($"<p class='msgList'><span class='time'>{LogInfo.BeginTime} 至 {LogInfo.EndTime}  【耗时】{LogInfo.ExecuteTime}</span>{JsonConvert.SerializeObject(LogInfo)}</p>");
+                var classErr = string.IsNullOrWhiteSpace(LogInfo.ErrorMsg) ? "" : "error";
+                logs.Add($"<p class='msgList {classErr}'><span class='time'>{LogInfo.BeginTime} 至 {LogInfo.EndTime}  【耗时】{LogInfo.ExecuteTime}</span>{JsonConvert.SerializeObject(LogInfo)}</p>");
                 context.JobDetail.JobDataMap[Constant.LOGLIST] = logs;
                 double seconds = stopwatch.Elapsed.TotalSeconds;  //总秒数
                 if (seconds >= warnTime)//如果请求超过20秒，记录警告日志    

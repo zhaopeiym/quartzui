@@ -287,14 +287,14 @@
             <button [nzSize]="'small'" *ngIf="jobInfo.displayState!=='暂停'" nz-button
               [disabled]="jobInfo.bt_suspended_loading" (click)="stopJob(jobInfo,panel.groupName)"
               nzType="default">{{ 'task.list.table.th.button.暂停' | translate }}</button>
-            <nz-popconfirm [nzTitle]="'你确定删除这个任务？'" (nzOnConfirm)="removeJob(jobInfo.name,panel.groupName)"
+            <nz-popconfirm [nzTitle]="'你确定删除这个任务？'" (nzOnConfirm)="removeJob(jobInfo,panel.groupName)"
               (nzOnCancel)="confirm()">
               <a nz-popconfirm>
-                <button [nzSize]="'small'" nz-button nzType="danger"
+                <button [nzSize]="'small'" nz-button nzType="danger" [disabled]="jobInfo.bt_del_loading"
                   style="margin-left: 5px; margin-right: 5px;">{{ 'task.list.table.th.button.删除' | translate }}</button>
               </a>
             </nz-popconfirm>
-            <nz-dropdown>
+            <nz-dropdown nzTrigger="click">
               <button [nzSize]="'small'" nz-button nz-dropdown>
                 <span>{{ 'task.list.table.th.button.更多' | translate }}</span>
                 <i class="anticon anticon-down"></i>
@@ -302,26 +302,26 @@
               <ul nz-menu style="border: 1px solid #D9D9D9;background-color: rgb(245, 245, 245)">
                 <li nz-menu-item>
                   <a>
-                    <button [nzSize]="'small'" nz-button
-                      (click)="editJob(jobInfo.name,panel.groupName)">{{ 'task.list.table.th.button.编辑' | translate }}</button>
+                    <button [nzSize]="'small'" nz-button [disabled]="jobInfo.bt_edit_loading"
+                      (click)="editJob(jobInfo,panel.groupName)">{{ 'task.list.table.th.button.编辑' | translate }}</button>
                   </a>
                 </li>
                 <li nz-menu-item>
                   <a>
-                    <button [nzSize]="'small'" nz-button
-                      (click)="copyJob(jobInfo.name,panel.groupName)">{{ 'task.list.table.th.button.复制' | translate }}</button>
+                    <button [nzSize]="'small'" nz-button [disabled]="jobInfo.bt_copy_loading"
+                      (click)="copyJob(jobInfo,panel.groupName)">{{ 'task.list.table.th.button.复制' | translate }}</button>
                   </a>
                 </li>
                 <li nz-menu-item>
                   <a>
-                    <button [nzSize]="'small'" nz-button
-                      (click)="triggerJob(jobInfo.name,panel.groupName)">{{ 'task.list.table.th.button.执行' | translate }}</button>
+                    <button [nzSize]="'small'" nz-button [disabled]="jobInfo.bt_trigger_loading"
+                      (click)="triggerJob(jobInfo,panel.groupName)">{{ 'task.list.table.th.button.执行' | translate }}</button>
                   </a>
                 </li>
                 <li nz-menu-item>
                   <a>
-                    <button [nzSize]="'small'" nz-button
-                      (click)="getJobLogs(jobInfo.name,panel.groupName)">{{ 'task.list.table.th.button.日志' | translate }}</button>
+                    <button [nzSize]="'small'" nz-button [disabled]="jobInfo.bt_log_loading"
+                      (click)="getJobLogs(jobInfo,panel.groupName)">{{ 'task.list.table.th.button.日志' | translate }}</button>
                   </a>
                 </li>
               </ul>
