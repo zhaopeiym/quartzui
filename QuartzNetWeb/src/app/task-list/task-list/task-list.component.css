@@ -159,7 +159,8 @@ form nz-tag {
 }
 
 ::ng-deep p.msgList span.time {
-  font-weight: 600;
+  font-weight: 600;  
+  display: block;
   /* color: #fff;
   padding: 0 10px;
   border-radius: 4px;
