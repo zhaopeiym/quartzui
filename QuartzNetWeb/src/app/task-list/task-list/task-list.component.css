@@ -14,8 +14,21 @@
 
 .jobTable th,
 .jobTable td {
-  padding: 0 15px;
   border: 1px solid #f5f5f5;
+}
+
+.jobTable th:not(.tb-center),
+.jobTable td:not(.tb-center) {
+  padding: 0 15px;
+}
+
+/*笔记本 (小于1400px时应用的样式)*/
+@media screen and (max-width: 1400px) {
+
+  .jobTable th:not(.tb-center),
+  .jobTable td:not(.tb-center) {
+    padding-left: 8px;
+  }
 }
 
 .jobTable tr:hover {
@@ -38,10 +51,12 @@
   border-bottom: 0;
 }
 
+/* 最后一列，操作按钮 */
 .jobTable tr th:last-child,
 .jobTable tr td:last-child {
   border-right: 0;
-  padding: 0 13px;
+  padding-right: 0px;
+  padding-left: 13px;
 }
 
 
@@ -146,7 +161,7 @@ form nz-tag {
 }
 
 .ant-tag {
-  margin: 8px;
+  margin: 0px;
 }
 
 ::ng-deep p.msgList {
@@ -159,7 +174,7 @@ form nz-tag {
 }
 
 ::ng-deep p.msgList span.time {
-  font-weight: 600;  
+  font-weight: 600;
   display: block;
   /* color: #fff;
   padding: 0 10px;
@@ -177,6 +192,11 @@ form nz-tag {
   ::ng-deep .ant-modal-body {
     max-height: 480px;
     overflow-y: auto;
+  }
+
+  .jobTable tr th:last-child,
+  .jobTable tr td:last-child {
+    padding-left: 7px;
   }
 }
 
