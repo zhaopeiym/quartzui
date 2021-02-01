@@ -1,5 +1,6 @@
 .logo {
-  width: 120px;
+  min-width: 120px;
+  padding: 0 8px;
   height: 31px;
   background: rgba(255, 255, 255, .2);
   margin: 16px 24px 16px 0;
