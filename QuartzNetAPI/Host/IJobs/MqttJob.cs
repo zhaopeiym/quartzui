@@ -39,6 +39,8 @@ namespace Host.IJobs
 
             if (!string.IsNullOrWhiteSpace(LogInfo.ErrorMsg))
                 context.JobDetail.JobDataMap[Constant.EXCEPTION] = $"<div class='err-time'>{LogInfo.BeginTime}</div>{JsonConvert.SerializeObject(LogInfo)}";
+            else
+                LogInfo.Result = "发送成功！";
         }
     }
 }

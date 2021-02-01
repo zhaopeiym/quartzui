@@ -53,28 +53,27 @@ namespace Host.IJobs
                 LogInfo.JobName = $"{context.JobDetail.Key.Group}.{context.JobDetail.Key.Name}";
 
                 await NextExecute(context);
-
-                stopwatch.Stop(); //  停止监视            
-                double seconds = stopwatch.Elapsed.TotalSeconds;  //总秒数             
-                LogInfo.EndTime = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
-                LogInfo.ExecuteTime = seconds + "秒";
             }
             catch (Exception ex)
             {
-                stopwatch.Stop(); //  停止监视            
-                double seconds = stopwatch.Elapsed.TotalSeconds;  //总秒数
-                LogInfo.EndTime = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
                 LogInfo.ErrorMsg = $"<span class='error'>{ex.Message}</span>";
                 context.JobDetail.JobDataMap[Constant.EXCEPTION] = $"<div class='err-time'>{LogInfo.BeginTime}</div>{JsonConvert.SerializeObject(LogInfo)}";
-                LogInfo.ExecuteTime = seconds + "秒";
                 await ErrorAsync(LogInfo.JobName, ex, JsonConvert.SerializeObject(LogInfo), MailLevel);
             }
             finally
             {
+                stopwatch.Stop(); //  停止监视            
+                double seconds = stopwatch.Elapsed.TotalSeconds;  //总秒数             
+                LogInfo.EndTime = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
+
+                if (seconds >= 1)
+                    LogInfo.ExecuteTime = seconds + "秒";
+                else
+                    LogInfo.ExecuteTime = stopwatch.Elapsed.TotalMilliseconds + "毫秒";
+
                 var classErr = string.IsNullOrWhiteSpace(LogInfo.ErrorMsg) ? "" : "error";
                 logs.Add($"<p class='msgList {classErr}'><span class='time'>{LogInfo.BeginTime} 至 {LogInfo.EndTime}  【耗时】{LogInfo.ExecuteTime}</span>{JsonConvert.SerializeObject(LogInfo)}</p>");
                 context.JobDetail.JobDataMap[Constant.LOGLIST] = logs;
-                double seconds = stopwatch.Elapsed.TotalSeconds;  //总秒数
                 if (seconds >= warnTime)//如果请求超过20秒，记录警告日志    
                 {
                     await WarningAsync(LogInfo.JobName, "耗时过长 - " + JsonConvert.SerializeObject(LogInfo), MailLevel);
