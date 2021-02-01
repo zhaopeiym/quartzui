@@ -189,6 +189,12 @@ namespace Host
                     httpDir.Add(Constant.Topic, entity.Topic);
                     httpDir.Add(Constant.Payload, entity.Payload);
                 }
+                else if (entity.JobType == JobTypeEnum.RabbitMQ)
+                {
+                    jobConfigurator = JobBuilder.Create<RabbitJob>();
+                    httpDir.Add(Constant.RabbitQueue, entity.RabbitQueue);
+                    httpDir.Add(Constant.RabbitBody, entity.RabbitBody);
+                }
 
                 // 定义这个工作，并将其绑定到我们的IJob实现类                
                 IJobDetail job = jobConfigurator
@@ -355,6 +361,8 @@ namespace Host
                     entity.Topic = jobDetail.JobDataMap.GetString(Constant.Topic);
                     break;
                 case JobTypeEnum.RabbitMQ:
+                    entity.RabbitQueue = jobDetail.JobDataMap.GetString(Constant.RabbitQueue);
+                    entity.RabbitBody = jobDetail.JobDataMap.GetString(Constant.RabbitBody);
                     break;
                 case JobTypeEnum.Hotreload:
                     break;
@@ -438,6 +446,8 @@ namespace Host
                             triggerAddress = jobDetail.JobDataMap.GetString(Constant.MailTo);
                         else if (jobType == JobTypeEnum.Mqtt)
                             triggerAddress = jobDetail.JobDataMap.GetString(Constant.Topic);
+                        else if (jobType == JobTypeEnum.RabbitMQ)
+                            triggerAddress = jobDetail.JobDataMap.GetString(Constant.RabbitQueue);
 
                         //Constant.MailTo
                         jobInfo.JobInfoList.Add(new JobInfo()

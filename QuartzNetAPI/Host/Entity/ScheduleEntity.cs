@@ -82,7 +82,12 @@ namespace Host
         /// <summary>
         /// Payload
         /// </summary>
-        public string Payload { get; set; }        
+        public string Payload { get; set; }
+        #endregion
+
+        #region Rabbit
+        public string RabbitQueue { get; set; }
+        public string RabbitBody { get; set; }
         #endregion
     }
 }

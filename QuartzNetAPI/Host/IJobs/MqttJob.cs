@@ -8,10 +8,10 @@ using System.Threading.Tasks;
 
 namespace Host.IJobs
 {
-    public class MqttJob : JobBase<LogMqttlModel>, IJob
+    public class MqttJob : JobBase<LogMqttModel>, IJob
     {
         private MqttManager mqttManager;
-        public MqttJob() : base(new LogMqttlModel())
+        public MqttJob() : base(new LogMqttModel())
         {
             mqttManager = MqttManager.Instance;
         }

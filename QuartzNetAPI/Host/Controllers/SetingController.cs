@@ -58,6 +58,38 @@ namespace Host.Controllers
         }
 
         /// <summary>
+        /// 保存Rabbit 配置
+        /// </summary>
+        /// <param name="input"></param>
+        /// <returns></returns>
+        [HttpPost]
+        public async Task<bool> SaveRabbitSet([FromBody] RabbitOptionsEntity input)
+        {
+            await FileConfig.SaveRabbitSetAsync(input);
+            return true;
+        }
+
+        /// <summary>
+        /// 重启Rabbit
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost]
+        public async Task<bool> RestartRabbit()
+        {
+            return await RabbitMQManager.Instance.RestartAsync();
+        }
+
+        /// <summary>
+        /// 获取Rabbit的配置
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost]
+        public async Task<RabbitOptionsEntity> GetRabbitSet()
+        {
+            return await FileConfig.GetRabbitSetAsync();
+        }
+
+        /// <summary>
         /// 保存刷新间隔
         /// </summary>
         /// <param name="entity"></param>

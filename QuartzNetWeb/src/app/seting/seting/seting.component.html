@@ -124,6 +124,58 @@
       </form>
     </nz-tab>
 
+    <nz-tab nzTitle="{{'system.setup.tabset.tab.RabbitMQ配置' | translate}}" title="用来发送RabbitMQ消息">
+      <form nz-form [formGroup]="rabbitValidateForm">
+        <nz-form-item>
+          <nz-form-label [nzSm]="5" [nzXs]="24" nzFor="rabbitHost">{{'system.setup.label.主机地址' | translate}}
+          </nz-form-label>
+          <nz-form-control [nzSm]="15" [nzXs]="24">
+            <input nz-input formControlName="rabbitHost" placeholder="如：test.rabbitmq.com">
+            <nz-form-explain
+              *ngIf="rabbitValidateForm.get('rabbitHost').dirty && rabbitValidateForm.get('rabbitHost').errors">
+              请填写主机地址
+            </nz-form-explain>
+          </nz-form-control>
+        </nz-form-item>
+        <nz-form-item>
+          <nz-form-label [nzSm]="5" [nzXs]="24" nzFor="rabbitPort">{{'system.setup.label.端口' | translate}}
+          </nz-form-label>
+          <nz-form-control [nzSm]="15" [nzXs]="24">
+            <input nz-input formControlName="rabbitPort" placeholder="如：5672">
+            <nz-form-explain
+              *ngIf="rabbitValidateForm.get('rabbitPort').dirty && rabbitValidateForm.get('rabbitPort').errors">请填写端口
+            </nz-form-explain>
+          </nz-form-control>
+        </nz-form-item>
+        <nz-form-item>
+          <nz-form-label [nzSm]="5" [nzXs]="24" nzFor="rabbitUserName">{{'system.setup.label.用户名' | translate}}
+          </nz-form-label>
+          <nz-form-control [nzSm]="15" [nzXs]="24">
+            <input nz-input formControlName="rabbitUserName" placeholder="如：username">
+            <!-- <nz-form-explain *ngIf="validateForm.get('mailPwd').dirty && validateForm.get('mailPwd').errors">请填写用户名
+              </nz-form-explain> -->
+          </nz-form-control>
+        </nz-form-item>
+        <nz-form-item>
+          <nz-form-label [nzSm]="5" [nzXs]="24" nzFor="rabbitPassword">{{'system.setup.label.密码' | translate}}
+          </nz-form-label>
+          <nz-form-control [nzSm]="15" [nzXs]="24">
+            <input nz-input type="rabbitPassword" formControlName="rabbitPassword" placeholder="如：123456">
+            <!-- <nz-form-explain *ngIf="validateForm.get('mailPwd').dirty && validateForm.get('mailPwd').errors">请填写密码
+              </nz-form-explain> -->
+          </nz-form-control>
+        </nz-form-item>
+        <nz-form-item>
+          <div class="but-con mqtt-but">
+            <!-- <button nz-button nzType="dashed" [nzLoading]="sendMailLoading" (click)="testMail()"
+                title="测试邮件是否配置成功">{{'system.setup.button.测试' | translate}}</button> -->
+            <button nz-button nzType="primary" [nzLoading]="rabbitbutLoading"
+              (click)="saveRabbitSet()">{{'system.setup.button.' +  rabbitbut | translate}}</button>
+          </div>
+        </nz-form-item>
+      </form>
+    </nz-tab>
+
     <nz-tab nzTitle="{{'system.setup.tabset.tab.刷新设置' | translate}}">
       <form nz-form>
         <nz-form-item>

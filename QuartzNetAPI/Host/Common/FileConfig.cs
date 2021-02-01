@@ -8,7 +8,9 @@ namespace Host.Common
     {
         private static string filePath = "File/Mail.txt";
 
-        private static string mqttFilePath = "File/Mail.txt";
+        private static string mqttFilePath = "File/mqtt.json";
+        private static string rabbitFilePath = "File/rabbitmq.json";
+
         private static MailEntity mailData = null;
         public static async Task<MailEntity> GetMailInfoAsync()
         {
@@ -50,6 +52,29 @@ namespace Host.Common
 
             var entity = await System.IO.File.ReadAllTextAsync(mqttFilePath);
             return JsonConvert.DeserializeObject<MqttOptionsEntity>(entity);
+        }
+
+        /// <summary>
+        /// 保存Rabbit 配置
+        /// </summary>
+        /// <param name="input"></param>
+        /// <returns></returns>
+        public static async Task<bool> SaveRabbitSetAsync(RabbitOptionsEntity input)
+        {
+            await System.IO.File.WriteAllTextAsync(rabbitFilePath, JsonConvert.SerializeObject(input));
+            return true;
+        }
+
+        /// <summary>
+        /// 获取Rabbit 配置
+        /// </summary>
+        /// <returns></returns>
+        public static async Task<RabbitOptionsEntity> GetRabbitSetAsync()
+        {
+            if (!System.IO.File.Exists(rabbitFilePath)) return new RabbitOptionsEntity();
+
+            var entity = await System.IO.File.ReadAllTextAsync(rabbitFilePath);
+            return JsonConvert.DeserializeObject<RabbitOptionsEntity>(entity);
         }
     }
 }

@@ -37,7 +37,7 @@
             <nz-option nzValue="1" nzLabel="Url"></nz-option>
             <nz-option nzValue="2" nzLabel="{{ 'task.list.modal.label.邮件' | translate }}"></nz-option>
             <nz-option nzValue="3" nzLabel="MQTT"></nz-option>
-            <nz-option nzValue="4" [nzDisabled]="'disabled'" nzLabel="RabbitMQ"></nz-option>
+            <nz-option nzValue="4" nzLabel="RabbitMQ"></nz-option>
             <nz-option nzValue="5" [nzDisabled]="'disabled'" nzLabel="{{ 'task.list.modal.label.热加载' | translate }}">
             </nz-option>
           </nz-select>
@@ -125,9 +125,35 @@
         <nz-form-label [nzSpan]="6" nzRequired nzFor="payload">{{ 'task.list.modal.label.消息' | translate }}
         </nz-form-label>
         <nz-form-control [nzSpan]="15">
-          <input nz-input formControlName="payload" placeholder="请输入Payload消息" [(ngModel)]="jobInfoEntity.payload">
+          <textarea row="4" nz-input formControlName="payload" placeholder="请输入Payload消息"
+            [(ngModel)]="jobInfoEntity.payload">
+            </textarea>
           <nz-form-explain *ngIf="validateJobForm.get('payload').dirty && validateJobForm.get('payload').errors">
             Payload消息必填</nz-form-explain>
+        </nz-form-control>
+      </nz-form-item>
+
+      <nz-form-item *ngIf="validateJobForm.get('jobType').value == 4">
+        <nz-form-label [nzSpan]="6" nzRequired nzFor="topic">{{ 'task.list.modal.label.队列名称' | translate }}
+        </nz-form-label>
+        <nz-form-control [nzSpan]="15">
+          <input nz-input formControlName="rabbitQueue" placeholder="请输入Queue队列名称"
+            [(ngModel)]="jobInfoEntity.rabbitQueue">
+          <nz-form-explain
+            *ngIf="validateJobForm.get('rabbitQueue').dirty && validateJobForm.get('rabbitQueue').errors">
+            Queue队列名称必填</nz-form-explain>
+        </nz-form-control>
+      </nz-form-item>
+
+      <nz-form-item *ngIf="validateJobForm.get('jobType').value == 4">
+        <nz-form-label [nzSpan]="6" nzRequired nzFor="payload">{{ 'task.list.modal.label.主体内容' | translate }}
+        </nz-form-label>
+        <nz-form-control [nzSpan]="15">
+          <textarea row="4" nz-input formControlName="rabbitBody" placeholder="请输入Body内容"
+            [(ngModel)]="jobInfoEntity.rabbitBody">
+          </textarea>
+          <nz-form-explain *ngIf="validateJobForm.get('rabbitBody').dirty && validateJobForm.get('rabbitBody').errors">
+            Body内容必填</nz-form-explain>
         </nz-form-control>
       </nz-form-item>
 

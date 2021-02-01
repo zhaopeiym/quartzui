@@ -56,5 +56,8 @@ namespace Host.Common
 
         public static string Topic = "Topic";
         public static string Payload = "Payload";
+
+        public static string RabbitQueue = "RabbitQueue";
+        public static string RabbitBody = "RabbitBody";
     }
 }

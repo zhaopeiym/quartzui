@@ -24,6 +24,9 @@ export class SetingComponent implements OnInit {
   newPassword: any;
   sendMailLoading: boolean;
   mqttValidateForm: FormGroup;
+  rabbitValidateForm: FormGroup;
+  rabbitbut: string = "确定";
+  rabbitbutLoading: boolean;
 
   constructor(private fb: FormBuilder,
     private router: Router,
@@ -47,8 +50,17 @@ export class SetingComponent implements OnInit {
       password: [null],
       connectionMethod: ['4']
     });
+
+    this.rabbitValidateForm = this.fb.group({
+      rabbitHost: [null, [Validators.required]],
+      rabbitPort: [null, [Validators.required]],
+      rabbitUserName: [null],
+      rabbitPassword: [null]
+    });
+
     this.getMailInfo();
     this.getMqttSet();
+    this.getRabbitSet();
   }
 
   //获取邮箱信息
@@ -109,6 +121,52 @@ export class SetingComponent implements OnInit {
       this.mqttValidateForm.controls.userName.setValue(result.userName);
       this.mqttValidateForm.controls.password.setValue(result.password);
       this.mqttValidateForm.controls.connectionMethod.setValue(result.connectionMethod.toString());
+    }, (err) => {
+
+    });
+  }
+
+  saveRabbitSet() {
+    for (const i in this.rabbitValidateForm.controls) {
+      this.rabbitValidateForm.controls[i].markAsDirty();
+      this.rabbitValidateForm.controls[i].updateValueAndValidity();
+    }
+    if (!this.rabbitValidateForm.valid)
+      return;
+    var url = this.baseUrl + "/api/Seting/SaveRabbitSet";
+    this.http.post(url, this.rabbitValidateForm.value, (result: any) => {
+      this.message.success("保存成功！");
+      this.restartRabbit();
+    }, (err) => {
+      this.message.warning("保存失败！");
+    });
+  }
+
+  restartRabbit() {
+    this.rabbitbut = "连接测试";
+    this.rabbitbutLoading = true;
+    var url = this.baseUrl + "/api/Seting/RestartRabbit";
+    this.http.post(url, this.rabbitValidateForm.value, (result: any) => {
+      this.rabbitbut = "确定";
+      this.rabbitbutLoading = false;
+      if (result)
+        this.message.success("RestartMQ连接成功");
+      else
+        this.message.warning("RestartMQ连接失败！");
+    }, (err) => {
+      this.rabbitbut = "确定";
+      this.rabbitbutLoading = false;
+      this.message.warning("RestartMQ连接失败！");
+    });
+  }
+
+  getRabbitSet() {
+    var url = this.baseUrl + "/api/Seting/GetRabbitSet";
+    this.http.post(url, {}, (result: any) => {
+      this.rabbitValidateForm.controls.rabbitHost.setValue(result.rabbitHost);
+      this.rabbitValidateForm.controls.rabbitPort.setValue(result.rabbitPort);
+      this.rabbitValidateForm.controls.rabbitUserName.setValue(result.rabbitUserName);
+      this.rabbitValidateForm.controls.rabbitPassword.setValue(result.rabbitPassword);
     }, (err) => {
 
     });

@@ -19,8 +19,12 @@ namespace Host.Services
         {
             //开启调度器
             await schedulerCenter.StartScheduleAsync();
+
             //启动mqtt
             await mqttManager.RestartAsync();
+
+            //启动Rabbit
+            await RabbitMQManager.Instance.RestartAsync();
         }
 
         public Task StopAsync(CancellationToken cancellationToken)

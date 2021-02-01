@@ -76,6 +76,8 @@ export class TaskListComponent implements OnInit {
       mailTo: [null, [Validators.required]],
       topic: [null, [Validators.required]],
       payload: [null, [Validators.required]],
+      rabbitQueue: [null, [Validators.required]],
+      rabbitBody: [null, [Validators.required]],
     });
   }
 
@@ -422,34 +424,39 @@ export class TaskListComponent implements OnInit {
   changeJobType(jobType) {
     switch (jobType) {
       case "1":
-        this.validateJobForm.controls["mailTitle"].setValidators(null);
-        this.validateJobForm.controls["mailTo"].setValidators(null);
-        this.validateJobForm.controls["topic"].setValidators(null);
-        this.validateJobForm.controls["payload"].setValidators(null);
+        this.requiredReset();
         this.validateJobForm.controls["requestType"].setValidators(Validators.required);
         this.validateJobForm.controls["requestUrl"].setValidators(Validators.required);
         break;
       case "2":
+        this.requiredReset();
         this.validateJobForm.controls["mailTitle"].setValidators(Validators.required);
         this.validateJobForm.controls["mailTo"].setValidators(Validators.required);
-        this.validateJobForm.controls["requestType"].setValidators(null);
-        this.validateJobForm.controls["requestUrl"].setValidators(null);
-        this.validateJobForm.controls["topic"].setValidators(null);
-        this.validateJobForm.controls["payload"].setValidators(null);
         break;
       case "3":
-        this.validateJobForm.controls["mailTitle"].setValidators(null);
-        this.validateJobForm.controls["mailTo"].setValidators(null);
-        this.validateJobForm.controls["requestType"].setValidators(null);
-        this.validateJobForm.controls["requestUrl"].setValidators(null);
+        this.requiredReset();
         this.validateJobForm.controls["topic"].setValidators(Validators.required);
         this.validateJobForm.controls["payload"].setValidators(Validators.required);
         break;
       case "4":
+        this.requiredReset();
+        this.validateJobForm.controls["rabbitQueue"].setValidators(Validators.required);
+        this.validateJobForm.controls["rabbitBody"].setValidators(Validators.required);
         break;
       case "5":
         break;
     }
+  }
+
+  requiredReset() {
+    this.validateJobForm.controls["requestType"].setValidators(null);
+    this.validateJobForm.controls["requestUrl"].setValidators(null);
+    this.validateJobForm.controls["mailTitle"].setValidators(null);
+    this.validateJobForm.controls["mailTo"].setValidators(null);
+    this.validateJobForm.controls["topic"].setValidators(null);
+    this.validateJobForm.controls["payload"].setValidators(null);
+    this.validateJobForm.controls["rabbitQueue"].setValidators(null);
+    this.validateJobForm.controls["rabbitBody"].setValidators(null);
   }
 
   //立即执行

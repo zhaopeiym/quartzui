@@ -76,8 +76,10 @@
             "时": "hour",
             "分": "minute",
             "天": "day",
-            "主题":"Topic",
-            "消息":"Payload"
+            "主题": "Topic",
+            "消息": "Payload",
+            "队列名称": "Queue",
+            "主体内容": "Body"
         },
         "任务列表": "Task list"
     },
@@ -88,7 +90,8 @@
             "邮箱设置": "Mailbox settings",
             "MQTT配置": "MQTT settings",
             "刷新设置": "Refresh settings",
-            "登录设置": "Login settings"
+            "登录设置": "Login settings",
+            "RabbitMQ配置": "RabbitMQ settings"
         },
         "label": {
             "页面定时刷新时间": "Page refresh time",
@@ -99,16 +102,17 @@
             "秒": "second",
             "旧登录口令": "Old login password",
             "新登录口令": "New login password",
-            "主机地址":"Host",
-            "端口":"Port",
-            "客户端ID":"Clinet ID",
-            "用户名":"UserName",
-            "密码":"Password",
-            "连接方式":"Connection method"
+            "主机地址": "Host",
+            "端口": "Port",
+            "客户端ID": "Clinet ID",
+            "用户名": "UserName",
+            "密码": "Password",
+            "连接方式": "Connection method"
         },
         "button": {
             "确定": "Ok",
-            "测试": "Test"
+            "测试": "Test",
+            "连接测试": "Test connect"
         }
     }
 }
