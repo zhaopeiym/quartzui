@@ -99,17 +99,7 @@
           <nz-form-explain *ngIf="validateJobForm.get('mailTo').dirty && validateJobForm.get('mailTo').errors">
             收件邮箱必填</nz-form-explain>
         </nz-form-control>
-      </nz-form-item>
-
-      <nz-form-item *ngIf="validateJobForm.get('jobType').value == 2">
-        <nz-form-label [nzSpan]="6" nzRequired nzFor="mailTo">{{ 'task.list.modal.label.收件邮箱' | translate }}
-        </nz-form-label>
-        <nz-form-control [nzSpan]="15">
-          <input nz-input formControlName="mailTo" placeholder="请输入收件邮箱，多个邮箱用','分割。" [(ngModel)]="jobInfoEntity.mailTo">
-          <nz-form-explain *ngIf="validateJobForm.get('mailTo').dirty && validateJobForm.get('mailTo').errors">
-            收件邮箱必填</nz-form-explain>
-        </nz-form-control>
-      </nz-form-item>
+      </nz-form-item>     
 
       <nz-form-item *ngIf="validateJobForm.get('jobType').value == 3">
         <nz-form-label [nzSpan]="6" nzRequired nzFor="topic">{{ 'task.list.modal.label.主题' | translate }}
