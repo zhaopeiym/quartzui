@@ -222,7 +222,7 @@ export class TaskListComponent implements OnInit {
         eleJob.jobTypeColor = "#87d068";
         break;
       case "4":
-        eleJob.jobTypeColor = "#2db7f5";
+        eleJob.jobTypeColor = "#f97250";
         break;
       case "5":
         eleJob.jobTypeColor = "#FF955F";
@@ -237,6 +237,7 @@ export class TaskListComponent implements OnInit {
     if (this.modalTitle === "新增任务") {
       this.jobInfoEntity.beginTime = new Date();
       this.validateJobForm.controls["jobType"].setValue("1");
+      this.validateJobForm.controls["triggerType"].setValue("1");
     }
     if (this.translate.currentLang === "en") {
       if (this.modalTitle === "新增任务")
