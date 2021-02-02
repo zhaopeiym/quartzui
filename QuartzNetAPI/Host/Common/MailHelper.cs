@@ -1,4 +1,5 @@
 ﻿using Host.Entity;
+using MailKit.Security;
 using MimeKit;
 using System;
 using System.Threading.Tasks;
@@ -34,10 +35,10 @@ namespace Host.Common
             };
             using (var client = new MailKit.Net.Smtp.SmtpClient())
             {
-                client.Connect(mailInfo.MailHost, 465, true);
-                client.Authenticate(mailInfo.MailFrom, mailInfo.MailPwd);
-                client.Send(message);
-                client.Disconnect(true);
+                await client.ConnectAsync(mailInfo.MailHost, 465, SecureSocketOptions.Auto);
+                await client.AuthenticateAsync(mailInfo.MailFrom, mailInfo.MailPwd);
+                await client.SendAsync(message);
+                await client.DisconnectAsync(true);
             }
             return true;
         }
