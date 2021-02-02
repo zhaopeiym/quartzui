@@ -249,9 +249,7 @@ export class TaskListComponent implements OnInit {
 
   //取消
   handleJobCancel() {
-    this.isJobVisible = false;
-    this.modalTitle = "新增任务";
-    this.formReset();
+    this.formResetClose();
   }
 
   //验证
@@ -262,8 +260,10 @@ export class TaskListComponent implements OnInit {
     }
   }
 
-  //重置
-  formReset() {
+  //重置，并关闭对话框
+  formResetClose() {
+    this.isJobVisible = false;
+    this.modalTitle = "新增任务";
     this.validateJobForm.reset();
     this.validateJobForm.controls["triggerType"].setValue("1");
     this.validateJobForm.controls["intervalUnit"].setValue("1");
@@ -303,8 +303,8 @@ export class TaskListComponent implements OnInit {
       if (result.code == 200) {
         this.msgInfo("保存任务计划成功！");
         this.loadJobInfo();
-        this.formReset();
-        this.isJobVisible = false;
+        this.formResetClose();
+        //this.isJobVisible = false;
       }
       else {
         this.msgWarning(result.msg);
