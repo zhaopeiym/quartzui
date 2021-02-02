@@ -35,7 +35,6 @@ namespace Host.Common
             };
             using (var client = new MailKit.Net.Smtp.SmtpClient())
             {
-                client.SslProtocols = SslProtocols.Ssl3 | SslProtocols.Tls | SslProtocols.Tls11 | SslProtocols.Tls12 | SslProtocols.Tls13;
                 await client.ConnectAsync(mailInfo.MailHost, 465, true);
                 await client.AuthenticateAsync(mailInfo.MailFrom, mailInfo.MailPwd);
                 await client.SendAsync(message);
