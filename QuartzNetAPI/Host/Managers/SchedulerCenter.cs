@@ -329,8 +329,8 @@ namespace Host
             var intervalSeconds = (triggers as SimpleTriggerImpl)?.RepeatInterval.TotalSeconds;
             var endTime = jobDetail.JobDataMap.GetString("EndAt");
             entity.BeginTime = triggers.StartTimeUtc.LocalDateTime;
-            entity.EndTime = string.IsNullOrWhiteSpace(endTime) ? null : DateTime.Parse(endTime);
-            entity.IntervalSecond = intervalSeconds.HasValue ? Convert.ToInt32(intervalSeconds.Value) : null;
+            if (!string.IsNullOrWhiteSpace(endTime)) entity.EndTime = DateTime.Parse(endTime);
+            if (intervalSeconds.HasValue) entity.IntervalSecond = Convert.ToInt32(intervalSeconds.Value);
             entity.JobGroup = jobGroup;
             entity.JobName = jobName;
             entity.Cron = (triggers as CronTriggerImpl)?.CronExpressionString;
