@@ -1,7 +1,7 @@
 ﻿using Host.Entity;
-using MailKit.Security;
 using MimeKit;
 using System;
+using System.Security.Authentication;
 using System.Threading.Tasks;
 using Talk.Extensions;
 
@@ -35,9 +35,8 @@ namespace Host.Common
             };
             using (var client = new MailKit.Net.Smtp.SmtpClient())
             {
-                //client.CheckCertificateRevocation = false;
-                client.ServerCertificateValidationCallback = (s, c, h, e) => true;
-                await client.ConnectAsync(mailInfo.MailHost, 465, SecureSocketOptions.Auto);
+                client.SslProtocols = SslProtocols.Ssl3 | SslProtocols.Tls | SslProtocols.Tls11 | SslProtocols.Tls12 | SslProtocols.Tls13;
+                await client.ConnectAsync(mailInfo.MailHost, 465, true);
                 await client.AuthenticateAsync(mailInfo.MailFrom, mailInfo.MailPwd);
                 await client.SendAsync(message);
                 await client.DisconnectAsync(true);
