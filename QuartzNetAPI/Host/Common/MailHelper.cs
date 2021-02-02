@@ -35,6 +35,7 @@ namespace Host.Common
             };
             using (var client = new MailKit.Net.Smtp.SmtpClient())
             {
+                client.CheckCertificateRevocation = false;
                 await client.ConnectAsync(mailInfo.MailHost, 465, SecureSocketOptions.Auto);
                 await client.AuthenticateAsync(mailInfo.MailFrom, mailInfo.MailPwd);
                 await client.SendAsync(message);
