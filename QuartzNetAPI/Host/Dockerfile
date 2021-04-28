@@ -8,7 +8,7 @@ RUN cp /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
 RUN cp /usr/share/zoneinfo/Asia/Shanghai /usr/share/zoneinfo/Asia/Beijing
 
 #编译（临时镜像，主要用来编译发布项目）
-FROM mcr.microsoft.com/dotnet/sdk:5.0-alpine AS publish
+FROM mcr.microsoft.com/dotnet/sdk:5.0 AS publish
 WORKDIR /src
 COPY . .
 WORKDIR /src/Host
