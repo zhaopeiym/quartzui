@@ -84,6 +84,7 @@ namespace Host
             //TODO 其他数据源...
             if (driverDelegateType.Equals(typeof(SQLiteDelegate).AssemblyQualifiedName) ||
                 driverDelegateType.Equals(typeof(MySQLDelegate).AssemblyQualifiedName) ||
+                driverDelegateType.Equals(typeof(SqlServerDelegate).AssemblyQualifiedName) ||
                 driverDelegateType.Equals(typeof(PostgreSQLDelegate).AssemblyQualifiedName))
             {
                 IRepositorie repositorie = RepositorieFactory.CreateRepositorie(driverDelegateType, dbProvider);
@@ -524,11 +525,11 @@ namespace Host
                         jobInfo.JobInfoList.Add(new JobBriefInfo()
                         {
                             Name = jobKey.Name,
-                            LastErrMsg = jobDetail.JobDataMap.GetString(Constant.EXCEPTION),
+                            LastErrMsg = jobDetail?.JobDataMap.GetString(Constant.EXCEPTION),
                             TriggerState = await scheduler.GetTriggerState(triggers.Key),
                             PreviousFireTime = triggers.GetPreviousFireTimeUtc()?.LocalDateTime,
                             NextFireTime = triggers.GetNextFireTimeUtc()?.LocalDateTime,
-                            RunNumber = jobDetail.JobDataMap.GetLong(Constant.RUNNUMBER)
+                            RunNumber = jobDetail?.JobDataMap.GetLong(Constant.RUNNUMBER) ?? 0
                         });
                         continue;
                     }

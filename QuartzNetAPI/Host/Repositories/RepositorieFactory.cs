@@ -24,6 +24,10 @@ namespace Host.Repositories
             {
                 return new RepositorieOracle(dbProvider);
             }
+            else if (driverDelegateType == typeof(SqlServerDelegate).AssemblyQualifiedName)
+            {
+                return new RepositorieSqlServer(dbProvider);
+            }
             else
             {
                 return null;
