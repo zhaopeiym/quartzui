@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
@@ -22,15 +23,15 @@ namespace Host
         /// <summary>
         /// 不同url分配不同HttpClient
         /// </summary>
-        public static Dictionary<string, HttpClient> dictionary = new Dictionary<string, HttpClient>();
+        public static ConcurrentDictionary<string, HttpClient> dictionary = new ConcurrentDictionary<string, HttpClient>();
 
         private HttpClient GetHttpClient(string url)
         {
             var uri = new Uri(url);
             var key = uri.Scheme + uri.Host;
-            if (!dictionary.Keys.Contains(key))
-                dictionary.Add(key, new HttpClient());
-            return dictionary[key];
+            //if (!dictionary.Keys.Contains(key))
+            return dictionary.GetOrAdd(key, new HttpClient());
+            //return dictionary[key];
         }
 
         /// <summary>
@@ -57,12 +58,12 @@ namespace Host
                         http.DefaultRequestHeaders.Remove(item.Key);
                         http.DefaultRequestHeaders.TryAddWithoutValidation(item.Key, item.Value);
                     }
-                    return await http.PostAsync(new Uri(url), content); 
+                    return await http.PostAsync(new Uri(url), content);
                 }
             }
             else
             {
-                return await GetHttpClient(url).PostAsync(new Uri(url), content); 
+                return await GetHttpClient(url).PostAsync(new Uri(url), content);
             }
         }
 
@@ -97,12 +98,12 @@ namespace Host
                         http.DefaultRequestHeaders.Remove(item.Key);
                         http.DefaultRequestHeaders.TryAddWithoutValidation(item.Key, item.Value);
                     }
-                    return await http.GetAsync(url); 
+                    return await http.GetAsync(url);
                 }
             }
             else
             {
-                return await GetHttpClient(url).GetAsync(url); 
+                return await GetHttpClient(url).GetAsync(url);
             }
         }
 
@@ -129,12 +130,12 @@ namespace Host
                         http.DefaultRequestHeaders.Remove(item.Key);
                         http.DefaultRequestHeaders.TryAddWithoutValidation(item.Key, item.Value);
                     }
-                    return await http.PutAsync(url, content); 
+                    return await http.PutAsync(url, content);
                 }
             }
             else
             {
-                return await GetHttpClient(url).PutAsync(url, content); 
+                return await GetHttpClient(url).PutAsync(url, content);
             }
         }
 
@@ -169,12 +170,12 @@ namespace Host
                         http.DefaultRequestHeaders.Remove(item.Key);
                         http.DefaultRequestHeaders.TryAddWithoutValidation(item.Key, item.Value);
                     }
-                    return await http.DeleteAsync(url); 
+                    return await http.DeleteAsync(url);
                 }
             }
             else
             {
-                return await GetHttpClient(url).DeleteAsync(url); 
+                return await GetHttpClient(url).DeleteAsync(url);
             }
         }
     }
