@@ -37,7 +37,7 @@
   <ItemGroup>
     <PackageReference Include="Dapper" Version="2.0.78" />
     <PackageReference Include="Dapper.Contrib" Version="2.0.78" />
-    <PackageReference Include="MailKit" Version="2.10.1" />
+    <PackageReference Include="MailKit" Version="2.11.1" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="5.0.2" />    
     <PackageReference Include="Microsoft.Data.SQLite" Version="5.0.2" />    
     <PackageReference Include="Microsoft.Extensions.PlatformAbstractions" Version="1.1.0" />    
@@ -46,14 +46,14 @@
     <PackageReference Include="MySql.Data" Version="8.0.23" />
     <PackageReference Include="Npgsql" Version="5.0.3" />
     <PackageReference Include="Oracle.ManagedDataAccess.Core" Version="2.19.101" />
-    <PackageReference Include="Quartz" Version="3.2.4" />
-    <PackageReference Include="Quartz.Serialization.Json" Version="3.2.4" />
+    <PackageReference Include="Quartz" Version="3.3.2" />
+    <PackageReference Include="Quartz.Serialization.Json" Version="3.3.2" />
     <PackageReference Include="RabbitMQ.Client" Version="6.2.1" />
     <PackageReference Include="Serilog.Extensions.Logging" Version="3.0.1" />
     <PackageReference Include="Serilog.Sinks.Async" Version="1.4.0" />
     <PackageReference Include="Serilog.Sinks.RollingFile" Version="3.3.0" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="5.6.3" />
-    <PackageReference Include="Talk.Extensions" Version="1.0.1.66" />
+    <PackageReference Include="Talk.Extensions" Version="1.0.1.67" />
   </ItemGroup>
 
   <ItemGroup>
