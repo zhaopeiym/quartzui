@@ -8,7 +8,7 @@
         /// <summary>
         /// 请求是否成功
         /// </summary>
-        public bool IsSuccess { get; set; }
+        public bool IsSuccess { get; set; } = true;
         /// <summary>
         /// 异常消息
         /// </summary>
