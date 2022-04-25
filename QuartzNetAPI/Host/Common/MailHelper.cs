@@ -21,6 +21,12 @@ namespace Host.Common
                     throw new Exception("请先在 [/seting] 页面配置邮箱设置。");
                 }
             }
+            else
+            {
+                mailInfo.MailFrom = mailInfo.MailFrom.Trim();
+                mailInfo.MailHost = mailInfo.MailHost.Trim();
+                mailInfo.MailTo = mailInfo.MailTo.Trim();
+            }
 
             var message = new MimeMessage();
             message.From.Add(new MailboxAddress(mailInfo.MailFrom, mailInfo.MailFrom));
