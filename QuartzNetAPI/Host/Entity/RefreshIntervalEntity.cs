@@ -10,6 +10,6 @@ namespace Host.Entity
         /// <summary>
         /// 间隔时间
         /// </summary>
-        public int IntervalTime { get; set; }
+        public int IntervalTime { get; set; } = 10;
     }
 }

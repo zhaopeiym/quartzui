@@ -94,7 +94,10 @@ export class TaskListComponent implements OnInit {
   getRefreshInterval() {
     var url = this.baseUrl + "/api/Seting/GetRefreshInterval";
     this.http.post(url, {}, (result: any) => {
-      this.refreshValue = result.intervalTime * 1000;
+      if (!result || result.intervalTime === null || result.intervalTime === undefined)
+        this.refreshValue = 10 * 1000;
+      else
+        this.refreshValue = result.intervalTime * 1000;
     }, (err) => {
 
     });

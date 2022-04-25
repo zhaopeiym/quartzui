@@ -180,7 +180,7 @@ namespace Host.Controllers
         [HttpPost]
         public async Task<RefreshIntervalEntity> GetRefreshInterval()
         {
-            return JsonConvert.DeserializeObject<RefreshIntervalEntity>(await System.IO.File.ReadAllTextAsync(refreshIntervalPath));
+            return JsonConvert.DeserializeObject<RefreshIntervalEntity>(await System.IO.File.ReadAllTextAsync(refreshIntervalPath)) ?? new RefreshIntervalEntity();
         }
 
         /// <summary>
