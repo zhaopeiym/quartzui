@@ -74,7 +74,7 @@ namespace Host.Common
             if (!System.IO.File.Exists(rabbitFilePath)) return new RabbitOptionsEntity();
 
             var entity = await System.IO.File.ReadAllTextAsync(rabbitFilePath);
-            return JsonConvert.DeserializeObject<RabbitOptionsEntity>(entity);
+            return JsonConvert.DeserializeObject<RabbitOptionsEntity>(entity) ?? new RabbitOptionsEntity();
         }
     }
 }
