@@ -17,7 +17,7 @@
     "@angular/cli": "^8.3.6",
     "@angular/common": "^8.2.8",
     "@angular/compiler": "^8.2.8",
-    "@angular/core": "^8.2.8",
+    "@angular/core": "^11.0.5",
     "@angular/forms": "^8.2.8",
     "@angular/platform-browser": "^8.2.8",
     "@angular/platform-browser-dynamic": "^8.2.8",
