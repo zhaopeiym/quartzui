@@ -58,6 +58,7 @@ namespace Host
                         http.DefaultRequestHeaders.Remove(item.Key);
                         http.DefaultRequestHeaders.TryAddWithoutValidation(item.Key, item.Value);
                     }
+                    http.Timeout = TimeSpan.FromMinutes(5);
                     return await http.PostAsync(new Uri(url), content);
                 }
             }
@@ -98,6 +99,7 @@ namespace Host
                         http.DefaultRequestHeaders.Remove(item.Key);
                         http.DefaultRequestHeaders.TryAddWithoutValidation(item.Key, item.Value);
                     }
+                    http.Timeout = TimeSpan.FromMinutes(5);
                     return await http.GetAsync(url);
                 }
             }
@@ -130,6 +132,7 @@ namespace Host
                         http.DefaultRequestHeaders.Remove(item.Key);
                         http.DefaultRequestHeaders.TryAddWithoutValidation(item.Key, item.Value);
                     }
+                    http.Timeout = TimeSpan.FromMinutes(5);
                     return await http.PutAsync(url, content);
                 }
             }
@@ -170,6 +173,7 @@ namespace Host
                         http.DefaultRequestHeaders.Remove(item.Key);
                         http.DefaultRequestHeaders.TryAddWithoutValidation(item.Key, item.Value);
                     }
+                    http.Timeout = TimeSpan.FromMinutes(5);
                     return await http.DeleteAsync(url);
                 }
             }
